@@ -52,3 +52,6 @@ next-env.d.ts
 
 # Workspace npm cache.
 /.npm-cache/
+
+.vercel
+.env*

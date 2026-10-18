@@ -2,7 +2,7 @@
 .contact-popup::backdrop { background: #13271dcc; backdrop-filter: blur(5px); }
 .contact-popup-layout { display: grid; grid-template-columns: .9fr 1.1fr; }
 .contact-popup-close { position: absolute; top: 14px; right: 14px; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 1px solid #e3e8df; border-radius: 50%; background: #fff; color: #314332; font-size: 26px; cursor: pointer; z-index: 1; }
-.contact-popup-details { padding: 28px; border: 1px solid #e3edda; border-radius: 16px; background: radial-gradient(ellipse at top left, #dff0c8 0, transparent 65%), linear-gradient(145deg, #f0f7e9, #f8faf5); }
+.contact-popup-details { padding: 28px; border: 1px solid #e3edda; border-radius: 16px; background: #f6f6f7; }
 .contact-popup-eyebrow { display: block; margin-bottom: 9px; color: #67942f; font-size: 10px; font-weight: 700; letter-spacing: 1.6px; }
 .public-site .contact-popup h2 { font-size: 32px; color: #293f2d; margin-bottom: 12px; }
 .public-site .contact-popup h3 { font-size: 28px; color: #293f2d; margin-bottom: 8px; }

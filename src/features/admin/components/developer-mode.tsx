@@ -1,5 +1,7 @@
 "use client";
 
+import {isDialogBackdropClick} from "@/lib/dialog-events";
+
 import {useEffect, useRef, useState} from "react";
 import Icon from "@/components/ui/icon";
 import {api} from "@/lib/api-client";
@@ -61,7 +63,7 @@ export default function DeveloperMode({onClose}: {onClose: () => void}) {
     finally {pending.current = false; setUploading(null);}
   }
 
-  if (!status) return <dialog ref={dialog} className="cms-developer-pin-dialog" aria-labelledby="developer-pin-title" onCancel={event => {event.preventDefault(); onClose();}} onClick={event => {if (event.target === event.currentTarget) onClose();}}>
+  if (!status) return <dialog ref={dialog} className="cms-developer-pin-dialog" aria-labelledby="developer-pin-title" onCancel={event => {event.preventDefault(); onClose();}} onClick={event => {if (isDialogBackdropClick(event)) onClose();}}>
     <button type="button" className="cms-developer-pin-close" aria-label="Close PIN popup" onClick={onClose}>&times;</button>
     <span className="cms-developer-lock-icon"><Icon name="lock" size={27}/></span>
     <h2 id="developer-pin-title">Developer mode</h2>

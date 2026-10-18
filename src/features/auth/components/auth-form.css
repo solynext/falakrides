@@ -1,42 +1,25 @@
-.admin-app.adm-auth-app { display:grid; grid-template-columns:minmax(0,1fr); width:100%; place-items:center; height:auto; min-height:100svh; padding:28px 24px; overflow:visible; background:radial-gradient(ellipse at 15% 0%,#e5ead9,transparent 60%),linear-gradient(145deg,#f4f5ed,#e8eee5); }
-.admin-app .adm-auth { display:grid; grid-template-columns:1fr 1fr; width:100%; max-width:1080px; min-height:450px; margin:auto; padding:0; gap:0; overflow:hidden; border:1px solid #ffffffb3; border-radius:24px; background:#fafbf8; box-shadow:0 24px 70px #183d3214; }
-.adm-auth-story { position:relative; isolation:isolate; display:flex; flex-direction:column; min-width:0; padding:20px 64px 18px 40px; color:#fff; }
-.adm-auth-story::before { content:""; position:absolute; z-index:-2; inset:0 -12px 0 -160px; border-radius:0 50% 50% 0 / 0 80% 80% 0; background:radial-gradient(ellipse at 0% 100%,#305a46,transparent 70%),#123d32; }
-.adm-auth-story .adm-brand { padding:0; align-self:flex-start; }
-.adm-auth-story .adm-brand>span { background:#ffffff15; border:1px solid #ffffff20; }
-.adm-auth-story .adm-brand>strong { color:#fff; font-size:24px; }
-.adm-auth-story .adm-brand>strong>span { color:#c8d7b7; }
-.adm-auth-story-copy { margin-top:12px; }
-.adm-auth-eyebrow { display:flex; align-items:center; gap:9px; color:#c3d4c8; font-size:9px; letter-spacing:1.4px; }
-.adm-auth-eyebrow>span { width:6px; height:6px; flex-shrink:0; border-radius:50%; background:#bdd4a4; box-shadow:0 0 0 4px #bdd4a412; }
-.admin-app .adm-auth-story h1 { margin:12px 0 10px; font-size:42px; line-height:1.08; letter-spacing:-2px; font-weight:500; }
-.adm-auth-story h1 em { color:#d4dfbc; font-style:normal; }
-.admin-app .adm-auth-story-copy p { color:#bfd0c5; font-size:13px; line-height:1.8; }
-.adm-auth-art { position:relative; display:grid; align-items:center; min-height:96px; margin:8px 18px 10px 0; }
-.adm-auth-orbit { position:absolute; z-index:-1; width:330px; height:330px; border:1px solid #d4dfbc12; border-radius:50%; right:-32px; top:-115px; pointer-events:none; }
-.adm-auth-orbit-two { width:410px; height:410px; right:-72px; top:-155px; }
-.adm-auth-route { position:absolute; width:100%; height:100px; color:#b8c99d66; }
-.adm-auth-route-start,.adm-auth-route-end { position:absolute; display:flex; align-items:center; gap:6px; font-size:9px; color:#c2d2c5; }
-.adm-auth-route-start { left:0; bottom:0; }
-.adm-auth-route-end { right:8px; top:0; }
-.adm-auth-journey-card { position:relative; display:flex; align-items:center; gap:12px; padding:14px; margin:10px 0 0; border:1px solid #ffffff22; border-radius:13px; background:linear-gradient(120deg,#31564a,#22483d); box-shadow:0 12px 24px #051c2525; transform:rotate(-2deg); }
-.adm-auth-car-icon { display:grid; place-items:center; width:43px; height:43px; flex-shrink:0; border-radius:10px; background:#d9e2c4; color:#234c3c; }
-.adm-auth-journey-card>div { min-width:0; }
-.adm-auth-journey-card small { display:block; color:#c1d0c5; font-size:7px; letter-spacing:.9px; margin-bottom:6px; }
-.adm-auth-journey-card strong { display:block; font-size:12px; font-weight:500; }
-.adm-auth-journey-card>svg { margin-left:auto; color:#d4dfbc; }
-.adm-auth-story-footer { display:flex; flex-wrap:wrap; gap:16px; margin-top:auto; padding-top:16px; border-top:1px solid #ffffff18; }
-.adm-auth-story-footer>span { display:flex; align-items:center; gap:7px; color:#c3d3c8; font-size:10px; }
-.adm-auth-form-side { position:relative; display:flex; flex-direction:column; min-width:0; padding:18px 40px 16px 32px; }
+.admin-app.adm-auth-app { display:grid; grid-template-columns:minmax(0,1fr); width:100%; place-items:center; height:auto; min-height:100svh; padding:40px 24px; overflow:visible; background:#fff; }
+.admin-app .adm-auth { display:grid; grid-template-columns:1fr 1fr; width:100%; max-width:1080px; min-height:480px; margin:auto; padding:0; gap:0; overflow:hidden; border:1px solid #e0e7de; border-radius:24px; background:linear-gradient(135deg,#f8f7fbbf 0%,#f1f3f8bf 55%,#eef3f5bf 100%); box-shadow:0 20px 60px #183d320c; }
+.adm-auth-story { position:relative; display:flex; flex-direction:column; min-width:0; padding:28px 40px; background:transparent; color:#2a2b34; }
+.adm-auth-brand { display:inline-flex; align-self:flex-start; padding:0; background:transparent; }
+.adm-auth-story-copy { margin-block:auto; padding-block:24px; }
+.adm-auth-eyebrow { display:flex; align-items:center; gap:9px; color:#64746b; font-size:10px; line-height:1.6; letter-spacing:1.5px; }
+.adm-auth-eyebrow>span { width:6px; height:6px; flex-shrink:0; border-radius:50%; background:#15803d; box-shadow:0 0 0 4px #15803d12; }
+.admin-app .adm-auth-story h1 { margin:18px 0; font-size:clamp(40px,4.2vw,56px); line-height:1.12; letter-spacing:-2px; font-weight:500; }
+.adm-auth-story h1 em { color:#15803d; font-style:normal; }
+.admin-app .adm-auth-story-copy p { max-width:360px; color:#64746b; font-size:14px; line-height:1.9; }
+.adm-auth-story-footer { display:flex; flex-wrap:wrap; gap:20px; padding-top:20px; border-top:1px solid #e0e7de; }
+.adm-auth-story-footer>span { display:flex; align-items:center; gap:7px; color:#64746b; font-size:11px; }
+.adm-auth-form-side { position:relative; display:flex; flex-direction:column; min-width:0; padding:24px 40px; }
 .adm-auth-top-link { display:flex; align-items:center; gap:8px; align-self:flex-end; color:#64745f; font-size:11px; }
 .adm-auth-top-link:hover { color:#15803d; }
-.adm-auth-card { width:100%; max-width:340px; margin:auto; padding:12px 0; }
+.adm-auth-card { width:100%; max-width:340px; margin:auto; padding:8px 0; }
 .adm-auth-heading { margin-bottom:14px; }
-.adm-auth-heading .adm-cms-pin-icon { width:36px; height:36px; margin-bottom:10px; border:1px solid #dfebdd; background:#eef4e9; }
+.adm-auth-heading .adm-cms-pin-icon { width:36px; height:36px; margin-bottom:10px; border:1px solid #e3e3e8; background:#f0f0f2; }
 .adm-auth-heading .adm-overline { display:block; color:#6e7f65; font-size:9px; letter-spacing:1.1px; margin-bottom:10px; }
 .admin-app .adm-auth-heading h2 { font-size:32px; font-weight:500; letter-spacing:-1.2px; line-height:1.2; margin-bottom:10px; }
 .admin-app .adm-auth-heading p { color:#6c7665; font-size:12px; line-height:1.7; }
-.adm-auth-card form { display:grid; gap:12px; }
+.adm-auth-card form { display:grid; gap:10px; }
 .admin-app .adm-auth-card label { font-size:12px; color:#4a5645; gap:8px; }
 .admin-app .adm-auth-card input { min-height:46px; padding:12px 14px; font-size:14px; border-radius:8px; border-color:#dfe5d9; background:#fff; }
 .admin-app .adm-auth-card .adm-button { display:flex; width:100%; min-height:46px; justify-content:center; margin-top:4px; border-radius:8px; gap:12px; background:#15803d; box-shadow:0 4px 8px #15803d12; transition:background .2s; }
@@ -47,23 +30,17 @@
 .adm-auth-form-footer>span:first-child { font-size:9px; letter-spacing:1.1px; }
 @media(max-width:950px) and (min-width:701px) {
   .adm-auth-story { padding:30px 36px 26px 28px; }
-  .adm-auth-story::before { right:0; }
   .admin-app .adm-auth-story h1 { font-size:40px; }
-  .adm-auth-story .adm-brand>strong { font-size:21px; }
   .adm-auth-form-side { padding:26px 24px; }
-  .adm-auth-art { margin-right:0; }
-  .adm-auth-journey-card { gap:8px; padding:12px; }
-  .adm-auth-journey-card>svg { display:none; }
 }
 @media(max-width:700px) {
   .admin-app.adm-auth-app { padding:16px 12px; }
   .admin-app .adm-auth { grid-template-columns:minmax(0,1fr); min-height:0; border-radius:20px; }
   .adm-auth-story { padding:26px 28px 32px; overflow:hidden; }
-  .adm-auth-story::before { inset:0; border-radius:0 0 35% 0 / 0 0 12% 0; }
-  .adm-auth-story-copy { margin-top:12px; }
+  .adm-auth-story-copy { margin:0; padding-block:32px 0; }
   .admin-app .adm-auth-story h1 { font-size:36px; margin-block:16px 12px; }
   .admin-app .adm-auth-story-copy p { font-size:12px; }
-  .adm-auth-art,.adm-auth-story-footer { display:none; }
+  .adm-auth-story-footer { display:none; }
   .adm-auth-form-side { padding:22px 26px; }
   .adm-auth-card { max-width:420px; padding:26px 0; }
   .admin-app .adm-auth-heading h2 { font-size:30px; }

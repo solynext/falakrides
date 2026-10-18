@@ -1,5 +1,7 @@
 "use client";
 
+import {isDialogBackdropClick} from "@/lib/dialog-events";
+
 import {useEffect, useId, useRef, useState} from "react";
 import Link from "./header-link";
 import Image from "next/image";
@@ -83,7 +85,7 @@ export default function UserProfile() {
     finally {setSaving(false);}
   }
 
-  return <div className="public-account" ref={root} onBlur={event => {if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);}}>
+  return <div className="public-account" ref={root} onBlur={event => {if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) setOpen(false);}}>
     <button className="public-account-trigger" disabled={!profileLoaded} type="button" ref={trigger} aria-label={profile.name ? `Profile: ${profile.name}` : "Open user profile"} aria-expanded={open} aria-controls={id} onClick={() => setOpen(current => !current)} onKeyDown={event => {if (event.key === "ArrowDown") {event.preventDefault(); setOpen(true); requestAnimationFrame(() => root.current?.querySelector<HTMLButtonElement>(".public-account-dropdown button")?.focus());}}}>
       <span className="public-account-avatar">{profile.image ? <Image src={profile.image} alt="" width={32} height={32} unoptimized/> : initials || <Icon name="user" size={19}/>}</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
     </button>
@@ -91,7 +93,7 @@ export default function UserProfile() {
       <div className="public-account-summary"><span className="public-account-avatar">{profile.image ? <Image src={profile.image} alt="" width={32} height={32} unoptimized/> : initials || <Icon name="user" size={20}/>}</span><div><strong>{profile.name || "Welcome to Falak Rides"}</strong><small>{profile.email || "Your journey, your way"}</small></div></div>
       <div className="public-account-options"><button type="button" onClick={edit}><Icon name="user" size={18}/><span>My profile</span><Icon size={14}/></button><Link href="/my-bookings" onClick={() => setOpen(false)}><Icon name="car" size={18}/><span>My bookings</span><Icon size={14}/></Link><Link href="/contact" onClick={() => setOpen(false)}><Icon name="chat" size={18}/><span>Help &amp; support</span><Icon size={14}/></Link></div>
     </div>}
-    <dialog ref={dialog} className="public-profile-dialog" aria-labelledby={`${id}-title`} onClose={() => {setEditing(false); trigger.current?.focus();}} onCancel={event => {event.preventDefault(); closeProfile();}} onClick={event => {if (event.target === event.currentTarget) closeProfile();}}>
+    <dialog ref={dialog} className="public-profile-dialog" aria-labelledby={`${id}-title`} onClose={() => {setEditing(false); trigger.current?.focus();}} onCancel={event => {event.preventDefault(); closeProfile();}} onClick={event => {if (isDialogBackdropClick(event)) closeProfile();}}>
       <div className="public-profile-heading"><div><h2 id={`${id}-title`}>My profile</h2></div><button type="button" aria-label="Close profile" onClick={closeProfile}>×</button></div>
       <form key={value} onSubmit={save} onChange={event => {if (!(event.target instanceof HTMLInputElement) || event.target.type !== "file") {setMessage(""); const data = new FormData(event.currentTarget); setFieldsDirty(["name", "email", "phone"].some(key => String(data.get(key) || "") !== profile[key as "name" | "email" | "phone"]));}}}>
         <div className="public-profile-photo">

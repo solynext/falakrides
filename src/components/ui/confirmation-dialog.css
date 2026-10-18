@@ -1,0 +1,19 @@
+.app-confirm { position: fixed; inset: 0; margin: auto; box-sizing: border-box; width: min(400px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow-y: auto; padding: 0; border: 1px solid #e7e7ec; border-radius: 22px; background: #fff; color: #2a2b34; box-shadow: 0 32px 100px #15161e2e, 0 8px 24px #15161e14; font-family: var(--font-admin-inter), Inter, Arial, sans-serif; animation: app-confirm-enter 180ms ease-out; }
+.app-confirm::backdrop { background: #18192366; backdrop-filter: blur(6px); }
+.app-confirm .app-confirm-close { position: absolute; top: 14px; right: 14px; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; background: transparent; color: #8a8b96; cursor: pointer; transition: background 150ms, color 150ms; }
+.app-confirm .app-confirm-close:hover { background: #f4f4f6; color: #2a2b34; }
+.app-confirm-body { padding: 38px 32px 28px; text-align: center; }
+.app-confirm-icon { display: grid; place-items: center; width: 64px; height: 64px; margin: 4px auto 24px; border: 1px solid #fee2e2; border-radius: 20px; background: #fff5f5; color: #dc2626; box-shadow: 0 0 0 7px #fffafa; }
+.app-confirm .app-confirm-body h2 { margin: 0 0 10px; color: #24252e; font-size: 25px; line-height: 1.25; letter-spacing: -.7px; font-weight: 600; }
+.app-confirm .app-confirm-body p { max-width: 290px; margin: 0 auto; color: #73747f; font-size: 14px; line-height: 1.7; }
+.app-confirm-actions { display: flex; gap: 12px; margin: 0; padding: 20px 24px; border-top: 1px solid #efeff2; background: #fafafa; }
+.app-confirm .app-confirm-actions button { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 11px 16px; border-radius: 9px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 150ms, border-color 150ms, box-shadow 150ms; }
+.app-confirm-cancel { border: 1px solid #dedee5; background: #fff; color: #444550; box-shadow: 0 1px 2px #15161e05; }
+.app-confirm-cancel:hover { border-color: #c9c9d3; background: #f4f4f6; }
+.app-confirm-submit { border: 1px solid #dc2626; background: #dc2626; color: #fff; box-shadow: 0 2px 4px #dc26261a; }
+.app-confirm-submit:hover { border-color: #b91c1c; background: #b91c1c; box-shadow: 0 3px 8px #dc262626; }
+.app-confirm button:focus-visible { outline: 2px solid #73747f; outline-offset: 3px; }
+.app-confirm .app-confirm-submit:focus-visible { outline-color: #dc2626; }
+@keyframes app-confirm-enter { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .app-confirm { animation: none; } .app-confirm button { transition: none; } }
+@media (max-width: 400px) { .app-confirm-body { padding-inline: 24px; } .app-confirm-actions { padding-inline: 20px; gap: 10px; } }

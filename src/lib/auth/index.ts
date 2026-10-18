@@ -12,6 +12,7 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: authBaseURL(),
   trustedOrigins: async request => trustedOrigins(request),
+  disabledPaths: ["/request-password-reset", "/reset-password"],
   emailAndPassword: {enabled: true, disableSignUp: true, minPasswordLength: 12},
   user: {additionalFields: {role: {type: "string", defaultValue: "Viewer", input: false}, status: {type: "string", defaultValue: "Active", input: false}}},
   session: {expiresIn: 60 * 60 * 8, updateAge: 60 * 30, cookieCache: {enabled: false}},

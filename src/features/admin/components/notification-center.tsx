@@ -1,5 +1,7 @@
 "use client";
 
+import {isDialogBackdropClick} from "@/lib/dialog-events";
+
 import {useRef, useState} from "react";
 import Icon from "@/components/ui/icon";
 import type {AdminRow} from "../types";
@@ -32,7 +34,7 @@ export default function NotificationCenter({bookings, notifications, onOpen, ini
       <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
       {unread > 0 && <span className="adm-notification-count" aria-hidden="true">{unread > 9 ? "9+" : unread}</span>}
     </button>
-    <dialog ref={dialog} id="admin-notification-center" className="adm-notifications" aria-labelledby="admin-notifications-title" onClose={() => {setOpen(false); trigger.current?.focus();}} onClick={event => {if (event.target === event.currentTarget) close();}}>
+    <dialog ref={dialog} id="admin-notification-center" className="adm-notifications" aria-labelledby="admin-notifications-title" onClose={() => {setOpen(false); trigger.current?.focus();}} onClick={event => {if (isDialogBackdropClick(event)) close();}}>
       <div className="adm-notifications-head"><h2 id="admin-notifications-title">Notifications <span>{unread}</span></h2><button className="adm-icon-button" aria-label="Close notifications" onClick={close} autoFocus><CloseIcon/></button></div>
       <div className="adm-notifications-tools"><div role="group" aria-label="Notification filter"><button aria-pressed={filter === "all"} onClick={() => setFilter("all")}>All</button><button aria-pressed={filter === "unread"} onClick={() => setFilter("unread")}>Unread ({unread})</button></div><button disabled={!unread} onClick={() => {void persist(notices.map(notice => notice.id), "read");}}>Mark all read</button></div>
       <div className="adm-notifications-list">{visible.length ? visible.map(notice => <article key={notice.id} className={`adm-notice ${read.includes(notice.id) ? "is-read" : ""}`}>

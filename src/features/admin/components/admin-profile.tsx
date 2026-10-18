@@ -1,5 +1,8 @@
 "use client";
 
+import ConfirmationDialog from "@/components/ui/confirmation-dialog";
+import {isDialogBackdropClick} from "@/lib/dialog-events";
+
 import {useEffect, useRef, useState} from "react";
 import Link from "next/link";
 import Icon from "@/components/ui/icon";
@@ -13,6 +16,7 @@ export default function AdminProfile({onNavigate}: {onNavigate: (section: string
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
   const [logoutError, setLogoutError] = useState("");
   const root = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -43,8 +47,8 @@ export default function AdminProfile({onNavigate}: {onNavigate: (section: string
   function navigate(section: string) { setOpen(false); onNavigate(section); trigger.current?.focus(); }
 
   function logout() {
-    if (loggingOut || !window.confirm("Are you sure you want to log out?")) return;
-    confirmNavigation(() => {void performLogout();});
+    if (loggingOut) return;
+    setConfirmLogout(true);
   }
   async function performLogout() {
     setLoggingOut(true);
@@ -60,7 +64,7 @@ export default function AdminProfile({onNavigate}: {onNavigate: (section: string
   }
 
   return <div className="adm-account" ref={root} onBlur={event => {
-    if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+    if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) setOpen(false);
   }}>
     <button ref={trigger} type="button" className="adm-account-trigger" aria-label={`Admin profile: ${profile.name}`} aria-expanded={open} aria-controls="admin-account-options" onClick={() => setOpen(!open)}>
       <span className="adm-profile-avatar">{initials}</span>
@@ -75,10 +79,10 @@ export default function AdminProfile({onNavigate}: {onNavigate: (section: string
         <button type="button" onClick={() => navigate("roles")}><Icon name="shield" size={19}/><span>Team &amp; roles<small>Manage workspace access</small></span></button>
         <Link href="/" onClick={() => setOpen(false)}><ProfileIcon name="website"/><span>View website</span><Icon name="arrow" size={16}/></Link>
       </nav>
-      <div className="adm-account-footer"><span>Operations workspace</span><button type="button" className="adm-account-logout" disabled={loggingOut} onClick={logout}><ProfileIcon name="exit"/>{loggingOut ? "Logging out..." : "Logout"}</button></div>
+      <div className="adm-account-footer"><button type="button" className="adm-account-logout" disabled={loggingOut} onClick={logout}><ProfileIcon name="exit"/>{loggingOut ? "Logging out..." : "Logout"}</button></div>
       {logoutError && <p className="adm-account-error" role="alert">{logoutError}</p>}
     </div>}
-    <dialog ref={dialog} className="adm-account-dialog" aria-labelledby="admin-profile-title" onClose={() => trigger.current?.focus()} onCancel={event => {event.preventDefault(); closeProfile();}} onClick={event => { if (event.target === event.currentTarget) closeProfile(); }}>
+    <dialog ref={dialog} className="adm-account-dialog" aria-labelledby="admin-profile-title" onClose={() => trigger.current?.focus()} onCancel={event => {event.preventDefault(); closeProfile();}} onClick={event => { if (isDialogBackdropClick(event)) closeProfile(); }}>
       <div className="adm-account-dialog-head"><div><h2 id="admin-profile-title">My profile</h2><p>Your account details.</p></div><button type="button" className="adm-icon-button" aria-label="Close profile" onClick={closeProfile}><ProfileIcon name="close"/></button></div>
       <form onChange={event => {const data = new FormData(event.currentTarget); setDirty(String(data.get("name") || "") !== profile.name || String(data.get("email") || "") !== profile.email);}} onSubmit={async event => {
         event.preventDefault();
@@ -101,6 +105,7 @@ export default function AdminProfile({onNavigate}: {onNavigate: (section: string
         <div className="adm-account-dialog-actions"><button type="button" className="adm-button secondary" onClick={closeProfile}>Close</button><button type="submit" disabled={saving} className="adm-button">Save changes</button></div>
       </form>
     </dialog>
+    {confirmLogout && <ConfirmationDialog title="Log out?" description="Are you sure you want to log out of your account?" confirmLabel="Logout" onCancel={() => setConfirmLogout(false)} onConfirm={() => {setConfirmLogout(false); confirmNavigation(() => {void performLogout();});}}/>}
   </div>;
 }
 

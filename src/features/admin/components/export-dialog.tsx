@@ -1,5 +1,7 @@
 "use client";
 
+import {isDialogBackdropClick} from "@/lib/dialog-events";
+
 import {useEffect, useRef, useState} from "react";
 import Icon from "@/components/ui/icon";
 import {createExport, downloadExport, type ExportData, type ExportFormat} from "../exports";
@@ -66,7 +68,7 @@ export default function ExportDialog({data, onClose}: {data: ExportData; onClose
   }
   const stage = progress < 30 ? "Gathering your records" : progress < 65 ? "Organizing the details" : progress < 90 ? "Putting your report together" : "Adding the finishing touches";
 
-  return <dialog ref={dialog} className="adm-export-dialog" aria-labelledby="export-title" onCancel={onClose} onClick={event => {if (event.target === event.currentTarget) onClose();}}>
+  return <dialog ref={dialog} className="adm-export-dialog" aria-labelledby="export-title" onCancel={onClose} onClick={event => {if (isDialogBackdropClick(event)) onClose();}}>
     <div className="adm-export-top"><span><i/> FALAK RIDES WORKSPACE</span><button type="button" aria-label={phase === "processing" ? "Cancel export and close" : "Close export"} onClick={onClose}>×</button></div>
     {phase === "select" ? <>
       <h2 id="export-title" className="adm-sr-only" ref={focusTarget} tabIndex={-1}>Export report</h2>

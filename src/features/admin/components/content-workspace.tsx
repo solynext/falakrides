@@ -1,5 +1,7 @@
 "use client";
 
+import {isDialogBackdropClick} from "@/lib/dialog-events";
+
 import PublicWebsiteEditor from "./public-website-editor";
 import DeveloperMode from "./developer-mode";
 import ContentImageField from "./content-image-field";
@@ -78,7 +80,7 @@ export default function ContentWorkspace({document, values, onChange, onSave, st
         {!selectedFields.length && !section.copy.length && !section.collection && <div className="cms-no-results"><p>No editable fields in this section.</p></div>}
       </div>
     </div>}
-    <dialog ref={review} className="cms-review-dialog" aria-labelledby="cms-review-title" onClose={() => reviewTrigger.current?.focus()} onClick={event => {if (event.target === event.currentTarget) review.current?.close();}}>
+    <dialog ref={review} className="cms-review-dialog" aria-labelledby="cms-review-title" onClose={() => reviewTrigger.current?.focus()} onClick={event => {if (isDialogBackdropClick(event)) review.current?.close();}}>
       <div className="cms-review-head"><div><span className="adm-overline">READY TO GO LIVE</span><h2 id="cms-review-title">Review your changes</h2><p>{changes.length} {changes.length === 1 ? "field" : "fields"} will update on your website.</p></div><button className="adm-icon-button" aria-label="Close publish review" onClick={() => review.current?.close()} autoFocus><ToolIcon name="close"/></button></div>
       <div className="cms-review-list">{changes.map(field => <article key={field.id}><small>{sectionName(field.section)}</small><h3>{field.label}</h3>{field.kind === "website" && <ul className="website-change-list">{websiteChanges(fieldValue(field, document.published),fieldValue(field, values)).map((change,index)=><li key={index}>{change}</li>)}</ul>}<div className="cms-diff"><div><span>Live now</span><p>{(field.kind === "website" ? websiteSummary(fieldValue(field, document.published)) : fieldValue(field, document.published)) || "(Empty)"}</p></div><div><span>After publishing</span><p>{(field.kind === "website" ? websiteSummary(fieldValue(field, values)) : fieldValue(field, values)) || "(Empty)"}</p></div></div></article>)}</div>
       <div className="cms-review-actions"><p>Publishing also saves your current draft.</p><button className="adm-button secondary" disabled={busy} onClick={() => review.current?.close()}>Keep editing</button><button className="adm-button" disabled={busy || !changes.length} onClick={() => {review.current?.close(); void onSave(true);}}><Icon name="check" size={16}/>Publish changes</button></div>

@@ -39,6 +39,12 @@ Database-backed cash and bank-transfer records work without external services. R
 
 Outbound Email uses Resend (`RESEND_API_KEY`, `EMAIL_FROM`); SMS and WhatsApp use Twilio (`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and the corresponding sender). Sending fails clearly when a provider is unconfigured and never marks an unsent draft as sent. Provider acceptance does not guarantee recipient delivery.
 
+
+Run `node --test tests/unit/*.test.mjs` for unit coverage. Run `node --conditions=react-server --import tsx tests/integration/change-password.ts` for an isolated database test of actual password hashing, concurrent password changes, and session revocation without changing live administrator credentials.
+
+
+Administrators can change their own password in **Settings → Password & security**. The server requires an active administrator session, the current password, a different 12–128-character new password, and matching confirmation. Same-origin checks and database-backed rate limits protect the endpoint. The password hash, other-session revocation and audit entry are committed in one transaction; the current session stays signed in. Concurrent stale password changes are rejected. The isolated database test above also verifies this flow without changing live administrator credentials.
+
 Optional hosted card checkout and card refunds use `STRIPE_SECRET_KEY`. Set `STRIPE_WEBHOOK_SECRET` and register `/api/payments/stripe/webhook` for `checkout.session.completed`, `checkout.session.expired`, `refund.created`, and `refund.updated`. Card payment status changes only after signature/amount/currency verification. The checkout endpoint is `/api/bookings/{reference}/checkout` for an owned, confirmed booking with a fare. The existing UI does not collect card details. Configure an account that supports the business before enabling card checkout.
 
 No provider credentials were supplied during setup, so live card charges, external refunds, and message delivery have not been executed or claimed as tested. No messages were sent and no funds were moved during verification.

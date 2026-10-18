@@ -1,5 +1,8 @@
 "use client";
 
+import ConfirmationDialog from "@/components/ui/confirmation-dialog";
+import {isDialogBackdropClick} from "@/lib/dialog-events";
+
 import BrandLogo from "@/components/ui/brand-logo";
 import {useEffect, useRef, useState} from "react";
 import Link from "next/link";
@@ -7,6 +10,7 @@ import {usePathname} from "next/navigation";
 import {adminSectionFromPath, adminSectionPath} from "../routes";
 import NotificationCenter from "./notification-center";
 import AdminProfile from "./admin-profile";
+import PasswordSettings from "./password-settings";
 import ExportDialog from "./export-dialog";
 import type {ExportData} from "../exports";
 import WebsiteContent from "./website-content";
@@ -62,7 +66,7 @@ function RecordDialog({moduleKey,record,definition,drivers,vehicles,onClose,onSa
   const [receipt,setReceipt]=useState(false);
   useEffect(()=>{const element=dialog.current;if(element && !element.open) element.showModal();return ()=>element?.close();},[]);
   const action=(status:string,message:string)=>{if(form.current?.reportValidity()) void perform(() => onAction({...draft,status},message));};
-  return <dialog ref={dialog} className="adm-dialog" aria-labelledby="admin-dialog-title" onCancel={event => {event.preventDefault(); closeEditor();}} onClick={event=>{if(event.target===event.currentTarget)closeEditor();}}>
+  return <dialog ref={dialog} className="adm-dialog" aria-labelledby="admin-dialog-title" onCancel={event => {event.preventDefault(); closeEditor();}} onClick={event=>{if(isDialogBackdropClick(event))closeEditor();}}>
     <div className="adm-dialog-top"><div><span className="adm-overline">{record.id.startsWith("NEW")?"NEW RECORD":record.id} · OPERATIONS</span><h2 id="admin-dialog-title">{receipt?"Receipt preview":record.id.startsWith("NEW")?`Add ${definition.singular}`:`Manage ${definition.singular}`}</h2></div><button className="adm-icon-button" onClick={closeEditor} aria-label="Close dialog"><AdminIcon name="close"/></button></div>
     {receipt?<div className="adm-receipt"><span className="adm-badge amber">PAYMENT RECORD</span><h3>Falak Rides</h3><p>{draft.customer} · {draft.booking}</p><strong>{currency(draft.amount)}</strong><p>{draft.method} · {draft.status}</p><button className="adm-button secondary" onClick={()=>setReceipt(false)}>Back to payment</button></div>:<form ref={form} onSubmit={event=>{event.preventDefault();void perform(() => onSave(draft));}}>
       {moduleKey==="bookings"&&!record.id.startsWith("NEW")&&<div className="adm-quick-actions"><button type="button" onClick={()=>action("Confirmed","Booking confirmed.")}>Confirm</button><button type="button" onClick={()=>action("Rejected","Booking rejected.")}>Reject</button><button type="button" onClick={()=>action("Cancelled","Booking cancelled.")}>Cancel ride</button><button type="button" onClick={()=>document.getElementById("adm-date")?.focus()}>Reschedule</button><button type="button" onClick={()=>document.getElementById("adm-driver")?.focus()}>Assign ride</button><span>Changes to pickup and assignments take effect when you save.</span></div>}
@@ -97,6 +101,7 @@ export default function AdminApp({initial}: {initial: Snapshot}) {
   const [dateFilter,setDateFilter]=useState("All dates");
   const [menu,setMenu]=useState(false);
   const [loggingOut,setLoggingOut]=useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
   const [logoutError,setLogoutError]=useState("");
   const [editor,setEditor]=useState<{key:string;row:AdminRow}|null>(null);
   const [toast,setToast]=useState("");
@@ -121,8 +126,8 @@ export default function AdminApp({initial}: {initial: Snapshot}) {
   useEffect(()=>{if(!toast)return;const timer=setTimeout(()=>setToast(""),6000);return ()=>clearTimeout(timer);},[toast]);
   useEffect(()=>{if(!menu)return;const key=(event:KeyboardEvent)=>{if(event.key==="Escape")setMenu(false);};document.addEventListener("keydown",key);return ()=>document.removeEventListener("keydown",key);},[menu]);
   function logout() {
-    if (loggingOut || !window.confirm("Are you sure you want to log out?")) return;
-    confirmNavigation(() => {void performLogout();});
+    if (loggingOut) return;
+    setConfirmLogout(true);
   }
   async function performLogout() {
     setLoggingOut(true);
@@ -189,11 +194,12 @@ export default function AdminApp({initial}: {initial: Snapshot}) {
           {section==="roles"&&<div className="adm-info-note"><Icon name="shield" size={19}/><span><strong>Workspace roles.</strong> Administrator: all modules. Dispatcher: bookings and operations. Finance: payments and reports. Viewer: read only. Permissions are enforced for every request.</span></div>}
           <section className="adm-panel"><div className="adm-table-toolbar"><div className="adm-search"><AdminIcon name="search" size={18}/><input aria-label={`Search ${activeModule.title}`} placeholder={`Search ${activeModule.title.toLowerCase()}...`} value={search} onChange={event=>setSearch(event.target.value)}/></div><div>{activeModule.fields.some(field=>field.key==="status")&&<select aria-label="Filter by status" value={status} onChange={event=>setStatus(event.target.value)}><option>All statuses</option>{Array.from(new Set(data[section].map(row=>row.status).filter(Boolean))).map(value=><option key={value}>{value}</option>)}</select>}{section==="bookings"&&<select aria-label="Filter booking date" value={dateFilter} onChange={event=>setDateFilter(event.target.value)}><option>All dates</option><option>Today</option></select>}</div></div>{table(section,filtered)}<div className="adm-table-footer">Showing {filtered.length} of {data[section].length} records<span>Changes are saved to your workspace.</span></div></section>
         </>:section==="reports"?<section className="adm-panel adm-report"><span className="adm-stat-icon"><AdminIcon name="chart" size={25}/></span><h2>Booking report</h2><p>Choose a pickup date range and export the current bookings in your preferred format.</p><div className="adm-report-filters"><label>From<input type="date" value={reportFrom} onChange={event=>setReportFrom(event.target.value)}/></label><label>Through<input type="date" min={reportFrom} value={reportTo} onChange={event=>setReportTo(event.target.value)}/></label><button className="adm-button" disabled={reportFrom>reportTo} onClick={()=>exportRows("booking-report",reportRows)}><AdminIcon name="download" size={18}/> Export report</button></div><div className="adm-report-stats"><div><small>Matching bookings</small><strong>{reportRows.length}</strong></div><div><small>Completed fare total</small><strong>{currency(reportRows.filter(row=>row.status==="Completed").reduce((sum,row)=>sum+Number(row.fare||0),0))}</strong></div><div><small>Pending requests</small><strong>{reportRows.filter(row=>row.status==="Pending").length}</strong></div></div>{table("bookings",reportRows)}</section>:<section className="adm-panel adm-settings"><div className="adm-panel-head"><div><h2>Company information</h2><p>Manage business details.</p></div><Icon name="shield"/></div><form onSubmit={saveSettings}><div className="adm-dialog-fields">{Object.entries(settings).filter(([key]) => !["id", "version", "updatedAt"].includes(key)).map(([key,value])=><label key={key} className={key==="description"?"wide":""}>{({name:"Business name",phone:"Contact number",email:"Email address",currency:"Currency",timezone:"Timezone",description:"Description"} as Record<string,string>)[key]}{key==="description"?<textarea value={String(value)} maxLength={600} onChange={event=>setSettings({...settings,[key]:event.target.value})}/>:<input required type={key==="email"?"email":"text"} value={String(value)} readOnly={key==="currency"||key==="timezone"} onChange={event=>setSettings({...settings,[key]:event.target.value})}/>}</label>)}</div><div className="adm-settings-footer"><p>Saved business details update the public website.</p><button className="adm-button" type="submit">Save settings</button></div></form></section>}
-        <div className="adm-page-footer"><span>© 2026 Falak Rides · Operations workspace</span><span>Operations workspace</span></div>
+        {section === "settings" && canAccess(initial.user.role, "settings", true) && <PasswordSettings/>}
       </main>
     </div>
     {editor&&<RecordDialog editable={canAccess(initial.user.role, editor.key, true)} key={`${editor.key}-${editor.row.id}`} moduleKey={editor.key} definition={modules[editor.key]} record={editor.row} drivers={data.drivers} vehicles={data.vehicles} onClose={()=>setEditor(null)} onSave={row=>save(editor.key,row)} onAction={(row,message)=>save(editor.key,row,message)} onDelete={removeRecord}/>}
     {exportData&&<ExportDialog data={exportData} onClose={()=>setExportData(null)}/>}
     {toast&&<div className="adm-toast" role="status"><Icon name="check" size={18}/>{toast}<button onClick={()=>setToast("")} aria-label="Dismiss notification"><AdminIcon name="close" size={16}/></button></div>}
+    {confirmLogout && <ConfirmationDialog title="Log out?" description="Are you sure you want to log out of your account?" confirmLabel="Logout" onCancel={() => setConfirmLogout(false)} onConfirm={() => {setConfirmLogout(false); confirmNavigation(() => {void performLogout();});}}/>}
   </div>;
 }
