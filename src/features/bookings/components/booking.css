@@ -79,3 +79,6 @@
 .falak-date-shortcuts button:hover { border-color: #97b66c; background: #f3f8ec; }
 .falak-date-shortcuts button[aria-pressed="true"] { border-color: #314e37; background: #314e37; color: #fff; }
 .falak-date-picker button:focus-visible { outline: 2px solid #8cb854; outline-offset: 3px; }
+.falak-booking-form-fields{display:contents}
+.falak-booking-whatsapp{display:inline-flex;margin-top:12px;color:#397144;font-size:13px;text-underline-offset:3px}
+.falak-booking button:disabled{opacity:.6;cursor:not-allowed}

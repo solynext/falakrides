@@ -5,7 +5,7 @@ import {db} from "@/lib/db";
 import {body, digest, failure, HttpError, json, rateLimit} from "@/lib/security/http";
 export async function POST(request: Request) {
   try {
-    const input = z.object({token: z.string().regex(/^[a-f0-9]{64}$/), password: z.string().min(12).max(128)}).parse(await body(request, 4096));
+    const input = z.object({token: z.string().regex(/^[a-f0-9]{64}$/), password: z.string().min(4).max(128)}).parse(await body(request, 4096));
     await rateLimit(request, "team-activate", 5, 600);
     const password = await hashPassword(input.password);
     await db.$transaction(async tx => {

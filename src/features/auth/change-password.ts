@@ -2,6 +2,7 @@ import "server-only";
 import {hashPassword, verifyPassword} from "better-auth/crypto";
 import {db} from "@/lib/db";
 import {HttpError, rateLimit} from "@/lib/security/http";
+import {notifyPasswordChanged} from "./password-change-notification";
 
 export async function changePasswordForSession(request: Request, userId: string, sessionId: string, currentPassword: string, newPassword: string) {
   await rateLimit(request, "password-change", 20, 900);
@@ -18,7 +19,8 @@ export async function changePasswordForSession(request: Request, userId: string,
     // Reject stale verification if another request changed the password during hashing.
     const changed = await tx.account.updateMany({where: {id: account.id, userId, password: account.password}, data: {password}});
     if (!changed.count) throw new HttpError(409, "Your password changed in another session. Please try again.");
-    await tx.session.deleteMany({where: {userId, id: {not: sessionId}}});
+    await tx.session.deleteMany({where: {userId}});
     await tx.auditLog.create({data: {userId, action: "password-change", resource: "users", recordId: userId}});
   });
+  await notifyPasswordChanged(userId);
 }

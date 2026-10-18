@@ -1,2 +1,2 @@
 import {z} from "zod";
-export const signInSchema = z.object({email: z.email(), password: z.string().min(12).max(128)});
+export const signInSchema = z.object({email: z.email(), password: z.string().min(4).max(128)});

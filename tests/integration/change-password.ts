@@ -50,10 +50,10 @@ try {
   const changedAccount = await db.account.findFirstOrThrow({where: {userId, providerId: "credential"}});
   assert.ok(await verifyPassword({hash: changedAccount.password!, password: changedPassword}));
   assert.equal(await verifyPassword({hash: changedAccount.password!, password: oldPassword}), false);
-  assert.ok(await db.session.findUnique({where: {id: currentSessionId}}));
+  assert.equal(await db.session.findUnique({where: {id: currentSessionId}}), null);
   assert.equal(await db.session.findUnique({where: {id: otherSessionId}}), null);
   assert.equal(await db.auditLog.count({where: {userId, action: "password-change"}}), 1);
-  console.log("PASS: settings password change checks the current password, rejects concurrent stale writes, keeps the current session and invalidates other sessions.");
+  console.log("PASS: settings password change checks the current password, rejects concurrent stale writes and invalidates all sessions.");
 } finally {
   await disconnect?.();
   await sql.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);

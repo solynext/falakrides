@@ -53,3 +53,5 @@
 .adm-auth .adm-auth-password-toggle { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; background: transparent; color: #64765c; cursor: pointer; }
 .adm-auth .adm-auth-password-toggle:hover { background: #eef5e7; color: #476d32; }
 .adm-auth .adm-auth-password-toggle:focus-visible { outline: 2px solid #699536; outline-offset: 1px; }
+.adm-auth-forgot{justify-self:end;color:#527538;font-size:12px}
+.admin-app .adm-auth-success{padding:12px 14px;border:1px solid #cee4ca;border-radius:8px;background:#f0f8ed;color:#28642a;font-size:12px;line-height:1.6}

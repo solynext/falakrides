@@ -10,7 +10,7 @@ export function websitePaused(value: unknown): boolean {
 }
 
 export function isPublicPage(pathname: string): boolean {
-  return !["/admin", "/api", "/_next", "/login", "/register", "/images", "/fonts"].some(path => pathname === path || pathname.startsWith(`${path}/`))
+  return !["/admin", "/api", "/_next", "/login", "/register", "/forgot-password", "/images", "/fonts"].some(path => pathname === path || pathname.startsWith(`${path}/`))
     && !["/favicon.ico", "/robots.txt", "/sitemap.xml"].includes(pathname);
 }
 

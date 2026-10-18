@@ -10,12 +10,13 @@ export const bookingSchema = z.object({
   timing: z.enum(["now", "later"]).default("later"), journey: z.enum(["one-way", "round-trip"]).default("one-way"),
   date: text(10).default(""), time: text(5).default(""), returnDate: text(10).default(""), returnTime: text(5).default(""),
   passengers: z.coerce.number().int().min(1).max(30), luggage: z.coerce.number().int().min(0).max(30),
-  vehicle: text(100).min(1), name: text(80).min(1), phone: text(25).regex(/^\+?[\d\s()-]{8,25}$/, "Enter a valid contact number.").refine(value => value.replace(/\D/g, "").length >= 8 && value.replace(/\D/g, "").length <= 15, "Enter a valid contact number."), notes: text(600).default(""),
+  vehicle: text(100).min(1), name: text(80).min(1), phone: text(25).regex(/^\+?[\d\s()-]{8,25}$/, "Enter a valid contact number.").refine(value => value.replace(/\D/g, "").length >= 8 && value.replace(/\D/g, "").length <= 15, "Enter a valid contact number."), notes: text(900).default(""),
   idempotencyKey: z.string().uuid(),
+  email: z.string().trim().toLowerCase().pipe(z.union([z.email().max(254), z.literal("")])).default(""),
 });
 type Input = z.infer<typeof bookingSchema>;
 export function publicBooking(record: Booking) {
-  return {reference: record.reference, pickup: record.pickup, destination: record.destination, date: record.date, time: record.time, returnDate: record.returnDate, returnTime: record.returnTime, journey: record.journey, passengers: record.passengers, luggage: record.luggage, vehicle: record.vehicleName, name: record.customerName, phone: record.phone, notes: record.notes, stops: record.stops, status: record.status, fare: record.fare === null ? null : record.fare / 100, version: record.version};
+  return {reference: record.reference, pickup: record.pickup, destination: record.destination, date: record.date, time: record.time, returnDate: record.returnDate, returnTime: record.returnTime, journey: record.journey, passengers: record.passengers, luggage: record.luggage, vehicle: record.vehicleName, name: record.customerName, email: record.customerEmail, phone: record.phone, notes: record.notes, stops: record.stops, status: record.status, fare: record.fare === null ? null : record.fare / 100, version: record.version};
 }
 async function validated(input: Input) {
   if (input.pickup.toLowerCase() === input.destination.toLowerCase()) throw new HttpError(400, "Choose different pickup and destination locations.");
@@ -45,8 +46,8 @@ export async function createBooking(input: Input, customerId: string) {
   const data = await validated(input);
   try {
     const record = await db.$transaction(async tx => {
-      await tx.customer.update({where: {id: customerId}, data: {name: input.name, phone: input.phone, version: {increment: 1}}});
-      return tx.booking.create({data: {reference: `FR-${randomBytes(6).toString("hex").toUpperCase()}`, idempotencyKey: key, customerId, customerName: input.name, phone: input.phone, pickup: input.pickup, destination: input.destination, stops: input.stops, date: data.date, time: data.time, pickupAt: data.pickupAt, returnDate: input.returnDate, returnTime: input.returnTime, journey: input.journey, passengers: input.passengers, luggage: input.luggage, vehicleId: data.vehicle?.id ?? null, vehicleName: data.vehicle?.name || input.vehicle, fare: data.fare, notes: input.notes, status: "Pending"}});
+      await tx.customer.update({where: {id: customerId}, data: {name: input.name, phone: input.phone, ...(input.email ? {email: input.email} : {}), version: {increment: 1}}});
+      return tx.booking.create({data: {reference: `FR-${randomBytes(6).toString("hex").toUpperCase()}`, idempotencyKey: key, customerId, customerName: input.name, customerEmail: input.email, phone: input.phone, pickup: input.pickup, destination: input.destination, stops: input.stops, date: data.date, time: data.time, pickupAt: data.pickupAt, returnDate: input.returnDate, returnTime: input.returnTime, journey: input.journey, passengers: input.passengers, luggage: input.luggage, vehicleId: data.vehicle?.id ?? null, vehicleName: data.vehicle?.name || input.vehicle, fare: data.fare, notes: input.notes, status: "Pending"}});
     });
     return publicBooking(record);
   } catch (error) {

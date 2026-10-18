@@ -6,10 +6,11 @@ import BrandLogo from "@/components/ui/brand-logo";
 import Link from "next/link";
 import "./auth-form.css";
 
-export default function AuthForm({token}: {token?: string}) {
+export default function AuthForm({token, passwordChanged = false}: {token?: string; passwordChanged?: boolean}) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
   const [retryUntil, setRetryUntil] = useState(0);
   const [retrySeconds, setRetrySeconds] = useState(0);
   const pending = useRef(false);
@@ -38,8 +39,10 @@ export default function AuthForm({token}: {token?: string}) {
       if (token) {router.replace("/login"); router.refresh();} else {router.replace("/admin"); router.refresh();}
     } catch (error) {setError(error instanceof Error ? error.message : "Unable to connect.");} finally {pending.current = false; setBusy(false);}
   }}>
-    {!token && <label>Email<input type="email" name="email" required autoComplete="username" placeholder="you@example.com" disabled={busy}/></label>}
-    <div className="adm-auth-password-field"><label htmlFor="workspace-password">Password</label><div className="adm-auth-password-input"><input id="workspace-password" type={showPassword ? "text" : "password"} name="password" required minLength={token ? 12 : 1} maxLength={128} autoComplete={token ? "new-password" : "current-password"} placeholder="Enter your password" disabled={busy}/><button type="button" className="adm-auth-password-toggle" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} aria-controls="workspace-password" disabled={busy} onClick={() => setShowPassword(current => !current)}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>{showPassword && <path d="m3 3 18 18"/>}</svg></button></div></div>
+    {!token && <label>Email<input type="email" name="email" value={email} onChange={event => setEmail(event.target.value)} required autoComplete="username" placeholder="you@example.com" disabled={busy}/></label>}
+    <div className="adm-auth-password-field"><label htmlFor="workspace-password">Password</label><div className="adm-auth-password-input"><input id="workspace-password" type={showPassword ? "text" : "password"} name="password" required minLength={token ? 4 : 1} maxLength={128} autoComplete={token ? "new-password" : "current-password"} placeholder="Enter your password" disabled={busy}/><button type="button" className="adm-auth-password-toggle" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} aria-controls="workspace-password" disabled={busy} onClick={() => setShowPassword(current => !current)}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>{showPassword && <path d="m3 3 18 18"/>}</svg></button></div></div>
+    {!token && <Link className="adm-auth-forgot" href={email.trim() ? `/forgot-password?email=${encodeURIComponent(email.trim())}` : "/forgot-password"}>Forgot password?</Link>}
+    {passwordChanged && <p role="status" className="adm-auth-success">Password changed successfully. Sign in with your new password.</p>}
     {retrySeconds > 0 && <p role="status" className="adm-account-error">Too many sign-in attempts. Try again in {retrySeconds} seconds.</p>}
     {error && <p role="alert" className="adm-account-error">{error}</p>}
     <button type="submit" className="adm-button" disabled={busy || retrySeconds > 0}>{retrySeconds > 0 ? `Try again in ${retrySeconds}s` : busy ? "Please wait..." : token ? "Activate account" : "Sign in"}<Icon size={17}/></button>

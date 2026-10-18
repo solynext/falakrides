@@ -13,7 +13,7 @@ export const auth = betterAuth({
   baseURL: authBaseURL(),
   trustedOrigins: async request => trustedOrigins(request),
   disabledPaths: ["/request-password-reset", "/reset-password"],
-  emailAndPassword: {enabled: true, disableSignUp: true, minPasswordLength: 12},
+  emailAndPassword: {enabled: true, disableSignUp: true, minPasswordLength: 4},
   user: {additionalFields: {role: {type: "string", defaultValue: "Viewer", input: false}, status: {type: "string", defaultValue: "Active", input: false}}},
   session: {expiresIn: 60 * 60 * 8, updateAge: 60 * 30, cookieCache: {enabled: false}},
   rateLimit: {enabled: true, storage: "database", window: 60, max: 60, customRules: {"/sign-in/email": {window: 60, max: 5}}},

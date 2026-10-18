@@ -982,3 +982,12 @@
 .admin-app .adm-main .adm-table button.adm-row-action,
 .admin-app .adm-main .adm-table button.adm-row-action:is(:hover, :focus-visible, :active),
 .admin-app .adm-main .adm-table button.adm-row-action :is(span, svg) { color: #fff; }
+
+.admin-app .adm-customer-delete{margin-right:10px;padding:7px 12px;border:1px solid #f0d7d3;border-radius:7px;background:#fff6f4;color:#b34134;font-size:13px;font-weight:500;white-space:nowrap}
+.admin-app .adm-customer-delete:hover:not(:disabled){background:#ffe9e5;border-color:#e4b4ac}
+
+/* Compact spacing for the customer list. */
+.admin-app .adm-customers-table .adm-table th,
+.admin-app .adm-customers-table .adm-table td { padding-inline: 12px; }
+.admin-app .adm-customers-table .adm-person { gap: 8px; }
+.admin-app .adm-customers-table .adm-customer-delete { margin-right: 6px; }

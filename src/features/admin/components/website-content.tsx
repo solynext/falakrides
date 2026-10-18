@@ -5,7 +5,7 @@ import ContentWorkspace from "./content-workspace";
 import {changedFields} from "@/features/content/editor-utils";
 import type {ContentDocument, ContentValues} from "@/features/content/types";
 
-export default function WebsiteContent({actionsTarget, active}: {actionsTarget: HTMLDivElement | null; active: boolean}) {
+export default function WebsiteContent({actionsTarget}: {actionsTarget: HTMLDivElement | null}) {
   const [document, setDocument] = useState<ContentDocument | null>(null);
   const [values, setValues] = useState<ContentValues>({});
   const [state, setState] = useState("loading");
@@ -40,6 +40,6 @@ export default function WebsiteContent({actionsTarget, active}: {actionsTarget: 
   return <section className="adm-cms" aria-label="Website content editor" aria-busy={busy}>
     {error && <div className="adm-cms-error" role="alert">{error}{document && <button onClick={() => confirmDiscard(() => {void load();})}>Reload latest draft</button>}</div>}
     {notice && <p className="adm-cms-success" role="status">{notice}</p>}
-    {!document ? state === "loading" ? <p role="status">Loading website content...</p> : <div className="adm-cms-login"><h2>Unable to load website content</h2><button className="adm-button secondary" onClick={load}>Try again</button></div> : <ContentWorkspace active={active} actionsTarget={actionsTarget} document={document} values={values} onChange={setValues} onSave={save} state={state}/>}
+    {!document ? state === "loading" ? <p role="status">Loading website content...</p> : <div className="adm-cms-login"><h2>Unable to load website content</h2><button className="adm-button secondary" onClick={load}>Try again</button></div> : <ContentWorkspace actionsTarget={actionsTarget} document={document} values={values} onChange={setValues} onSave={save} state={state}/>}
   </section>;
 }

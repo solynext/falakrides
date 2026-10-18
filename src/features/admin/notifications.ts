@@ -1,21 +1,32 @@
 import {db} from "@/lib/db";
 import {HttpError} from "@/lib/security/http";
+import {sendAccountEmail} from "@/features/auth/password-reset-email";
+
+function gmailConfigured() {
+  return !!((process.env.GMAIL_SMTP_USER?.trim() || process.env.GMAIL_USER?.trim()) && (process.env.GMAIL_SMTP_APP_PASSWORD?.trim() || process.env.GMAIL_APP_PASSWORD?.trim()));
+}
 
 export function notificationConfigured(channel: string) {
-  return channel === "Email" ? !!(process.env.RESEND_API_KEY && process.env.EMAIL_FROM) : !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && (channel === "WhatsApp" ? process.env.TWILIO_WHATSAPP_FROM : process.env.TWILIO_SMS_FROM));
+  return channel === "Email" ? gmailConfigured() || !!(process.env.RESEND_API_KEY && process.env.EMAIL_FROM) : !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && (channel === "WhatsApp" ? process.env.TWILIO_WHATSAPP_FROM : process.env.TWILIO_SMS_FROM));
 }
 export async function deliverNotification(id: string) {
   const record = await db.notification.findUniqueOrThrow({where: {id}});
-  if (!notificationConfigured(record.channel)) throw new HttpError(503, `Configure the ${record.channel} delivery provider before sending.`);
   if (record.status === "Sent") return record;
   const claimed = await db.notification.updateMany({where: {id, status: {in: ["Draft", "Queued", "Failed"]}}, data: {status: "Sending", error: null, version: {increment: 1}}});
   if (!claimed.count) throw new HttpError(409, "This notification is already being sent.");
   try {
+    if (!notificationConfigured(record.channel)) throw new Error(`Configure the ${record.channel} delivery provider before sending.`);
     let providerId: string;
     if (record.channel === "Email") {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(record.recipient)) throw new Error("Use the recipient's email address.");
-      const response = await fetch("https://api.resend.com/emails", {method: "POST", headers: {Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json", "Idempotency-Key": `notification-${id}`}, body: JSON.stringify({from: process.env.EMAIL_FROM, to: [record.recipient], subject: "Falak Rides booking update", text: record.message}), signal: AbortSignal.timeout(15000)});
+      if (gmailConfigured()) {
+        const escape = (value: string) => value.replace(/[&<>"']/g, character => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[character]!));
+        await sendAccountEmail(record.recipient, record.id.startsWith("booking-confirmed:") ? "Your Falak Rides booking is confirmed" : "Falak Rides booking update", record.message, `<div style="font-family:Arial,sans-serif;max-width:560px;padding:24px;color:#24331d;white-space:pre-wrap">${escape(record.message)}</div>`);
+        providerId = `gmail:${id}`;
+      } else {
+      const response = await fetch("https://api.resend.com/emails", {method: "POST", headers: {Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json", "Idempotency-Key": `notification-${id}`}, body: JSON.stringify({from: process.env.EMAIL_FROM, to: [record.recipient], subject: record.id.startsWith("booking-confirmed:") ? "Your Falak Rides booking is confirmed" : "Falak Rides booking update", text: record.message}), signal: AbortSignal.timeout(15000)});
       const result = await response.json(); if (!response.ok) throw new Error("Email provider rejected the message. Check provider configuration."); providerId = result.id;
+      }
     } else {
       const recipient = record.recipient.replace(/[\s()-]/g, "");
       if (!/^\+\d{8,15}$/.test(recipient)) throw new Error("Use the recipient's international phone number.");

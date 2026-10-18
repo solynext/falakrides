@@ -18,11 +18,12 @@ function fixture() {
   let user = {id: "admin-1", role: "Administrator", status: "Active", email: "admin@example.com", version: 1};
   let sessions = [{id: "current", userId: user.id, expiresAt: new Date(Date.now() + 60000)}, {id: "other", userId: user.id, expiresAt: new Date(Date.now() + 60000)}];
   let audits = [];
+  const notifications = [];
   const limits = new Map(), failures = {audit: false};
   const db = {
     account: {findFirst: async () => structuredClone(account), updateMany: async ({where, data}) => {if (where.password !== account.password || where.userId !== account.userId) return {count: 0}; account = {...account, ...data}; return {count: 1};}},
     user: {updateMany: async ({where}) => {if (user.id !== where.id || user.role !== where.role || user.status !== where.status) return {count: 0}; user.version++; return {count: 1};}, findUniqueOrThrow: async () => user},
-    session: {findFirst: async ({where}) => sessions.find(row => row.id === where.id && row.userId === where.userId && row.expiresAt > where.expiresAt.gt) || null, deleteMany: async ({where}) => {sessions = sessions.filter(row => row.userId !== where.userId || row.id === where.id.not);}},
+    session: {findFirst: async ({where}) => sessions.find(row => row.id === where.id && row.userId === where.userId && row.expiresAt > where.expiresAt.gt) || null, deleteMany: async ({where}) => {sessions = sessions.filter(row => row.userId !== where.userId || (where.id && row.id === where.id.not));}},
     auditLog: {create: async ({data}) => {if (failures.audit) throw new Error("Audit failed"); audits.push(data);}},
     $transaction: async callback => {const snapshot = structuredClone({account, user, sessions, audits}); try {return await callback(db);} catch (error) {({account, user, sessions, audits} = snapshot); throw error;}},
   };
@@ -30,19 +31,21 @@ function fixture() {
     if (name === "server-only") return {};
     if (name === "better-auth/crypto") return {hashPassword: async password => `hashed:${password}`, verifyPassword: async ({hash, password}) => hash === `hashed:${password}`};
     if (name === "@/lib/db") return {db};
+    if (name === "./password-change-notification") return {notifyPasswordChanged: async id => {assert.equal(account.password.startsWith("hashed:"), true); notifications.push(id);}};
     if (name === "@/lib/security/http") return {HttpError, rateLimit: async (_request, key, max) => {const count = (limits.get(key) || 0) + 1; limits.set(key, count); if (count > max) throw new HttpError(429, "Too many requests");}};
     throw new Error(name);
   }};
   vm.runInNewContext(serviceCode, context);
-  return {state: () => ({account, user, sessions, audits}), failures,
+  return {state: () => ({account, user, sessions, audits}), failures, notifications,
     change: (current = "old-password", next = "new secure password", session = "current") => context.exports.changePasswordForSession(request, user.id, session, current, next)};
 }
 
-test("password change updates the hash, retains the current session, and revokes other sessions", async () => {
+test("password change updates the hash and revokes all sessions", async () => {
   const f = fixture(); await f.change();
   assert.equal(f.state().account.password, "hashed:new secure password");
-  assert.deepEqual(f.state().sessions.map(row => row.id), ["current"]);
+  assert.equal(f.state().sessions.length, 0);
   assert.equal(f.state().audits[0].action, "password-change");
+  assert.deepEqual(f.notifications, ["admin-1"]);
 });
 
 test("incorrect current password and password reuse cannot change credentials", async () => {
@@ -51,6 +54,7 @@ test("incorrect current password and password reuse cannot change credentials", 
   await assert.rejects(f.change("old-password", "old-password"), {status: 400});
   assert.equal(f.state().account.password, "hashed:old-password");
   assert.equal(f.state().sessions.length, 2);
+  assert.equal(f.notifications.length, 0);
 });
 
 test("revoked, expired, disabled and non-administrator sessions cannot change a password", async () => {
@@ -70,6 +74,7 @@ test("failed transaction preserves the old password and sessions", async () => {
   await assert.rejects(f.change());
   assert.equal(f.state().account.password, "hashed:old-password");
   assert.equal(f.state().sessions.length, 2);
+  assert.equal(f.notifications.length, 0);
 });
 
 function routeFixture({authenticated = true, allowed = true, sessionUser = "admin-1"} = {}) {
@@ -95,7 +100,12 @@ function routeFixture({authenticated = true, allowed = true, sessionUser = "admi
   vm.runInNewContext(routeCode, context);
   return {calls, post: (payload, headers = {}) => context.exports.POST(new Request(request.url, {method: "POST", headers: {Origin: "https://falak.test", "Content-Type": "application/json", ...headers}, body: JSON.stringify(payload)}))};
 }
-const validInput = {currentPassword: "12345", newPassword: "new long passphrase", confirmPassword: "new long passphrase"};
+const validInput = {currentPassword: "12345", newPassword: "new long passphrase"};
+
+test("password change accepts a four-character new password", async () => {
+  const f = routeFixture();
+  assert.equal((await f.post({...validInput, newPassword: "1234", confirmPassword: "1234"})).status, 200);
+});
 
 test("route requires active administrator authorization and matching authenticated session", async () => {
   assert.equal((await routeFixture({authenticated: false}).post(validInput)).status, 401);
@@ -103,11 +113,10 @@ test("route requires active administrator authorization and matching authenticat
   assert.equal((await routeFixture({sessionUser: "someone-else"}).post(validInput)).status, 401);
 });
 
-test("route enforces same-origin requests, password length, and confirmation", async () => {
+test("route enforces same-origin requests and password length", async () => {
   const f = routeFixture();
   assert.equal((await f.post(validInput, {Origin: "https://attacker.test"})).status, 403);
-  assert.equal((await f.post({...validInput, newPassword: "short", confirmPassword: "short"})).status, 400);
-  assert.equal((await f.post({...validInput, confirmPassword: "mismatch"})).status, 400);
+  assert.equal((await f.post({...validInput, newPassword: "abc", confirmPassword: "abc"})).status, 400);
   assert.equal((await f.post({...validInput, newPassword: "x".repeat(129), confirmPassword: "x".repeat(129)})).status, 400);
   assert.equal(f.calls.length, 0);
 });

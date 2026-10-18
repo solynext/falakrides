@@ -46,11 +46,8 @@ try {
   await evaluate(`(() => {const original=window.fetch; window.__passwordCalls=[]; window.fetch=async (url,options)=>{if(url!=='/api/admin/password')return original(url,options);const payload=JSON.parse(options.body);window.__passwordCalls.push(payload);return payload.currentPassword==='correct-test-current-password'?Response.json({ok:true}):Response.json({error:'Your current password is incorrect.'},{status:400});};})()`);
   await input('.adm-password-settings input[name=currentPassword]', 'incorrect-test-password');
   await input('.adm-password-settings input[name=newPassword]', 'new long test passphrase');
-  await input('.adm-password-settings input[name=confirmPassword]', 'different long test passphrase');
-  await evaluate("document.querySelector('.adm-password-settings form').requestSubmit()");
-  await wait("document.querySelector('.adm-password-error')?.textContent.includes('do not match')");
-  assert.equal(await evaluate('window.__passwordCalls.length'),0);
-  await input('.adm-password-settings input[name=confirmPassword]', 'new long test passphrase');
+  assert.equal(await evaluate("document.querySelector('.adm-password-settings input[name=confirmPassword]')"),null);
+  assert.equal(await evaluate("Array.from(document.querySelectorAll('.adm-password-settings input')).every(input=>input.autocomplete==='off')"),true);
   await evaluate("document.querySelector('.adm-password-settings form').requestSubmit()");
   await wait("document.querySelector('.adm-password-error')?.textContent.includes('incorrect')");
   await click('a[href="/admin/dashboard"]');
@@ -59,13 +56,9 @@ try {
   await wait("!document.querySelector('.unsaved-dialog').open");
   await input('.adm-password-settings input[name=currentPassword]', 'correct-test-current-password');
   await evaluate("document.querySelector('.adm-password-settings form').requestSubmit()");
-  await wait("document.querySelector('.adm-password-success')");
-  assert.equal(await evaluate("Array.from(document.querySelectorAll('.adm-password-settings input')).every(input=>input.value==='')"),true);
-  assert.equal(await evaluate('window.__passwordCalls.length'),2);
-  await click('a[href="/admin/dashboard"]');
-  await wait("location.pathname==='/admin/dashboard'");
-  assert.equal(await evaluate("document.querySelector('.unsaved-dialog').open"),false);
-  console.log('PASS: settings password form, mismatch/current-password feedback, unsaved-change protection, successful save and secret clearing (mock API).');
+  await wait("location.pathname==='/login' && document.querySelector('.adm-auth-success')");
+  assert.match(await evaluate("document.querySelector('.adm-auth-success').textContent"),/Password changed successfully/);
+  console.log('PASS: two password fields, autofill settings, incorrect-password feedback, unsaved protection, automatic sign-out and login confirmation (mock password API).');
 } finally {
   await fetch(base+'/api/auth/sign-out',{method:'POST',headers:{Origin:base,'Content-Type':'application/json',Cookie:testCookie},body:'{}'}).catch(()=>{});
   socket?.close(); browser.kill();

@@ -8,6 +8,8 @@ import {modules} from "./data/modules";
 import type {ContentValues} from "@/features/content/types";
 import type {AdminRow} from "./types";
 import type {Prisma} from "@/generated/prisma/client";
+import {queueBookingConfirmation} from "@/features/bookings/confirmation";
+import {deliverNotification} from "./notifications";
 
 type Row = Record<string, unknown>;
 type Delegate = {
@@ -33,6 +35,7 @@ export function serialize(module: string, record: Row): AdminRow {
   if (module === "bookings") {
     result.id = String(record.reference);
     result.customer = String(record.customerName);
+    result.email = String(record.customerEmail || "");
     result.route = `${record.pickup} → ${record.destination}`;
     result.fare = record.fare == null ? "" : String(Number(record.fare) / 100);
     result.driver = (record.driver as Row | null)?.id ? String((record.driver as Row).id) : "Unassigned";
@@ -73,7 +76,7 @@ function validate(module: string, input: unknown) {
     if (field.type === "select" && !["driver", "vehicle"].includes(field.key)) schema = schema.refine(value => !value && field.key === "rating" || !!field.options?.includes(value), `Choose a valid ${field.label.toLowerCase()}.`);
     if (field.type === "date") schema = schema.refine(value => !value && !field.required || /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)), "Enter a valid date.");
     if (field.key === "image") schema = schema.refine(value => !value || isSafePublicImage(value), "Use a local /images/ path or Unsplash photo ID.");
-    shape[field.key] = ["category", "description", "image", "caption"].includes(field.key) ? schema.optional() : schema;
+    shape[field.key] = (["category", "description", "image", "caption"].includes(field.key) || module === "bookings" && field.key === "email") ? schema.optional() : schema;
   }
   shape.id = z.string().optional(); shape._version = z.string().optional(); shape._createdAt = z.string().optional();
   return z.object(shape).strip().parse(input) as Record<string, string>;
@@ -94,8 +97,8 @@ async function mutationData(tx: Prisma.TransactionClient, module: string, row: R
     if (!Number.isInteger(passengers) || passengers < 1 || passengers > 30 || vehicle && passengers > vehicle.passengers) throw new HttpError(400, "The selected vehicle must fit all passengers.");
     if (vehicle?.status === "Maintenance" || driver?.status === "Off duty") throw new HttpError(400, "The selected driver or vehicle is unavailable.");
     if (row.status === "Confirmed" && (!driver || !vehicle || !row.fare)) throw new HttpError(400, "Assign a driver, vehicle, and fare before confirming.");
-    const customerId = existing ? String(existing.customerId) : (await tx.customer.create({data: {name: row.customer, phone: row.phone}})).id;
-    return {customerId, customerName: row.customer, phone: row.phone, pickup, destination, date: row.date, time: row.time, pickupAt, passengers, fare: row.fare ? money(row.fare) : null, status: row.status, driverId: driver?.id ?? null, vehicleId: vehicle?.id ?? null, vehicleName: vehicle?.name || String(existing?.vehicleName || ""), notes: row.notes, ...(!existing ? {reference: `FR-${randomBytes(6).toString("hex").toUpperCase()}`, idempotencyKey: `admin-${randomBytes(24).toString("hex")}`, luggage: 0, stops: []} : {})};
+    const customerId = existing ? String(existing.customerId) : (await tx.customer.create({data: {name: row.customer, phone: row.phone, email: row.email || ""}})).id;
+    return {customerId, customerName: row.customer, customerEmail: row.email ?? String(existing?.customerEmail || ""), phone: row.phone, pickup, destination, date: row.date, time: row.time, pickupAt, passengers, fare: row.fare ? money(row.fare) : null, status: row.status, driverId: driver?.id ?? null, vehicleId: vehicle?.id ?? null, vehicleName: vehicle?.name || String(existing?.vehicleName || ""), notes: row.notes, ...(!existing ? {reference: `FR-${randomBytes(6).toString("hex").toUpperCase()}`, idempotencyKey: `admin-${randomBytes(24).toString("hex")}`, luggage: 0, stops: []} : {})};
   }
   if (module === "customers") delete data.trips;
   if (module === "vehicles") {
@@ -138,7 +141,7 @@ async function syncPublicRecord(tx: Prisma.TransactionClient, module: string, re
 export async function writeRecord(module: string, input: unknown, user: {id: string; role: string}, id?: string) {
   if (!canAccess(user.role, module, true)) throw new HttpError(403, "Your role does not allow this action.");
   const row = validate(module, input);
-  return db.$transaction(async tx => {
+  const result = await db.$transaction(async tx => {
     if (module === "roles") await tx.$queryRaw`SELECT pg_advisory_xact_lock(7264101)::text`;
     const where = module === "bookings" ? {reference: id} : {id};
     const existing = id ? await table(tx, module).findUnique({where}) : null;
@@ -158,8 +161,16 @@ export async function writeRecord(module: string, input: unknown, user: {id: str
     if (module === "roles" && (row.status !== "Active" || existing?.role !== row.role)) await tx.session.deleteMany({where: {userId: String(record.id)}});
     await tx.auditLog.create({data: {userId: user.id, action: existing ? "update" : "create", resource: module, recordId: String(record.id)}});
     await syncPublicRecord(tx, module, record);
-    return {row: serialize(module, record), invitation};
+    const notificationId = module === "bookings" ? await queueBookingConfirmation(tx, record, existing?.status) : null;
+    return {row: serialize(module, record), invitation, notificationId};
   });
+  const {notificationId, ...response} = result;
+  if (notificationId) {
+    try {await deliverNotification(notificationId);} catch {
+      return {...response, warning: "Booking confirmed. The confirmation email could not be sent; retry it from Notifications."};
+    }
+  }
+  return response;
 }
 export async function deleteRecord(module: string, id: string, version: number, user: {id: string; role: string}) {
   if (!canAccess(user.role, module, true)) throw new HttpError(403, "Your role does not allow this action.");

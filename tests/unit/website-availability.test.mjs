@@ -28,7 +28,7 @@ test("all public pages are blocked with an uncached 404 and resume immediately",
 });
 
 test("admin, login, APIs and assets remain accessible without querying availability", async () => {
-  for (const pathname of ["/admin", "/admin/website-content", "/login", "/login/", "/register", "/api/auth/sign-in/email", "/api/admin/developer-mode", "/_next/static/app.js", "/images/car.webp", "/fonts/inter.ttf", "/favicon.ico", "/robots.txt", "/sitemap.xml"]) {
+  for (const pathname of ["/admin", "/admin/website-content", "/login", "/login/", "/register", "/forgot-password", "/api/password-reset/request", "/api/auth/sign-in/email", "/api/admin/developer-mode", "/_next/static/app.js", "/images/car.webp", "/fonts/inter.ttf", "/favicon.ico", "/robots.txt", "/sitemap.xml"]) {
     assert.equal(isPublicPage(pathname), false, pathname);
     assert.equal(await websiteAvailabilityResponse(pathname, async () => {throw new Error("Recovery routes must not query the pause flag");}), null);
   }

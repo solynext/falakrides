@@ -6,9 +6,8 @@ import {changePasswordForSession} from "@/features/auth/change-password";
 export const runtime = "nodejs";
 const schema = z.object({
   currentPassword: z.string().min(1, "Enter your current password.").max(128),
-  newPassword: z.string().min(12, "Use at least 12 characters for your new password.").max(128),
-  confirmPassword: z.string().max(128),
-}).refine(value => value.newPassword === value.confirmPassword, "New passwords do not match.");
+  newPassword: z.string().min(4, "Use at least 4 characters for your new password.").max(128),
+});
 
 export async function POST(request: Request) {
   try {

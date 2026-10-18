@@ -1,0 +1,65 @@
+// Mocked reset APIs: this test never sends email or changes a password.
+import {spawn} from 'node:child_process';
+import {mkdtemp, rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import assert from 'node:assert/strict';
+import WebSocket from 'next/dist/compiled/ws/index.js';
+const base = process.env.TEST_BASE_URL || 'http://localhost:3000';
+const profile = await mkdtemp(join(tmpdir(), 'falak-reset-browser-'));
+const browser = spawn(process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', ['--headless=new', '--disable-gpu', '--disable-extensions', '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'], {windowsHide: true});
+let socket;
+try {
+  const endpoint = await new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('Chrome did not start')), 15000);
+    browser.on('error', error => {clearTimeout(timer); reject(error);});
+    browser.stderr.on('data', chunk => {const match = String(chunk).match(/DevTools listening on (ws:\/\/[^\s]+)/); if (match) {clearTimeout(timer); resolve(match[1]);}});
+  });
+  const tabs = await (await fetch(`http://${new URL(endpoint).host}/json/list`)).json();
+  socket = new WebSocket(tabs.find(tab => tab.type === 'page').webSocketDebuggerUrl);
+  await new Promise(resolve => socket.addEventListener('open', resolve, {once: true}));
+  let sequence = 0;
+  const pending = new Map();
+  socket.addEventListener('message', ({data}) => {const message = JSON.parse(data); const call = pending.get(message.id); if (call) {pending.delete(message.id); message.error ? call.reject(new Error(message.error.message)) : call.resolve(message.result);}});
+  const command = (method, params = {}) => new Promise((resolve, reject) => {const id = ++sequence; const timer = setTimeout(() => reject(new Error(`DevTools timeout: ${method}`)), 30000); pending.set(id, {resolve: result => {clearTimeout(timer); resolve(result);}, reject: error => {clearTimeout(timer); reject(error);}}); socket.send(JSON.stringify({id, method, params}));});
+  const evaluate = async expression => {const result = await command('Runtime.evaluate', {expression, returnByValue: true, awaitPromise: true}); if (result.exceptionDetails) throw new Error(JSON.stringify(result.exceptionDetails)); return result.result.value;};
+  const wait = async expression => {const deadline = Date.now() + 30000; while (Date.now() < deadline) {if (await evaluate(`Boolean(${expression})`)) return; await new Promise(resolve => setTimeout(resolve, 100));} throw new Error(`Timed out: ${expression}`);};
+  const input = (selector, value) => evaluate(`(() => {const el=document.querySelector(${JSON.stringify(selector)}); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,${JSON.stringify(value)}); el.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  const submit = () => evaluate(`document.querySelector('.adm-reset-card form').requestSubmit()`);
+  await command('Page.navigate', {url: base + '/login'});
+  await wait(`document.querySelector('input[name=email]') && Object.keys(document.querySelector('input[name=email]')).some(key=>key.startsWith('__reactProps'))`);
+  await input('input[name=email]', 'admin@example.com');
+  await wait(`document.querySelector('.adm-auth-forgot').href.includes('email=admin')`);
+  const resetUrl = await evaluate(`document.querySelector('.adm-auth-forgot').href`);
+  await command('Page.navigate', {url: resetUrl});
+  await wait(`document.querySelector('.adm-reset-card input[type=email]') && Object.keys(document.querySelector('.adm-reset-card input')).some(key=>key.startsWith('__reactProps'))`);
+  assert.equal(await evaluate(`document.querySelector('input[type=email]').value`), 'admin@example.com');
+  await evaluate(`window.resetRequests=[]; const original=window.fetch; window.fetch=async function(url,options){if(typeof url==='string'&&url.startsWith('/api/password-reset/')){window.resetRequests.push({url,body:JSON.parse(options.body)});return new Response(JSON.stringify({ok:true}),{status:200,headers:{'Content-Type':'application/json'}});}return original.apply(this,arguments);};`);
+  await submit(); await wait(`document.querySelector('input[autocomplete="one-time-code"]')`);
+  assert.match(await evaluate(`document.body.innerText`), /Resend code in/);
+  assert.equal(await evaluate(`document.querySelector('[aria-current=step]').textContent`), '2Confirm');
+  assert.equal(await evaluate(`document.querySelector('button[type=submit]')`), null);
+  await input('input[autocomplete="one-time-code"]', '1234');
+  assert.equal(await evaluate(`window.resetRequests.length`), 1);
+  await input('input[autocomplete="one-time-code"]', '12345');
+  await wait(`document.querySelector('input[name=newPassword]')`);
+  await input('input[name=newPassword]', 'a strong new password');
+  await input('input[name=confirmPassword]', 'a different password');
+  await submit(); await wait(`document.querySelector('[role=alert]')?.textContent.includes('Passwords do not match')`);
+  assert.equal(await evaluate(`window.resetRequests.length`), 2);
+  await evaluate(`document.querySelector('.adm-reset-show input').click()`);
+  assert.equal(await evaluate(`document.querySelector('input[name=newPassword]').type`), 'text');
+  await input('input[name=confirmPassword]', 'a strong new password'); await submit();
+  await wait(`document.querySelector('#reset-title')?.textContent === "You're all set"`);
+  assert.equal(await evaluate(`window.resetRequests.length`), 3);
+  assert.equal(await evaluate(`new URL(document.querySelector('.adm-reset-sign-in').href).pathname`), '/login');
+  await command('Emulation.setDeviceMetricsOverride', {width: 375, height: 812, deviceScaleFactor: 1, mobile: true});
+  assert.equal(await evaluate(`document.documentElement.scrollWidth <= window.innerWidth`), true);
+  await command('Page.reload');
+  await wait(`location.pathname === '/login' && document.querySelector('input[name=email]')`);
+  console.log('PASS: login email carryover, verification, resend cooldown, password matching, visibility, completion, mobile layout and refresh redirect. No email sent or password changed.');
+} finally {
+  socket?.close(); browser.kill();
+  await new Promise(resolve => browser.exitCode !== null ? resolve() : browser.once('exit', resolve));
+  await rm(profile, {recursive: true, force: true, maxRetries: 5, retryDelay: 200});
+}

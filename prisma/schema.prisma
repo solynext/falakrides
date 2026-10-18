@@ -162,6 +162,7 @@ model Booking {
   customerId     String
   customer       Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
   customerName   String
+  customerEmail  String @default("")
   phone          String
   pickup         String
   destination    String

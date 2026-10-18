@@ -3,7 +3,6 @@
 import {isDialogBackdropClick} from "@/lib/dialog-events";
 
 import PublicWebsiteEditor from "./public-website-editor";
-import DeveloperMode from "./developer-mode";
 import ContentImageField from "./content-image-field";
 import {websiteChanges, websiteSummary} from "@/features/content/website-model";
 import {useEffect, useRef, useState} from "react";
@@ -18,10 +17,10 @@ import type {ContentDocument, ContentValues} from "@/features/content/types";
 const sectionNames: Record<string, string> = {home: "Header & hero", main: "Homepage content", "whatsapp-title": "WhatsApp identity", "whatsapp-chat": "WhatsApp chat", "whatsapp-description": "WhatsApp description", services: "Services", fleet: "Fleet", routes: "Routes", umrah: "Umrah & Ziyarat", about: "About & benefits", offers: "Offers", faq: "FAQs", contact: "Contact banner", footer: "Footer", inquiry: "Inquiry form", booking: "Booking form", whatsapp: "WhatsApp popup", privacy: "Privacy policy", terms: "Terms & conditions"};
 const sectionName = (section: string) => sectionNames[section] || section;
 
-export default function ContentWorkspace({document, values, onChange, onSave, state, actionsTarget, active}: {
+export default function ContentWorkspace({document, values, onChange, onSave, state, actionsTarget}: {
   document: ContentDocument; values: ContentValues; onChange: (values: ContentValues) => void;
   onSave: (publish: boolean) => Promise<void>;
-  state: string; actionsTarget: HTMLDivElement | null; active: boolean;
+  state: string; actionsTarget: HTMLDivElement | null;
 }) {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -34,8 +33,6 @@ export default function ContentWorkspace({document, values, onChange, onSave, st
   }, []);
   const [pageId, setPageId] = useState(contentPages[0].id);
   const [sectionId, setSectionId] = useState(contentPages[0].sections[0].id);
-  const previousPage = useRef(contentPages[0].id);
-  const developerMode = pageId === "developer-mode";
   const page = contentPages.find(item => item.id === pageId) || contentPages[0];
   const section = page.sections.find(item => item.id === sectionId) || page.sections[0];
   const [validationError, setValidationError] = useState("");
@@ -57,11 +54,11 @@ export default function ContentWorkspace({document, values, onChange, onSave, st
   }
   return <div className="cms-workspace">
     {validationError && <p className="adm-cms-error" role="alert">{validationError} Check fields on other pages and sections, before saving.</p>}
-    {actionsTarget && !developerMode && createPortal(
+    {actionsTarget && createPortal(
       <div className="cms-primary-actions">{!scrolled && <button className="adm-button secondary" form="cms-editor-form" type="submit" disabled={busy || !dirty}>{state === "saving" ? "Saving..." : "Save draft"}</button>}<button ref={reviewTrigger} className="adm-button" disabled={busy || !changes.length} onClick={() => {if (form.current?.reportValidity() && validDraft()) review.current?.showModal();}}><Icon name="check" size={16}/>Review &amp; publish</button></div>
     , actionsTarget)}
-    <nav className="cms-page-tabs" aria-label="Website pages">{contentPages.map(item => <button type="button" key={item.id} aria-current={pageId === item.id ? "page" : undefined} className={pageId === item.id ? "active" : ""} onClick={() => {setPageId(item.id); setSectionId(item.sections[0].id);}}>{item.label}</button>)}<button type="button" aria-current={developerMode ? "page" : undefined} className={developerMode ? "active" : ""} onClick={() => {if (!developerMode) previousPage.current = pageId; setPageId("developer-mode");}}>Developer mode</button></nav>
-    {developerMode ? active && <DeveloperMode onClose={() => setPageId(previousPage.current)}/> : <div className="cms-editor-layout">
+    <nav className="cms-page-tabs" aria-label="Website pages">{contentPages.map(item => <button type="button" key={item.id} aria-current={pageId === item.id ? "page" : undefined} className={pageId === item.id ? "active" : ""} onClick={() => {setPageId(item.id); setSectionId(item.sections[0].id);}}>{item.label}</button>)}</nav>
+    <div className="cms-editor-layout">
       <aside className="cms-section-nav"><div className="cms-section-heading">{page.label.toUpperCase()} SECTIONS</div><nav aria-label={page.label + " content sections"}>{page.sections.map(item => <button type="button" key={item.id} className={section.id === item.id ? "active" : ""} aria-current={section.id === item.id ? "page" : undefined} onClick={() => {setSectionId(item.id);}}>{item.label}</button>)}</nav></aside>
       <div className="cms-editor-main">
         <form id="cms-editor-form" ref={form} onSubmit={event => {event.preventDefault(); if (dirty && !busy && validDraft()) void onSave(false);}}><fieldset className="cms-field-list" disabled={busy}>
@@ -79,7 +76,7 @@ export default function ContentWorkspace({document, values, onChange, onSave, st
         </fieldset></form>
         {!selectedFields.length && !section.copy.length && !section.collection && <div className="cms-no-results"><p>No editable fields in this section.</p></div>}
       </div>
-    </div>}
+    </div>
     <dialog ref={review} className="cms-review-dialog" aria-labelledby="cms-review-title" onClose={() => reviewTrigger.current?.focus()} onClick={event => {if (isDialogBackdropClick(event)) review.current?.close();}}>
       <div className="cms-review-head"><div><span className="adm-overline">READY TO GO LIVE</span><h2 id="cms-review-title">Review your changes</h2><p>{changes.length} {changes.length === 1 ? "field" : "fields"} will update on your website.</p></div><button className="adm-icon-button" aria-label="Close publish review" onClick={() => review.current?.close()} autoFocus><ToolIcon name="close"/></button></div>
       <div className="cms-review-list">{changes.map(field => <article key={field.id}><small>{sectionName(field.section)}</small><h3>{field.label}</h3>{field.kind === "website" && <ul className="website-change-list">{websiteChanges(fieldValue(field, document.published),fieldValue(field, values)).map((change,index)=><li key={index}>{change}</li>)}</ul>}<div className="cms-diff"><div><span>Live now</span><p>{(field.kind === "website" ? websiteSummary(fieldValue(field, document.published)) : fieldValue(field, document.published)) || "(Empty)"}</p></div><div><span>After publishing</span><p>{(field.kind === "website" ? websiteSummary(fieldValue(field, values)) : fieldValue(field, values)) || "(Empty)"}</p></div></div></article>)}</div>
