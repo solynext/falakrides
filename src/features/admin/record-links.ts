@@ -7,7 +7,7 @@ export function routeStops(route:string) {
 export function applySavedRide(row:AdminRow,ride?:AdminRow):AdminRow {
   if(!ride)return {...row,fareId:""};
   const [pickup,destination]=routeStops(ride.route);
-  return {...row,fareId:ride.id,pickup,destination,fare:ride.fare || ""};
+  return {...row,fareId:ride.id,pickup,destination,fare:ride.fare || "",...(ride.vehicleId ? {vehicle:ride.vehicleId} : {})};
 }
 export function applySavedCustomer(row:AdminRow,customer?:AdminRow):AdminRow {
   return customer ? {...row,customerId:customer.id,customer:customer.name,email:customer.email,phone:customer.phone} : {...row,customerId:"",customer:"",email:"",phone:""};

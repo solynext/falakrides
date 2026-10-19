@@ -556,20 +556,25 @@
 }
 
 /* Notification center stays available throughout the admin workspace. */
-/* Keep the Manage column compact without a separate background. */
+/* Pin Manage actions above horizontally scrolling table content. */
 .admin-app .adm-table th:last-child,
 .admin-app .adm-table td:last-child {
-  position: static;
+  position: sticky;
+  right: 0;
+  z-index: 2;
   width: 1%;
   min-width: 0;
   padding: 8px;
   overflow: visible;
   text-align: center;
-  box-shadow: none;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: -1px 0 0 #dce5d680, -8px 0 14px -12px #203b2f60;
 }
+.admin-app .adm-table th:last-child { z-index: 3; background: rgb(248 250 245 / 86%); }
 .admin-app .adm-table td:last-child,
 .admin-app .adm-table tbody tr:nth-child(even) td:last-child,
-.admin-app .adm-table tbody tr:hover td:last-child { background: transparent; }
+.admin-app .adm-table tbody tr:hover td:last-child { background: rgb(255 255 255 / 78%); }
 .admin-app .adm-row-action {
   display: inline-flex;
   align-items: center;
@@ -1111,3 +1116,6 @@
 
 .adm-linked-customer{display:grid;grid-template-columns:1fr 1fr;gap:16px}.adm-booking-leg select{width:100%;min-height:44px}.adm-location-input>select{padding-left:38px}@media(max-width:640px){.adm-linked-customer{grid-template-columns:1fr}}
 
+
+.adm-offer-vehicle-image { display: grid; justify-items: start; gap: 8px; font-size: 13px; font-weight: 500; }
+.adm-offer-vehicle-image small { color: var(--adm-muted); font-weight: 400; }

@@ -12,8 +12,14 @@ function load(path,require=()=>{throw Error('Unexpected import');}) {
 }
 const links=load('../../src/features/admin/record-links.ts');
 const {modules}=load('../../src/features/admin/data/modules.ts');
+test('Price and Routes exposes only saved locations, a SAR range, caption, status and ride selection',()=>{
+  assert.equal(modules.fares.title,'Price and Routes');
+  assert.equal(modules.fares.fields.map(field=>field.key).join(','),'pickup,destination,fare,maxFare,caption,status,vehicleId');
+  assert.equal(modules.fares.fields.find(field=>field.key==='vehicleId').required,true);
+});
 test('selecting saved rides and customers fills the corresponding booking fields',()=>{
-  const ride=links.applySavedRide({id:'new',notes:'Keep notes'},{id:'fare1',route:'Makkah → Madinah',fare:'250'});
+  const ride=links.applySavedRide({id:'new',notes:'Keep notes'},{id:'fare1',route:'Makkah → Madinah',fare:'250',vehicleId:'vehicle1'});
+  assert.equal(ride.vehicle,'vehicle1');
   assert.equal(ride.pickup,'Makkah');assert.equal(ride.destination,'Madinah');assert.equal(ride.fare,'250');assert.equal(ride.fareId,'fare1');assert.equal(ride.notes,'Keep notes');
   const customer=links.applySavedCustomer(ride,{id:'customer1',name:'Customer',email:'customer@example.com',phone:'+966500000000'});
   assert.equal(customer.customerId,'customer1');assert.equal(customer.email,'customer@example.com');assert.equal(customer.phone,'+966500000000');
@@ -32,7 +38,7 @@ function fixture() {
   const booking={id:'booking1',reference:'FR-ONE',customerName:'Customer',customerEmail:'one@example.com',phone:'+966500000000'};
   const delegate={findUnique:async()=>null,create:async({data})=>{written=data;return {...data,id:'saved',version:1,booking};}};
   const db={driver:delegate,fare:delegate,notification:delegate,payment:delegate,
-    vehicle:{findFirst:async({where})=>where.OR.some(item=>item.id==='vehicle1'||item.name==='Saved car')?{id:'vehicle1'}:null},
+    vehicle:{findUnique:async({where})=>where.id==='vehicle1'?{id:'vehicle1'}:null,findFirst:async({where})=>where.OR.some(item=>item.id==='vehicle1'||item.name==='Saved car')?{id:'vehicle1'}:null},
     location:{findFirst:async({where})=>['Makkah','Madinah'].includes(where.name)?{name:where.name}:null},
     booking:{findUnique:async({where})=>where.reference==='FR-ONE'?booking:null},
     auditLog:{create:async()=>{}},siteContent:{findUniqueOrThrow:async()=>({draft:{},published:{}}),update:async()=>{}},$transaction:async action=>action(db)};
@@ -57,8 +63,10 @@ test('driver vehicles resolve to saved IDs and reject unknown vehicles or locati
   await assert.rejects(fixture().save('drivers',{...row,city:'Missing'}),{status:400});
 });
 test('fares derive routes from saved locations and reject unavailable stops',async()=>{
-  const row={pickup:'Makkah',destination:'Madinah',fare:'250',hourly:'0',waiting:'0',status:'Active'};
-  const f=fixture();await f.save('fares',row);assert.equal(f.written().route,'Makkah → Madinah');assert.equal(f.written().fare,25000);assert.equal('pickup' in f.written(),false);
+  const row={pickup:'Makkah',destination:'Madinah',fare:'250',maxFare:'350',vehicleId:'vehicle1',status:'Active'};
+  const f=fixture();await f.save('fares',row);assert.equal(f.written().route,'Makkah → Madinah');assert.equal(f.written().fare,25000);assert.equal(f.written().maxFare,35000);assert.equal('pickup' in f.written(),false);
+  await assert.rejects(fixture().save('fares',{...row,maxFare:'200'}),{status:400});
+  await assert.rejects(fixture().save('fares',{...row,vehicleId:'missing'}),{status:400});
   await assert.rejects(fixture().save('fares',{...row,pickup:'Missing'}),{status:400});
   await assert.rejects(fixture().save('fares',{...row,destination:'Makkah'}),{status:400});
 });

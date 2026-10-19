@@ -60,7 +60,7 @@ test('real bookings use server pricing, idempotency, owner checks and cancellati
     cleanup.push(()=>admin(`/api/admin/locations/${row.id}`,'DELETE',{version:Number(row._version)}));
   }
   const route = `Test pickup ${suffix} → Test destination ${suffix}`;
-  const created = await admin('/api/admin/fares', 'POST', {id: 'NEW', route, fare: '125.50', hourly: '0', waiting: '0', status: 'Active'});
+  const created = await admin('/api/admin/fares', 'POST', {id: 'NEW', route, fare: '125.50', maxFare:'125.50', vehicleId:vehicle.id, status: 'Active'});
   assert.equal(created.status, 201, JSON.stringify(created.result)); fare = created.result.row;
   cleanup.push(() => admin(`/api/admin/fares/${fare.id}`, 'DELETE', {version: Number(fare._version)}));
   const future = new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10);

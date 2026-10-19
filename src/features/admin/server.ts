@@ -27,7 +27,7 @@ function table(client: Prisma.TransactionClient | typeof db, module: string): De
   if (!name) throw new HttpError(404, "Unknown module.");
   return (client as unknown as Record<string, Delegate>)[name];
 }
-const includes = (module: string) => module === "bookings" ? {driver: true, vehicle: true} : module === "payments" ? {booking: true} : module === "notifications" ? {booking: true} : module === "customers" ? {_count: {select: {bookings: {where: {status: "Completed"}}}}} : undefined;
+const includes = (module: string) => module === "bookings" ? {driver: true, vehicle: true} : module === "payments" ? {booking: true} : module === "notifications" ? {booking: true} : module === "offers" ? {vehicle:true} : module === "customers" ? {_count: {select: {bookings: {where: {status: "Completed"}}}}} : undefined;
 export function serialize(module: string, record: Row): AdminRow {
   const result: AdminRow = {id: String(record.id), _version: String(record.version ?? 1), _createdAt: record.createdAt instanceof Date ? record.createdAt.toISOString() : String(record.createdAt || "")};
   for (const field of modules[module].fields) {
@@ -45,6 +45,7 @@ export function serialize(module: string, record: Row): AdminRow {
     result._vehicleName = String(record.vehicleName || "");
     result.customerId=String(record.customerId || "");
   }
+  if(module === "offers") {const vehicle=record.vehicle as Row|null|undefined;result.image=vehicle ? String(vehicle.image || "") : record.vehicle === null ? "" : String(record.image || "");}
   if (module === "payments" || module === "notifications") {
     const booking = record.booking as Row | null;
     result.booking = String(booking?.reference || "");
@@ -52,6 +53,10 @@ export function serialize(module: string, record: Row): AdminRow {
   }
   if (module === "fares") for (const key of ["fare", "hourly", "waiting"]) result[key] = record[key] == null ? "" : String(Number(record[key]) / 100);
   if (module === "fares") {const [pickup,destination]=routeStops(String(record.route || ""));result.pickup=pickup;result.destination=destination;result.route=String(record.route || "");}
+  if (module === "fares") {
+    result.maxFare=record.maxFare == null ? result.fare : String(Number(record.maxFare)/100);
+    result.priceRange=result.fare ? `SAR ${result.fare}${result.maxFare && result.maxFare !== result.fare ? ` – ${result.maxFare}` : ""}` : "";
+  }
   if (module === "customers") result.trips = String((record._count as {bookings?: number} | undefined)?.bookings ?? 0);
   return result;
 }
@@ -85,6 +90,7 @@ function validate(module: string, input: unknown) {
   }
   shape.id = z.string().optional(); shape._version = z.string().optional(); shape._createdAt = z.string().optional();
   if(module === "bookings") {shape.customerId=clean.optional();shape.fareId=clean.optional();}
+  if(module === "offers") {shape.discount=shape.discount.optional();shape.terms=shape.terms.optional();}
   if(module === "fares" && input && typeof input === "object") {
     const legacy=input as Record<string,unknown>;
     if(typeof legacy.route === "string" && legacy.pickup === undefined && legacy.destination === undefined) {const [pickup,destination]=routeStops(legacy.route);input={...legacy,pickup,destination};}
@@ -106,7 +112,7 @@ async function mutationData(tx: Prisma.TransactionClient, module: string, row: R
     catch(error) {throw new HttpError(400,error instanceof Error ? error.message : "Check the journey details.");}
     const {pickup,destination,pickupAt,dropoffDate,dropoffTime}=itinerary;
     await checkLocation(tx,pickup,existing?.pickup);await checkLocation(tx,destination,existing?.destination);
-    if(row.fareId) {const ride=await tx.fare.findUnique({where:{id:row.fareId}});if(!ride || ride.status !== "Active" || routeStops(ride.route).join("→") !== [pickup,destination].join("→"))throw new HttpError(400,"The selected ride is unavailable or does not match these locations.");}
+    if(row.fareId) {const ride=await tx.fare.findUnique({where:{id:row.fareId}});if(!ride || ride.status !== "Active" || ride.vehicleId && ride.vehicleId !== row.vehicle || routeStops(ride.route).join("→") !== [pickup,destination].join("→"))throw new HttpError(400,"The selected ride is unavailable or does not match these locations.");}
     const driver = row.driver === "Unassigned" ? null : await tx.driver.findUnique({where: {id: row.driver}});
     const vehicle = row.vehicle === "Unassigned" ? null : await tx.vehicle.findUnique({where: {id: row.vehicle}});
     if (row.driver !== "Unassigned" && !driver || row.vehicle !== "Unassigned" && !vehicle) throw new HttpError(400, "Choose an existing driver and vehicle.");
@@ -137,7 +143,11 @@ async function mutationData(tx: Prisma.TransactionClient, module: string, row: R
     await checkLocation(tx,row.pickup,oldPickup);await checkLocation(tx,row.destination,oldDestination);
     if(row.pickup.toLowerCase() === row.destination.toLowerCase())throw new HttpError(400,"Choose different pickup and drop-off locations.");
     data.route=`${row.pickup} → ${row.destination}`;delete data.pickup;delete data.destination;
-    for (const key of ["fare", "hourly", "waiting"]) data[key] = row[key] ? money(row[key]) : key === "fare" ? null : 0;
+    const vehicle=await tx.vehicle.findUnique({where:{id:row.vehicleId}});
+    if(!vehicle)throw new HttpError(400,"Select a ride from Vehicles.");
+    data.vehicleId=vehicle.id;
+    data.fare=money(row.fare);data.maxFare=money(row.maxFare);
+    if(Number(data.maxFare)<Number(data.fare))throw new HttpError(400,"Maximum price must be at least the minimum price.");
   }
   if (module === "fares" && !existing) {data.featured = true; data.image = row.image || "/images/header-background.jpg";}
   if (module === "offers") {
@@ -145,7 +155,9 @@ async function mutationData(tx: Prisma.TransactionClient, module: string, row: R
     if(!vehicle)throw new HttpError(400,"Select an existing vehicle.");
     if(row.pickup.toLowerCase() === row.destination.toLowerCase())throw new HttpError(400,"Choose different pickup and drop-off locations.");
     await checkLocation(tx,row.pickup,existing?.pickup);await checkLocation(tx,row.destination,existing?.destination);
-    return {...data,name:`${vehicle.name} · ${row.pickup} → ${row.destination}`,route:`${row.pickup} → ${row.destination}`,...(!existing ? {code:`OFFER-${randomBytes(8).toString("hex").toUpperCase()}`,discount:0,validUntil:"9999-12-31",terms:"",status:"Active"} : {})};
+    const discount=row.discount === undefined ? Number(existing?.discount || 0) : Number(row.discount || 0);
+    if(!Number.isInteger(discount) || discount<0 || discount>100)throw new HttpError(400,"Discount must be a whole percentage from 0 to 100.");
+    return {...data,image:vehicle.image || "",discount,terms:row.terms ?? String(existing?.terms || ""),name:`${vehicle.name} · ${row.pickup} → ${row.destination}`,route:`${row.pickup} → ${row.destination}`,...(!existing ? {code:`OFFER-${randomBytes(8).toString("hex").toUpperCase()}`,validUntil:"9999-12-31",status:"Active"} : {})};
   }
   if (module === "feedback") {data.rating = row.type === "Inquiry" ? null : Number(row.rating); if (row.type !== "Inquiry" && !row.rating) throw new HttpError(400, "Choose a rating.");}
   if (module === "payments" || module === "notifications") {

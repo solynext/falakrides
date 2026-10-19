@@ -36,8 +36,8 @@ async function validated(input: Input) {
   const published = content.published as Record<string, string>;
   const preferences = ["booking.21", "booking.22", "booking.30", "booking.31"].map(key => published[key]).filter(Boolean);
   if (!vehicle && !preferences.includes(input.vehicle) || vehicle && (vehicle.passengers < input.passengers || vehicle.luggage < input.luggage)) throw new HttpError(400, "Choose an available vehicle with enough passenger and luggage space.");
-  const fare = !vehicle || input.stops.length || input.journey === "round-trip" ? null : await db.fare.findFirst({where: {route: {equals: `${input.pickup} → ${input.destination}`, mode: "insensitive"}, status: "Active"}});
-  return {date, time, pickupAt, vehicle, fare: fare?.fare ?? null};
+  const fare = !vehicle || input.stops.length || input.journey === "round-trip" ? null : await db.fare.findFirst({where: {route: {equals: `${input.pickup} → ${input.destination}`, mode: "insensitive"}, status: "Active",OR:[{vehicleId:vehicle.id},{vehicleId:null}]},orderBy:{vehicleId:{sort:"asc",nulls:"last"}}});
+  return {date, time, pickupAt, vehicle, fare: fare?.maxFare != null && fare.fare !== fare.maxFare ? null : fare?.fare ?? null};
 }
 export async function createBooking(input: Input, customerId: string) {
   const key = `${customerId}:${input.idempotencyKey}`;

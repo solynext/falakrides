@@ -13,7 +13,7 @@ function fixture(file,user=null,allowed=true) {
     if(name==="@/lib/auth")return {currentAdmin:async()=>user,canAccess:()=>allowed};
     if(name==="@/features/admin/components/admin-app")return {default:()=>null};
     if(name==="@/features/admin/server")return {adminSnapshot:async user=>{snapshots.push(user);return {data:{}};}};
-    if(name==="@/features/admin/routes")return {adminSectionFromPath:path=>path==="/admin/offers"?"offers":undefined};
+    if(name==="@/features/admin/routes")return {adminLegacyRedirect:slug=>["fares","offers","reviews","team"].includes(slug)?`/admin/${{fares:"price-and-routes",offers:"offers-and-packages",reviews:"feedback",team:"team-and-roles"}[slug]}`:undefined,adminSectionFromPath:path=>path==="/admin/offers-and-packages"?"offers":undefined};
     throw Error(name);
   }};
   vm.runInNewContext(code,context);
@@ -22,15 +22,15 @@ function fixture(file,user=null,allowed=true) {
 for(const file of ["../../src/app/admin/page.tsx","../../src/app/admin/[section]/page.tsx"]) {
   test(`${file}: missing sessions redirect to Login before reading admin data`,async()=>{
     const f=fixture(file);
-    await assert.rejects(f.page({params:Promise.resolve({section:"offers"})}),/REDIRECT:\/login/);
+    await assert.rejects(f.page({params:Promise.resolve({section:"offers-and-packages"})}),/REDIRECT:\/login/);
     assert.equal(f.snapshots.length,0);
   });
   test(`${file}: active administrators can load their workspace`,async()=>{
     const user={id:"admin",role:"Administrator"},f=fixture(file,user);
-    await f.page({params:Promise.resolve({section:"offers"})});assert.equal(f.snapshots[0],user);
+    await f.page({params:Promise.resolve({section:"offers-and-packages"})});assert.equal(f.snapshots[0],user);
   });
 }
 test("admin sections deny unavailable modules before loading private data",async()=>{
   const f=fixture("../../src/app/admin/[section]/page.tsx",{id:"viewer",role:"Viewer"},false);
-  await assert.rejects(f.page({params:Promise.resolve({section:"offers"})}),/NOT_FOUND/);assert.equal(f.snapshots.length,0);
+  await assert.rejects(f.page({params:Promise.resolve({section:"offers-and-packages"})}),/NOT_FOUND/);assert.equal(f.snapshots.length,0);
 });

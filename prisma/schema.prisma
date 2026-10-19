@@ -133,12 +133,16 @@ model Vehicle {
   updatedAt   DateTime @updatedAt
   bookings    Booking[]
   offers      Offer[]
+  fares       Fare[]
 }
 
 model Fare {
   id        String @id @default(cuid())
   route     String @unique
   fare      Int?
+  maxFare   Int?
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
   hourly    Int @default(0)
   waiting   Int @default(0)
   caption   String @default("")

@@ -117,3 +117,21 @@ test('booking submission saves its own email and retries reuse the existing book
   await service.createBooking(input, 'customer1'); assert.equal(creates, 1); assert.equal(saved.customerEmail, 'booking@example.com');
   assert.throws(() => service.bookingSchema.parse({...payload, email: 'invalid'}));
 });
+
+test('public bookings use the selected ride price and keep ranges pending a final quote',async()=>{
+  for(const [maxFare,expected] of [[10000,100],[15000,null]]) {
+    let query;
+    const db={
+      booking:{findUnique:async()=>null,create:async({data})=>({...data,id:'booking1',version:1})},
+      customer:{update:async()=>({})},vehicle:{findFirst:async()=>({id:'vehicle1',name:'Sedan',passengers:4,luggage:3})},
+      siteContent:{findUniqueOrThrow:async()=>({published:{}})},
+      fare:{findFirst:async(args)=>{query=args;return {fare:10000,maxFare};}},$transaction:async action=>action(db),
+    };
+    const service=load('../../src/features/bookings/server.ts',name=>{
+      if(name==='node:crypto')return crypto;if(name==='zod')return zod;if(name==='@/lib/db')return {db};if(name==='@/lib/security/http')return {HttpError};throw Error(name);
+    },{Date,Intl});
+    const input=service.bookingSchema.parse({name:'Customer',phone:'+966501234567',pickup:'Makkah',destination:'Jeddah',date:'2099-12-20',time:'10:00',passengers:2,luggage:1,vehicle:'vehicle1',idempotencyKey:crypto.randomUUID()});
+    const booking=await service.createBooking(input,'customer1');assert.equal(booking.fare,expected);
+    assert.equal(query.where.OR[0].vehicleId,'vehicle1');assert.equal(query.where.OR[1].vehicleId,null);
+  }
+});
