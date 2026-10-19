@@ -111,6 +111,12 @@ model Driver {
   bookings  Booking[]
 }
 
+model VehicleCategory {
+  id        String @id @default(cuid())
+  name      String @unique
+  createdAt DateTime @default(now())
+}
+
 model Vehicle {
   id          String @id @default(cuid())
   name        String @unique
@@ -126,6 +132,7 @@ model Vehicle {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   bookings    Booking[]
+  offers      Offer[]
 }
 
 model Fare {
@@ -144,15 +151,18 @@ model Fare {
   updatedAt DateTime @updatedAt
 }
 
-model ServiceArea {
-  id           String @id @default(cuid())
-  name         String @unique
+model Location {
+  id          String @id @default(cuid())
+  name        String @unique
+  image       String
+  description String
+  zipCode     String @default("")
   destinations String @default("")
-  status       String @default("Active")
+  status      String @default("Active")
   contentIndex Int? @unique
-  version      Int @default(1)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  version     Int @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Booking {
@@ -170,6 +180,8 @@ model Booking {
   date           String
   time           String
   pickupAt       DateTime
+  dropoffDate    String @default("")
+  dropoffTime    String @default("")
   returnDate     String @default("")
   returnTime     String @default("")
   journey        String @default("one-way")
@@ -201,6 +213,11 @@ model Offer {
   validUntil String
   terms      String @default("")
   status     String @default("Draft")
+  vehicleId  String?
+  vehicle    Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  image      String @default("")
+  pickup     String @default("")
+  destination String @default("")
   version    Int @default(1)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt

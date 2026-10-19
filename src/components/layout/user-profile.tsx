@@ -94,7 +94,7 @@ export default function UserProfile() {
       <div className="public-account-options"><button type="button" onClick={edit}><Icon name="user" size={18}/><span>My profile</span><Icon size={14}/></button><Link href="/my-bookings" onClick={() => setOpen(false)}><Icon name="car" size={18}/><span>My bookings</span><Icon size={14}/></Link><Link href="/contact" onClick={() => setOpen(false)}><Icon name="chat" size={18}/><span>Help &amp; support</span><Icon size={14}/></Link></div>
     </div>}
     <dialog ref={dialog} className="public-profile-dialog" aria-labelledby={`${id}-title`} onClose={() => {setEditing(false); trigger.current?.focus();}} onCancel={event => {event.preventDefault(); closeProfile();}} onClick={event => {if (isDialogBackdropClick(event)) closeProfile();}}>
-      <div className="public-profile-heading"><div><h2 id={`${id}-title`}>My profile</h2></div><button type="button" aria-label="Close profile" onClick={closeProfile}>×</button></div>
+      <div className="public-profile-heading"><div><h2 id={`${id}-title`}>My profile</h2></div><button className="app-x-button" type="button" aria-label="Close profile" onClick={closeProfile}>×</button></div>
       <form key={value} onSubmit={save} onChange={event => {if (!(event.target instanceof HTMLInputElement) || event.target.type !== "file") {setMessage(""); const data = new FormData(event.currentTarget); setFieldsDirty(["name", "email", "phone"].some(key => String(data.get(key) || "") !== profile[key as "name" | "email" | "phone"]));}}}>
         <div className="public-profile-photo">
           <div className="public-profile-photo-wrap">
@@ -122,7 +122,7 @@ function ProfileField({label, onClear, ...props}: React.InputHTMLAttributes<HTML
     <label htmlFor={props.id}>{label}{!props.required && <small>Optional</small>}</label>
     <div className="public-profile-input-wrap">
       <input {...props} ref={input}/>
-      <button type="button" className="public-profile-input-clear" aria-label={`Clear ${label.toLowerCase()}`} onClick={() => {if (input.current) {input.current.value = ""; input.current.focus(); onClear();}}}>
+      <button type="button" className="public-profile-input-clear app-x-button" aria-label={`Clear ${label.toLowerCase()}`} onClick={() => {if (input.current) {input.current.value = ""; input.current.focus(); onClear();}}}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
       </button>
     </div>

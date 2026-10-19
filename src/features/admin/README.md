@@ -15,4 +15,4 @@ Cash/bank payment entries are staff bookkeeping. Card payments and refunds requi
 
 Website content now includes the public design's structured data and actions. Start with **Current public website** to manage slides, service pages, vehicle-package pages, itinerary routes, FAQs, homepage order/visibility, navigation labels, and page copy/images. Changes use the existing authenticated, PIN-protected, versioned draft/publish API and audit trail.
 
-The fleet editor includes public category, description, and image fields. The fare editor includes public caption and image fields. Updates, visibility/status changes, offers, approved reviews, service areas, and company settings are reflected by the public site's existing refresh cycle.
+The fleet editor includes public category, description, and image fields. The fare editor includes public caption and image fields. Updates, visibility/status changes, offers, approved reviews, locations, and company settings are reflected by the public site's existing refresh cycle.

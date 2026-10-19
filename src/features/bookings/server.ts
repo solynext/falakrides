@@ -58,7 +58,7 @@ export async function createBooking(input: Input, customerId: string) {
 export async function updateBooking(reference: string, customerId: string, input: {action: "cancel" | "reschedule"; version: number; ride?: Input}) {
   const existing = await db.booking.findFirst({where: {reference, customerId}});
   if (!existing) throw new HttpError(404, "Booking not found.");
-  if (!["Pending", "Confirmed"].includes(existing.status)) throw new HttpError(409, "This booking can no longer be changed online.");
+  if (!["Pending", "Confirmed", "Scheduled"].includes(existing.status)) throw new HttpError(409, "This booking can no longer be changed online.");
   if (existing.version !== input.version) throw new HttpError(409, "This booking changed. Refresh before updating it.");
   if (input.action === "cancel") return publicBooking(await db.booking.update({where: {id: existing.id, version: input.version}, data: {status: "Cancelled", version: {increment: 1}}}));
   if (!input.ride) throw new HttpError(400, "Pickup details are required.");

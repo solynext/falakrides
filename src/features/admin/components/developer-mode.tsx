@@ -64,7 +64,7 @@ export default function DeveloperMode({onClose}: {onClose: () => void}) {
   }
 
   if (!status) return <dialog ref={dialog} className="cms-developer-pin-dialog" aria-labelledby="developer-pin-title" onCancel={event => {event.preventDefault(); onClose();}} onClick={event => {if (isDialogBackdropClick(event)) onClose();}}>
-    <button type="button" className="cms-developer-pin-close" aria-label="Close PIN popup" onClick={onClose}>&times;</button>
+    <button type="button" className="cms-developer-pin-close app-x-button" aria-label="Close PIN popup" onClick={onClose}>&times;</button>
     <span className="cms-developer-lock-icon"><Icon name="lock" size={27}/></span>
     <h2 id="developer-pin-title">Developer mode</h2>
     <p>Enter your 5-digit PIN to continue.</p>

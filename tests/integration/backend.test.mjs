@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {config} from 'dotenv';
 import {neon} from '@neondatabase/serverless';
-config({path: '.env.local', quiet: true});
+config({path: ['.env.local', '.env'], quiet: true});
 const origin = process.env.TEST_BASE_URL || 'http://localhost:3000';
 const suffix = randomUUID().slice(0, 8);
 const cleanup = [];
@@ -17,17 +17,30 @@ function client() {
   };
 }
 const admin = client(), guest = client(), stranger = client();
-let vehicle, fare, booking;
+let vehicle, fare, booking, vehicleCategory;
 after(async () => {for (const remove of cleanup.reverse()) await remove().catch(() => {}); const sql = neon(process.env.DATABASE_URL); const schema = new URL(process.env.DATABASE_URL).searchParams.get('schema') || 'public'; assert.match(schema, /^[A-Za-z_][A-Za-z0-9_]*$/); await sql.query(`DELETE FROM "${schema}"."Inquiry" WHERE message = $1`, [`Integration inquiry ${suffix}`]);});
 test('unauthenticated API access is denied and initial admin signs in', async () => {
   assert.equal((await guest('/api/admin')).status, 401);
   assert.equal((await guest('/api/content?admin=1')).status, 401);
-  const login = await admin('/api/auth/sign-in/email', 'POST', {email: process.env.ADMIN_EMAIL, password: process.env.ADMIN_PASSWORD});
+  const login = await admin('/api/auth/sign-in/email', 'POST', {email: process.env.TEST_ADMIN_EMAIL || process.env.ADMIN_EMAIL, password: process.env.TEST_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD});
   assert.equal(login.status, 200, JSON.stringify(login.result));
   assert.equal((await admin('/api/admin')).status, 200);
 });
+test('vehicle categories persist, reject duplicates and require administrator access', async () => {
+  assert.equal((await guest('/api/admin/vehicle-categories')).status, 401);
+  assert.equal((await admin('/api/admin/vehicle-categories', 'POST', {name: '  '})).status, 400);
+  const created = await admin('/api/admin/vehicle-categories', 'POST', {name: ` Category ${suffix} `});
+  assert.equal(created.status, 201, JSON.stringify(created.result));
+  vehicleCategory = created.result.category;
+  cleanup.push(async () => {const sql = neon(process.env.DATABASE_URL); await sql`DELETE FROM "VehicleCategory" WHERE id = ${vehicleCategory.id}`;});
+  assert.equal(vehicleCategory.name, `Category ${suffix}`);
+  assert.ok((await admin('/api/admin/vehicle-categories')).result.categories.some(category => category.id === vehicleCategory.id));
+  assert.equal((await admin('/api/admin/vehicle-categories', 'POST', {name: vehicleCategory.name.toUpperCase()})).status, 409);
+  const invalid = await admin('/api/admin/vehicles', 'POST', {id:'NEW', name:`Invalid category ${suffix}`, plate:`INVALID-${suffix}`, passengers:'4', luggage:'2', status:'Available', category:`Missing ${suffix}`});
+  assert.equal(invalid.status, 400);
+});
 test('database CRUD updates the public catalog and rejects stale writes', async () => {
-  const create = await admin('/api/admin/vehicles', 'POST', {id: 'NEW', name: `Test vehicle ${suffix}`, plate: `TEST-${suffix}`, passengers: '6', luggage: '4', status: 'Available'});
+  const create = await admin('/api/admin/vehicles', 'POST', {id: 'NEW', name: `Test vehicle ${suffix}`, plate: `TEST-${suffix}`, passengers: '6', luggage: '4', status: 'Available', category:vehicleCategory.name});
   assert.equal(create.status, 201, JSON.stringify(create.result)); vehicle = create.result.row;
   cleanup.push(async () => {const snapshot = await admin('/api/admin'); const current = snapshot.result.data.vehicles.find(row => row.id === vehicle.id); if (current) await admin(`/api/admin/vehicles/${vehicle.id}`, 'DELETE', {version: Number(current._version)});});
   const published = await guest('/api/content');
@@ -41,6 +54,11 @@ test('database CRUD updates the public catalog and rejects stale writes', async 
   assert.equal(invalid.status, 400);
 });
 test('real bookings use server pricing, idempotency, owner checks and cancellation', async () => {
+  for (const name of [`Test pickup ${suffix}`,`Test destination ${suffix}`]) {
+    const created=await admin('/api/admin/locations','POST',{name,description:'Integration location',image:'/images/header-background.jpg',status:'Active'});
+    assert.equal(created.status,201,JSON.stringify(created.result));const row=created.result.row;
+    cleanup.push(()=>admin(`/api/admin/locations/${row.id}`,'DELETE',{version:Number(row._version)}));
+  }
   const route = `Test pickup ${suffix} → Test destination ${suffix}`;
   const created = await admin('/api/admin/fares', 'POST', {id: 'NEW', route, fare: '125.50', hourly: '0', waiting: '0', status: 'Active'});
   assert.equal(created.status, 201, JSON.stringify(created.result)); fare = created.result.row;
@@ -84,6 +102,8 @@ test('team invitations enforce read-only authorization and can be revoked', asyn
   assert.equal((await viewer('/api/auth/sign-in/email', 'POST', {email, password})).status, 200);
   assert.equal((await viewer('/api/admin')).status, 200);
   assert.equal((await viewer('/api/admin/vehicles', 'POST', {name: 'Forbidden'})).status, 403);
+  assert.equal((await viewer('/api/admin/vehicle-categories')).status, 200);
+  assert.equal((await viewer('/api/admin/vehicle-categories', 'POST', {name:'Forbidden'})).status, 403);
   assert.equal((await viewer('/api/content?admin=1')).status, 403);
   assert.deepEqual((await viewer('/api/admin')).result.data.customers, []);
   assert.equal((await admin(`/api/admin/roles/${row.id}`, 'PATCH', {...row, _version: '2', status: 'Disabled'})).status, 200);
@@ -121,8 +141,8 @@ test('drafts stay private, publishing is synchronized, and stale content saves f
 test('operational modules persist, active offers publish, and payments use integer halalas', async () => {
   const records = {
     drivers: {name: `Driver ${suffix}`, phone: '+966500000001', city: 'Makkah', vehicle: vehicle.name, status: 'Available'},
-    areas: {name: `Area ${suffix}`, destinations: 'Test destination', status: 'Active'},
-    offers: {name: `Offer ${suffix}`, code: `TEST${suffix}`, discount: '10', route: fare.route, validUntil: '2099-12-31', terms: 'Integration test only', status: 'Active'},
+    locations: {name: `Location ${suffix}`, description: 'Test location', image: '/images/header-background.jpg', destinations: 'Test destination', status: 'Active'},
+    offers: {vehicleId:vehicle.id, image:'/images/header-background.jpg', pickup:`Test pickup ${suffix}`, destination:`Test destination ${suffix}`},
     feedback: {customer: `Review ${suffix}`, type: 'Review', rating: '5', message: 'Integration test only', status: 'Approved'},
     payments: {booking: booking.reference, customer: `Test customer ${suffix}`, amount: '125.50', method: 'Cash', status: 'Paid', notes: 'Integration test only'},
   };
@@ -135,8 +155,8 @@ test('operational modules persist, active offers publish, and payments use integ
     if (module === 'payments') {assert.equal(row.amount, '125.5'); assert.ok(row._paidAt);}
   }
   const catalog = (await guest('/api/content')).result.catalog;
-  assert.ok(catalog.locations.includes(`Area ${suffix}`));
-  assert.ok(catalog.offers.some(offer => offer.title === `Offer ${suffix}`));
+  assert.ok(catalog.locations.includes(`Location ${suffix}`));
+  assert.ok(catalog.offers.some(offer => offer.route === fare.route));
   assert.ok(catalog.reviews.some(review => review.name === `Review ${suffix}`));
 });
 

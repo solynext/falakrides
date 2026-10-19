@@ -1,0 +1,68 @@
+[
+  {
+    "name": "Jeddah Airport (JED)",
+    "image": "/images/locations/jeddah-airport.jpg",
+    "title": "King Abdulaziz International Airport - North Terminal 2.jpg",
+    "author": "Tahir mq",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:King_Abdulaziz_International_Airport_-_North_Terminal_2.jpg",
+    "download": "https://upload.wikimedia.org/wikipedia/commons/4/49/King_Abdulaziz_International_Airport_-_North_Terminal_2.jpg",
+    "changes": "Original photograph, unmodified file. Displayed with a crop to fit the image box."
+  },
+  {
+    "name": "Makkah",
+    "image": "/images/locations/makkah-haram.jpg",
+    "title": "The Kaaba during Hajj (edited).jpg",
+    "author": "Adli Wahid (cropped version uploaded by Aliphotography)",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:The_Kaaba_during_Hajj_(edited).jpg",
+    "download": "https://upload.wikimedia.org/wikipedia/commons/8/8b/The_Kaaba_during_Hajj_(edited).jpg",
+    "changes": "Original photograph, unmodified file. Displayed with a crop to fit the image box."
+  },
+  {
+    "name": "Madinah",
+    "image": "/images/locations/madinah.jpg",
+    "title": "Masjid al-Nabawi 2024 (9).jpg",
+    "author": "Radosław Botev / Fundacja Nomos",
+    "license": "CC BY 3.0 PL",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/pl/",
+    "source": "https://commons.wikimedia.org/wiki/File:Masjid_al-Nabawi_2024_(9).jpg",
+    "download": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Masjid_al-Nabawi_2024_(9).jpg",
+    "changes": "Original photograph, unmodified file. Displayed with a crop to fit the image box."
+  },
+  {
+    "name": "Madinah Airport (MED)",
+    "image": "/images/locations/madinah-airport.jpg",
+    "title": "Madina international Airport 2025.jpg",
+    "author": "ほっきー",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Madina_international_Airport_2025.jpg",
+    "download": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Madina_international_Airport_2025.jpg",
+    "changes": "Original photograph, unmodified file. Displayed with a crop to fit the image box."
+  },
+  {
+    "name": "Jeddah",
+    "image": "/images/locations/jeddah.jpg",
+    "title": "Jeddah waterfront sunset.jpg",
+    "author": "SUAAD",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Jeddah_waterfront_sunset.jpg",
+    "download": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Jeddah_waterfront_sunset.jpg",
+    "changes": "Original photograph, unmodified file. Displayed with a crop to fit the image box."
+  },
+  {
+    "name": "Hotel / other location",
+    "image": "/images/locations/hotel-makkah.jpg",
+    "title": "Hilton Hotel Makkah.jpg",
+    "author": "King Eliot",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Hilton_Hotel_Makkah.jpg",
+    "download": "https://upload.wikimedia.org/wikipedia/commons/9/98/Hilton_Hotel_Makkah.jpg",
+    "changes": "Original photograph, unmodified file. Displayed with a crop to fit the image box."
+  }
+]

@@ -1,7 +1,7 @@
-﻿import type {AdminRow} from "./types";
+import type {AdminRow} from "./types";
 
-export const bookingStatuses = ["Completed", "Confirmed", "Pending", "Cancelled", "Rejected"] as const;
-const statusColors = ["#8dc73f", "#8dc73f", "#e8bd64", "#f0f6e7", "#d49e8e"];
+export const bookingStatuses = ["Completed", "Confirmed", "Pending", "Cancelled", "Rejected", "Scheduled"] as const;
+const statusColors = ["#8dc73f", "#8dc73f", "#e8bd64", "#f0f6e7", "#d49e8e", "#789cc7"];
 
 /** Keep the status chart valid when the final record is removed. */
 export function bookingGradient(rows: AdminRow[]): string {

@@ -41,6 +41,16 @@ try {
   await command('Network.enable');
   await command('Network.setCookies', {cookies:cookiePairs.map(pair=>{const index=pair.indexOf('=');return {name:pair.slice(0,index),value:pair.slice(index+1),url:base,httpOnly:true};})});
   await command('Page.navigate', {url:base+'/admin/settings'});
+  await wait("document.querySelectorAll('.adm-settings-card').length===2");
+  await wait("Object.keys(document.querySelector('.adm-settings-card')).some(key=>key.startsWith('__reactProps'))");
+  assert.equal(await evaluate("document.querySelector('.adm-password-settings')"),null);
+  await click('.adm-settings-cards [role=listitem]:first-child button');
+  await wait("document.querySelector('.adm-settings-popup')?.open");
+  assert.equal(await evaluate("document.querySelector('#settings-dialog-title').textContent"),'Company information');
+  assert.equal(await evaluate("document.querySelector('.adm-settings-popup input[readonly]').value"),'SAR');
+  await click('button[aria-label="Close settings"]');
+  await wait("!document.querySelector('.adm-settings-popup')");
+  await click('.adm-settings-cards [role=listitem]:last-child button');
   await wait("document.querySelector('.adm-password-settings input[name=currentPassword]')");
   await wait("Object.keys(document.querySelector('.adm-password-settings input')).some(key=>key.startsWith('__reactProps'))");
   await evaluate(`(() => {const original=window.fetch; window.__passwordCalls=[]; window.fetch=async (url,options)=>{if(url!=='/api/admin/password')return original(url,options);const payload=JSON.parse(options.body);window.__passwordCalls.push(payload);return payload.currentPassword==='correct-test-current-password'?Response.json({ok:true}):Response.json({error:'Your current password is incorrect.'},{status:400});};})()`);
@@ -50,7 +60,7 @@ try {
   assert.equal(await evaluate("Array.from(document.querySelectorAll('.adm-password-settings input')).every(input=>input.autocomplete==='off')"),true);
   await evaluate("document.querySelector('.adm-password-settings form').requestSubmit()");
   await wait("document.querySelector('.adm-password-error')?.textContent.includes('incorrect')");
-  await click('a[href="/admin/dashboard"]');
+  await click('button[aria-label="Close settings"]');
   await wait("document.querySelector('.unsaved-dialog').open");
   await click('.unsaved-keep');
   await wait("!document.querySelector('.unsaved-dialog').open");

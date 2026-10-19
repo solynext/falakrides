@@ -1,0 +1,2 @@
+ALTER TABLE "Booking" ADD COLUMN "dropoffDate" TEXT NOT NULL DEFAULT '',
+ADD COLUMN "dropoffTime" TEXT NOT NULL DEFAULT '';

@@ -50,7 +50,7 @@ export default function ContactPopup({open, onClose}: {open: boolean; onClose: (
   }
 
   return <dialog ref={dialog} className="contact-popup" aria-labelledby="contact-popup-title" aria-describedby="contact-popup-description" onClose={onClose} onCancel={event => {event.preventDefault(); close();}} onClick={event => {if (event.target === event.currentTarget) {const bounds = event.currentTarget.getBoundingClientRect(); if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) close();}}}>
-    <button type="button" className="contact-popup-close" aria-label="Close contact popup" onClick={close} autoFocus><span aria-hidden="true">&times;</span></button>
+    <button type="button" className="contact-popup-close app-x-button" aria-label="Close contact popup" onClick={close} autoFocus><span aria-hidden="true">&times;</span></button>
     <div className="contact-popup-layout">
       <aside className="contact-popup-details">
         <span className="contact-popup-eyebrow">LET&apos;S TALK TRAVEL</span>

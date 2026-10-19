@@ -83,7 +83,7 @@ export default function AdminProfile({onNavigate}: {onNavigate: (section: string
       {logoutError && <p className="adm-account-error" role="alert">{logoutError}</p>}
     </div>}
     <dialog ref={dialog} className="adm-account-dialog" aria-labelledby="admin-profile-title" onClose={() => trigger.current?.focus()} onCancel={event => {event.preventDefault(); closeProfile();}} onClick={event => { if (isDialogBackdropClick(event)) closeProfile(); }}>
-      <div className="adm-account-dialog-head"><div><h2 id="admin-profile-title">My profile</h2><p>Your account details.</p></div><button type="button" className="adm-icon-button" aria-label="Close profile" onClick={closeProfile}><ProfileIcon name="close"/></button></div>
+      <div className="adm-account-dialog-head"><div><h2 id="admin-profile-title">My profile</h2><p>Your account details.</p></div><button type="button" className="adm-icon-button app-x-button" aria-label="Close profile" onClick={closeProfile}><ProfileIcon name="close"/></button></div>
       <form onChange={event => {const data = new FormData(event.currentTarget); setDirty(String(data.get("name") || "") !== profile.name || String(data.get("email") || "") !== profile.email);}} onSubmit={async event => {
         event.preventDefault();
         const values = new FormData(event.currentTarget);

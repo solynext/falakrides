@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "@/components/ui/x-button.css";
 import {UnsavedChangesProvider} from "@/components/forms/unsaved-changes";
 export const metadata: Metadata = {
  title: "Falak Rides | Private Rides, Umrah & Airport Transfers in Saudi Arabia",

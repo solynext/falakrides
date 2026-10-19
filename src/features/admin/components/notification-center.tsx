@@ -35,14 +35,14 @@ export default function NotificationCenter({bookings, notifications, onOpen, ini
       {unread > 0 && <span className="adm-notification-count" aria-hidden="true">{unread > 9 ? "9+" : unread}</span>}
     </button>
     <dialog ref={dialog} id="admin-notification-center" className="adm-notifications" aria-labelledby="admin-notifications-title" onClose={() => {setOpen(false); trigger.current?.focus();}} onClick={event => {if (isDialogBackdropClick(event)) close();}}>
-      <div className="adm-notifications-head"><h2 id="admin-notifications-title">Notifications <span>{unread}</span></h2><button className="adm-icon-button" aria-label="Close notifications" onClick={close} autoFocus><CloseIcon/></button></div>
+      <div className="adm-notifications-head"><h2 id="admin-notifications-title">Notifications <span>{unread}</span></h2><button className="adm-icon-button app-x-button" aria-label="Close notifications" onClick={close} autoFocus><CloseIcon/></button></div>
       <div className="adm-notifications-tools"><div role="group" aria-label="Notification filter"><button aria-pressed={filter === "all"} onClick={() => setFilter("all")}>All</button><button aria-pressed={filter === "unread"} onClick={() => setFilter("unread")}>Unread ({unread})</button></div><button disabled={!unread} onClick={() => {void persist(notices.map(notice => notice.id), "read");}}>Mark all read</button></div>
       <div className="adm-notifications-list">{visible.length ? visible.map(notice => <article key={notice.id} className={`adm-notice ${read.includes(notice.id) ? "is-read" : ""}`}>
         <button className="adm-notice-open" aria-label={`${notice.label}: ${notice.record.id}${read.includes(notice.id) ? "" : ", unread"}`} onClick={() => {markRead(notice.id); dialog.current?.close(); onOpen(notice.module, notice.record);}}>
           <span className="adm-notice-icon"><Icon name={notice.module === "bookings" ? "car" : "bag"} size={18}/></span>
           <span className="adm-notice-content"><span className="adm-notice-title">{notice.title}{!read.includes(notice.id) && <i aria-hidden="true"/>}</span><span className="adm-notice-message">{notice.message}</span><small>{notice.record.id}</small></span>
         </button>
-        <button className="adm-notice-dismiss" aria-label={`Dismiss ${notice.title}: ${notice.record.id}`} onClick={() => {void persist([notice.id], "dismiss");}}><CloseIcon/></button>
+        <button className="adm-notice-dismiss app-x-button" aria-label={`Dismiss ${notice.title}: ${notice.record.id}`} onClick={() => {void persist([notice.id], "dismiss");}}><CloseIcon/></button>
       </article>) : <div className="adm-notifications-empty"><Icon name="check" size={24}/><h3>All caught up</h3><p>{filter === "unread" ? "No unread notifications." : "New activity will appear here."}</p></div>}</div>
       <p className="adm-notifications-note" role={error ? "alert" : undefined}>{error || "Recent activity"}</p>
     </dialog>

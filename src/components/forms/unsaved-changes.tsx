@@ -77,6 +77,7 @@ export function UnsavedChangesProvider({children}: {children: React.ReactNode}) 
     return () => {window.removeEventListener("popstate", pop, true); if (history.pushState === push) history.pushState = originalPush; if (history.replaceState === replace) history.replaceState = originalReplace;};
   }, [confirm]);
   return <Context.Provider value={{register, confirm}}>{children}<dialog ref={dialog} className="unsaved-dialog" aria-labelledby="unsaved-title" aria-describedby="unsaved-description" onCancel={event => {event.preventDefault(); keep();}}>
+    <button type="button" className="app-x-button app-dialog-x" aria-label="Close unsaved changes popup" onClick={keep}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg></button>
     <div className="unsaved-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5m0 3h.01"/></svg></div>
     <h2 id="unsaved-title">You have unsaved changes</h2><p id="unsaved-description">Keep editing to save your work, or discard your changes and continue.</p>
     <div className="unsaved-actions"><button type="button" className="unsaved-discard" onClick={discard}>Discard changes</button><button type="button" className="unsaved-keep" autoFocus onClick={keep}>Keep editing</button></div>

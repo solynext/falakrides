@@ -8,6 +8,7 @@ import ts from 'typescript';
 const compile = path => ts.transpileModule(fs.readFileSync(new URL(path, import.meta.url), 'utf8'), {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022}}).outputText;
 function load(path, require = () => {throw Error('Unexpected import');}, globals = {}) {const context = {exports: {}, require, ...globals}; vm.runInNewContext(compile(path), context); return context.exports;}
 const confirmation = load('../../src/features/bookings/confirmation.ts');
+const itinerary = load('../../src/features/admin/booking-itinerary.ts',undefined,{Date});
 const {modules} = load('../../src/features/admin/data/modules.ts');
 class HttpError extends Error {constructor(status, message) {super(message); this.status = status;}}
 const initial = {id: 'booking1', reference: 'FR-123', customerId: 'customer1', customerName: 'Jane', customerEmail: 'booking@example.com', phone: '+966501234567', pickup: 'Makkah', destination: 'Jeddah', date: '2026-12-20', time: '10:00', status: 'Pending', version: 1, passengers: 2, fare: 10000, vehicleId: 'vehicle1', vehicleName: 'Sedan', driverId: 'driver1', notes: '', createdAt: new Date()};
@@ -27,13 +28,15 @@ function fixture() {
     if (name === '@/lib/db') return {db};
     if (name === '@/lib/auth') return {canAccess: () => true};
     if (name === '@/lib/security/http') return {HttpError, digest: value => crypto.createHash('sha256').update(value).digest('hex')};
+    if (name === "./record-links") return load("../../src/features/admin/record-links.ts");
     if (name === './data/modules') return {modules};
+    if (name === './booking-itinerary') return itinerary;
     if (name === '@/features/bookings/confirmation') return confirmation;
     if (name === './notifications') return {deliverNotification: async id => {assert.equal(committed, true); delivered.push(id); if (faults.delivery) throw Error('SMTP failed');}};
     throw Error(name);
   }, {Date});
   return {queued, delivered, faults, state: () => booking, save: (status = 'Confirmed', email) => service.writeRecord('bookings', {
-    customer: 'Jane', phone: initial.phone, ...(email === undefined ? {} : {email}), route: 'Makkah -> Jeddah', date: initial.date, time: initial.time,
+    customer: 'Jane', phone: initial.phone, ...(email === undefined ? {} : {email}), pickup:initial.pickup, destination:initial.destination, date: initial.date, time: initial.time,
     passengers: '2', fare: '100', status, driver: 'driver1', vehicle: 'vehicle1', notes: '', _version: String(booking.version),
   }, {id: 'admin', role: 'Administrator'}, initial.reference)};
 }

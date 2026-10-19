@@ -17,8 +17,8 @@ export async function updateContent(version: number, values: ContentValues, publ
       for (const vehicle of vehicles) {const prefix = `vehicle.${vehicle.contentIndex}`; await tx.vehicle.update({where: {id: vehicle.id}, data: {name: values[`${prefix}.name`] ?? vehicle.name, description: values[`${prefix}.description`] ?? vehicle.description, image: values[`${prefix}.image`] ?? vehicle.image, passengers: Number(values[`${prefix}.passengers`] ?? vehicle.passengers), luggage: Number(values[`${prefix}.bags`] ?? vehicle.luggage), version: {increment: 1}}});}
       const routes = await tx.fare.findMany({where: {contentIndex: {not: null}}});
       for (const route of routes) {const prefix = `route.${route.contentIndex}`; const [from, to] = route.route.split(" → "); await tx.fare.update({where: {id: route.id}, data: {route: `${values[`${prefix}.0`] ?? from} → ${values[`${prefix}.1`] ?? to}`, caption: values[`${prefix}.2`] ?? route.caption, image: values[`${prefix}.3`] ?? route.image, version: {increment: 1}}});}
-      const areas = await tx.serviceArea.findMany({where: {contentIndex: {not: null}}});
-      for (const area of areas) await tx.serviceArea.update({where: {id: area.id}, data: {name: values[`location.${area.contentIndex}`] ?? area.name, version: {increment: 1}}});
+      const locations = await tx.location.findMany({where: {contentIndex: {not: null}}});
+      for (const location of locations) await tx.location.update({where: {id: location.id}, data: {name: values[`location.${location.contentIndex}`] ?? location.name, version: {increment: 1}}});
       await tx.siteSettings.update({where: {id: "main"}, data: {name: values["company.name"], description: values["company.description"], phone: values["contact.phone"], email: values["contact.email"], version: {increment: 1}}});
     }
     await tx.auditLog.create({data: {userId, action: publish ? "publish" : "save-draft", resource: "content", recordId: "main"}});

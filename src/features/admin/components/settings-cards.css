@@ -1,0 +1,20 @@
+.adm-settings-cards{display:grid;grid-template-columns:1fr;gap:14px;max-width:820px}
+.admin-app .adm-settings-card{display:flex;align-items:center;gap:18px;width:100%;padding:23px 24px;text-align:left;border:1px solid #e6e9e1;border-radius:14px;background:#fff;color:var(--adm-ink);transition:border-color .15s,background .15s,box-shadow .15s}
+.admin-app .adm-settings-card:hover{border-color:#bdd69d;background:#fcfef9;box-shadow:0 4px 18px #24331d06}
+.adm-settings-card-icon{display:grid;place-items:center;flex:0 0 48px;height:48px;border:1px solid #e4ecd9;border-radius:12px;background:#f3f8ed;color:#577b3b}
+.adm-settings-card-copy{display:grid;gap:7px;min-width:0}
+.adm-settings-card-copy strong{font-size:16px;font-weight:600;letter-spacing:-.2px}
+.adm-settings-card-copy>span{font-size:13px;color:#788171;line-height:1.5}
+.adm-settings-card-chevron{margin-left:auto;flex-shrink:0;color:#8a9482}
+.admin-app .adm-settings-popup{width:640px;max-width:calc(100vw - 32px);padding:0;border:1px solid #e6e9e1;border-radius:18px;background:#fff;box-shadow:0 24px 80px #17211226}
+.adm-settings-popup::backdrop{background:#15200e66;backdrop-filter:blur(4px)}
+.adm-settings-popup-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:24px;border-bottom:1px solid var(--adm-line)}
+.admin-app .adm-settings-popup-header h2{font-size:21px;letter-spacing:-.5px;line-height:1.3}
+.admin-app .adm-settings-popup-header p{font-size:13px;color:#788171;line-height:1.6;margin-top:6px}
+.adm-settings-popup fieldset{border:0;margin:0;min-width:0}
+.admin-app .adm-settings-popup .adm-settings{border:0;background:none;padding:0}
+.admin-app .adm-settings-popup .adm-settings form{padding:0}
+.admin-app .adm-settings-popup .adm-settings-footer{margin:0;padding:20px 24px;border-top:1px solid var(--adm-line)}
+.admin-app .adm-password-embedded{margin:0;border:0;border-radius:0;background:none}
+.adm-password-embedded .adm-password-fields{padding-top:24px}
+@media(max-width:600px){.admin-app .adm-settings-card{gap:13px;padding:19px 17px}.adm-settings-card-icon{flex-basis:42px;height:42px}.adm-settings-card-copy strong{font-size:15px}.adm-settings-card-copy>span{font-size:12px}.adm-settings-popup-header{padding:20px}.admin-app .adm-settings-popup .adm-settings-footer{padding:18px 20px}.adm-settings-popup .adm-dialog-fields{grid-template-columns:1fr}.adm-settings-popup .adm-dialog-fields .wide{grid-column:auto}}

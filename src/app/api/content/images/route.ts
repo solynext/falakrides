@@ -7,7 +7,9 @@ import {imageMimeType, MAX_CONTENT_IMAGE_BYTES} from "@/features/content/image-u
 export const runtime = "nodejs";
 export async function POST(request: Request) {
   try {
-    const user = await requireAdmin("content", true);
+    const requestedResource = new URL(request.url).searchParams.get("resource");
+    const resource = requestedResource === "vehicles" || requestedResource === "locations" || requestedResource === "offers" ? requestedResource : "content";
+    const user = await requireAdmin(resource, true);
     sameOrigin(request);
     await rateLimit(request,"content-image-uploads",20);
     if (Number(request.headers.get("content-length")) > MAX_CONTENT_IMAGE_BYTES) throw new HttpError(413,"Choose an image smaller than 8 MB.");
@@ -26,12 +28,12 @@ export async function POST(request: Request) {
     if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) throw new HttpError(503,"Configure Cloudinary to upload website images.");
     const cloud = getCloudinary();
     const result = await new Promise<{secure_url:string;public_id:string;width:number;height:number}>((resolve,reject) => {
-      cloud.uploader.upload_stream({folder:`${cloudinaryUploadFolder()}/website`,resource_type:"image",allowed_formats:["jpg","png","webp","gif","avif"],overwrite:false},(error,result) => {
+      cloud.uploader.upload_stream({folder:`${cloudinaryUploadFolder()}/${resource === "content" ? "website" : resource}`,resource_type:"image",allowed_formats:["jpg","png","webp","gif","avif"],overwrite:false},(error,result) => {
         if (error || !result) reject(new HttpError(502,"Image upload failed. Please try again."));
         else resolve(result);
       }).end(data);
     });
-    await db.auditLog.create({data:{userId:user.id,action:"upload-image",resource:"content",recordId:result.public_id}});
+    await db.auditLog.create({data:{userId:user.id,action:"upload-image",resource,recordId:result.public_id}});
     return json({url:result.secure_url,publicId:result.public_id,width:result.width,height:result.height});
   } catch (error) {return failure(error);}
 }

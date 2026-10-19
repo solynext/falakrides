@@ -69,7 +69,7 @@ export default function ExportDialog({data, onClose}: {data: ExportData; onClose
   const stage = progress < 30 ? "Gathering your records" : progress < 65 ? "Organizing the details" : progress < 90 ? "Putting your report together" : "Adding the finishing touches";
 
   return <dialog ref={dialog} className="adm-export-dialog" aria-labelledby="export-title" onCancel={onClose} onClick={event => {if (isDialogBackdropClick(event)) onClose();}}>
-    <div className="adm-export-top"><span><i/> FALAK RIDES WORKSPACE</span><button type="button" aria-label={phase === "processing" ? "Cancel export and close" : "Close export"} onClick={onClose}>×</button></div>
+    <div className="adm-export-top"><span><i/> FALAK RIDES WORKSPACE</span><button className="app-x-button" type="button" aria-label={phase === "processing" ? "Cancel export and close" : "Close export"} onClick={onClose}>×</button></div>
     {phase === "select" ? <>
       <h2 id="export-title" className="adm-sr-only" ref={focusTarget} tabIndex={-1}>Export report</h2>
       <div className="adm-export-context"><span><Icon name="car" size={17}/>{data.title}</span><strong>{data.rows.length} {data.rows.length === 1 ? "record" : "records"}</strong><small>Current selection · saved records</small></div>

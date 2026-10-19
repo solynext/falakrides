@@ -556,21 +556,20 @@
 }
 
 /* Notification center stays available throughout the admin workspace. */
-/* Keep table actions in view as other columns scroll. */
+/* Keep the Manage column compact without a separate background. */
 .admin-app .adm-table th:last-child,
 .admin-app .adm-table td:last-child {
-  position: sticky;
-  right: 0;
-  z-index: 1;
-  min-width: 125px;
+  position: static;
+  width: 1%;
+  min-width: 0;
+  padding: 8px;
   overflow: visible;
-  text-align: right;
-  box-shadow: -1px 0 0 var(--adm-line), -8px 0 12px -10px #36501c40;
+  text-align: center;
+  box-shadow: none;
 }
-.admin-app .adm-table th:last-child { background: var(--adm-soft); }
-.admin-app .adm-table td:last-child { background: var(--adm-surface); }
-.admin-app .adm-table tbody tr:nth-child(even) td:last-child { background: var(--adm-surface); }
-.admin-app .adm-table tbody tr:hover td:last-child { background: var(--adm-line); }
+.admin-app .adm-table td:last-child,
+.admin-app .adm-table tbody tr:nth-child(even) td:last-child,
+.admin-app .adm-table tbody tr:hover td:last-child { background: transparent; }
 .admin-app .adm-row-action {
   display: inline-flex;
   align-items: center;
@@ -989,5 +988,126 @@
 /* Compact spacing for the customer list. */
 .admin-app .adm-customers-table .adm-table th,
 .admin-app .adm-customers-table .adm-table td { padding-inline: 12px; }
+.admin-app .adm-customers-table .adm-table :is(th, td):last-child { padding: 8px; }
 .admin-app .adm-customers-table .adm-person { gap: 8px; }
 .admin-app .adm-customers-table .adm-customer-delete { margin-right: 6px; }
+.admin-app .adm-table .adm-location-description { white-space: normal; min-width: 200px; max-width: 360px; line-height: 1.6; }
+.admin-app .adm-location-photo { display: grid; gap: 5px; }
+.admin-app .adm-photo-credit { display: block; width: fit-content; font-size: 10px; color: #78836f; text-decoration: underline; }
+.admin-app .adm-location-dialog { width: min(680px, calc(100vw - 32px)); border-radius: 16px; }
+.admin-app .adm-location-dialog > .adm-dialog-top { position: sticky; top: 0; z-index: 2; background: #fff; }
+.admin-app .adm-location-dialog .content-image-preview { width: 320px; max-width: 100%; height: auto; aspect-ratio: 2 / 1; overflow: hidden; border: 1px solid #e7e9e3; border-radius: 12px; }
+.admin-app .adm-location-dialog .content-image-preview > img { width: 100%; object-fit: cover; }
+
+.admin-app .adm-booking-dialog { width: min(780px, calc(100vw - 32px)); }
+.admin-app .adm-booking-dialog > .adm-dialog-top { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; background: #fff; box-shadow: 0 3px 12px #24331d08; }
+.admin-app .adm-booking-dialog > .adm-dialog-top > div:first-child { flex: 1; }
+.admin-app .adm-booking-dialog > .adm-dialog-top .adm-booking-message-actions { display: flex; flex-shrink: 0; margin: 0; gap: 8px; }
+.admin-app .adm-booking-dialog > .adm-dialog-top .adm-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 10px 15px; min-height: 42px; border-radius: 12px; font-size: 13px; font-weight: 600; white-space: nowrap; border: 1px solid transparent; transition: background .15s, border-color .15s, box-shadow .15s; }
+.admin-app .adm-booking-dialog > .adm-dialog-top .adm-booking-email { color: #4759a0; background: #f3f5ff; border-color: #dfe5fb; box-shadow: 0 2px 4px #4759a008; }
+.admin-app .adm-booking-dialog > .adm-dialog-top .adm-booking-email:hover:not(:disabled) { background: #e9edff; border-color: #c5cef2; box-shadow: 0 3px 8px #4759a014; }
+.admin-app .adm-booking-dialog > .adm-dialog-top .adm-booking-whatsapp { color: #147d4f; background: #edf9f2; border-color: #ccebd9; box-shadow: 0 2px 4px #147d4f08; }
+.admin-app .adm-booking-dialog > .adm-dialog-top .adm-booking-whatsapp:hover:not(:disabled) { background: #def3e7; border-color: #a8daba; box-shadow: 0 3px 8px #147d4f14; }
+.admin-app .adm-booking-dialog > .adm-dialog-top .adm-button:disabled { opacity: 1; color: #7a8491; background: #f5f6f8; border-color: #e5e8ed; box-shadow: none; }
+.admin-app .adm-booking-dialog > .adm-dialog-top .adm-button:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.admin-app .adm-booking-dialog > .adm-dialog-top .adm-button > svg { flex-shrink: 0; width: 18px; height: 18px; }
+.admin-app .adm-booking-dialog .adm-dialog-fields > label:has(#adm-phone) { grid-column: 1 / -1; }
+.admin-app .adm-booking-message { margin: 20px 25px 0; padding: 20px; border: 1px solid #e4e8ef; border-radius: 16px; background: #fff; box-shadow: 0 4px 18px #25364d05; }
+.admin-app .adm-booking-message-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+.admin-app .adm-booking-message h3 { font-size: 14px; font-weight: 600; }
+.admin-app .adm-booking-message p { margin-top: 4px; font-size: 12px; color: #788290; line-height: 1.5; }
+.admin-app .adm-message-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.admin-app .adm-message-icon { display: grid; place-items: center; width: 40px; height: 40px; flex-shrink: 0; border: 1px solid #e5eafa; border-radius: 12px; background: #f4f6ff; color: #6676ad; }
+.admin-app .adm-booking-recipient { display: flex; align-items: center; gap: 12px; margin: 18px 0 14px; padding: 14px; border: 1px solid #edf0f4; border-radius: 12px; background: #f9fafc; }
+.admin-app .adm-recipient-avatar { display: grid; place-items: center; width: 42px; height: 42px; flex-shrink: 0; border-radius: 50%; background: #eaf0e3; color: #597641; font-size: 13px; font-weight: 600; }
+.admin-app .adm-booking-recipient > div { display: grid; gap: 3px; min-width: 0; flex: 1; }
+.admin-app .adm-recipient-label { color: #8b94a1; font-size: 9px; font-weight: 600; letter-spacing: .09em; }
+.admin-app .adm-booking-recipient strong { font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+.admin-app .adm-recipient-email { font-size: 12px; color: #738091; overflow-wrap: anywhere; }
+.admin-app .adm-booking-recipient > svg { flex-shrink: 0; color: #9aa5b3; }
+.admin-app .adm-booking-message-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+.admin-app .adm-booking-message details { border: 1px solid #e9edf2; border-radius: 10px; overflow: hidden; }
+.admin-app .adm-booking-message summary { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; cursor: pointer; list-style: none; font-size: 12px; font-weight: 500; color: #647184; }
+.admin-app .adm-booking-message summary::-webkit-details-marker { display: none; }
+.admin-app .adm-booking-message summary > span:first-child { display: flex; align-items: center; gap: 9px; }
+.admin-app .adm-booking-message summary:hover { background: #f9fafc; }
+.admin-app .adm-booking-message summary:focus-visible { outline: 2px solid #96a3c5; outline-offset: -3px; }
+.admin-app .adm-preview-chevron { font-size: 18px; line-height: 1; }
+.admin-app .adm-booking-message details[open] .adm-preview-chevron { transform: rotate(180deg); }
+.admin-app .adm-booking-message pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; padding: 16px; border-top: 1px solid #e9edf2; background: #fafbfd; font: 12px/1.8 Arial,sans-serif; color: #536174; }
+.admin-app .adm-message-success { display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; padding: 12px 14px; border: 1px solid #dcecdf; border-radius: 10px; background: #f1f9f3; color: #35704a; font-size: 12px; line-height: 1.6; }
+.admin-app .adm-message-success > svg { flex-shrink: 0; margin-top: 1px; }
+.admin-app .adm-message-success > span { min-width: 0; overflow-wrap: anywhere; }
+.admin-app .adm-booking-message > a { display: inline-block; margin-top: 8px; color: #527c30; font-size: 12px; }
+.admin-app .adm-booking-leg { --leg-accent: #527c30; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; min-width: 0; margin: 0; padding: 20px 18px; border: 1px solid #dde6d5; border-radius: 14px; background: linear-gradient(160deg, #f7faf3, #fff); }
+.admin-app .adm-booking-leg.dropoff { --leg-accent: #426b98; border-color: #dbe4ee; background: linear-gradient(160deg, #f4f8fc, #fff); }
+.admin-app .adm-booking-leg legend { padding: 0 8px; font-size: 15px; font-weight: 600; color: var(--leg-accent); }
+.admin-app .adm-leg-marker { display: inline-grid; place-items: center; width: 23px; height: 23px; margin-right: 8px; border-radius: 50%; background: var(--leg-accent); color: #fff; font-size: 12px; vertical-align: middle; }
+.admin-app .adm-booking-leg label { min-width: 0; font-size: 12px; font-weight: 600; gap: 8px; }
+.admin-app .adm-booking-location { grid-column: 1 / -1; }
+.admin-app .adm-booking-leg input { min-width: 0; height: 46px; padding: 11px 10px; border: 1px solid #dce2d7; border-radius: 9px; background: #fff; font-size: 13px; font-weight: 400; transition: border-color .15s, box-shadow .15s; }
+.admin-app .adm-booking-leg input::placeholder { color: #899183; font-size: 12px; }
+.admin-app .adm-booking-leg input:focus { outline: none; border-color: var(--leg-accent); box-shadow: 0 0 0 3px #8ca9781c; }
+.admin-app .adm-location-input { display: block; position: relative; }
+.admin-app .adm-location-input > svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--leg-accent); pointer-events: none; }
+.admin-app .adm-location-input > input { padding-left: 38px; }
+.admin-app .adm-leg-label { display: flex; align-items: center; gap: 5px; }
+.admin-app .adm-leg-label > svg { color: var(--leg-accent); }
+.admin-app .adm-leg-label > small { margin-left: auto; color: #7d8577; font-size: 10px; font-weight: 400; letter-spacing: .04em; }
+@media (max-width: 620px) {
+  .admin-app .adm-booking-dialog .adm-dialog-fields { grid-template-columns: 1fr; }
+  .admin-app .adm-booking-dialog > .adm-dialog-top > div:first-child { flex-basis: calc(100% - 48px); }
+  .admin-app .adm-booking-dialog > .adm-dialog-top .adm-icon-button { order: 1; }
+  .admin-app .adm-booking-dialog > .adm-dialog-top .adm-booking-message-actions { order: 2; flex-basis: 100%; }
+}
+
+.admin-app .adm-vehicle-dialog { width: min(680px, calc(100vw - 32px)); border-radius: 18px; }
+.admin-app .adm-vehicle-dialog .adm-dialog-top { padding: 24px 28px; background: #fafbf8; }
+.admin-app .adm-vehicle-dialog .adm-dialog-fields { padding: 8px 28px 28px; gap: 18px 20px; }
+.admin-app .adm-vehicle-section { grid-column: 1 / -1; margin: 14px 0 0; padding-bottom: 10px; border-bottom: 1px solid #e7e9e3; font-size: 13px; font-weight: 600; letter-spacing: .03em; }
+.admin-app .adm-vehicle-field { min-width: 0; }
+.admin-app .adm-vehicle-field > label { display: block; margin-bottom: 7px; font-size: 13px; font-weight: 600; }
+.admin-app .adm-vehicle-field > label > span { color: #b34134; }
+.admin-app .adm-category-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 20px; margin-bottom: 7px; }
+.admin-app .adm-category-label > label { font-size: 13px; font-weight: 600; }
+.admin-app .adm-category-label > button { padding: 0; border: 0; background: transparent; color: #557d2f; font-size: 12px; font-weight: 600; }
+.admin-app .adm-category-create { display: grid; gap: 10px; margin-top: 12px; padding: 12px; border: 1px solid #e0e6d8; border-radius: 9px; background: #fafbf8; }
+.admin-app .adm-category-create > div:last-child { display: flex; flex-wrap: wrap; gap: 8px; }
+.admin-app .adm-category-create .adm-button { padding: 7px 10px; font-size: 12px; }
+.admin-app .adm-category-error { margin-top: 8px; font-size: 12px; color: #b34134; }
+.admin-app .adm-category-error > button { display: block; border: 0; background: transparent; padding: 4px 0; text-decoration: underline; color: inherit; }
+.admin-app .adm-category-manager { margin-top: 12px; padding: 14px; border: 1px solid #e0e6d8; border-radius: 10px; background: #fafbf8; }
+.admin-app .adm-category-manager .adm-category-create { display: flex; align-items: center; flex-wrap: wrap; margin: 0 0 12px; padding: 0; border: 0; }
+.admin-app .adm-category-manager .adm-category-create .adm-vehicle-input { flex: 1; min-width: 140px; }
+.admin-app .adm-category-list { list-style: none; padding: 0; margin: 0; max-height: 260px; overflow-y: auto; }
+.admin-app .adm-category-list > li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1px solid #e7e9e3; }
+.admin-app .adm-category-list > li > span { flex: 1; min-width: 100px; overflow-wrap: anywhere; }
+.admin-app .adm-category-list .adm-vehicle-input { flex: 1; min-width: 140px; }
+.admin-app .adm-category-actions { display: flex; align-items: center; gap: 10px; }
+.admin-app .adm-category-manager .adm-button { min-height: 34px; padding: 7px 10px; font-size: 12px; }
+.admin-app .adm-category-confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; width: 100%; padding: 10px; border-radius: 7px; background: #fff1ed; font-size: 12px; }
+.admin-app .adm-category-empty { font-size: 13px; color: #66705e; }
+.admin-app .adm-category-dialog { width: min(560px, calc(100vw - 32px)); max-height: 85dvh; padding: 0; border-radius: 16px; overflow-y: auto; box-shadow: 0 24px 80px #14220f40; }
+.admin-app .adm-category-dialog::backdrop { background: #17231470; backdrop-filter: blur(3px); }
+.admin-app .adm-category-dialog .adm-dialog-top { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; background: #fafbf8; }
+.admin-app .adm-category-dialog .adm-category-manager { margin: 0; padding: 24px; border: 0; border-radius: 0; background: #fff; }
+.admin-app .adm-category-dialog .adm-category-list { max-height: 45dvh; }
+.admin-app .adm-vehicle-input :is(input, select, textarea) { width: 100%; border: 1px solid #dce1d7; border-radius: 9px; background: #fff; padding: 11px 13px; font-size: 14px; transition: border-color .15s, box-shadow .15s; }
+.admin-app .adm-vehicle-input :is(input, select) { height: 44px; }
+.admin-app .adm-vehicle-input select { padding-right: 30px; }
+.admin-app .adm-vehicle-input textarea { min-height: 96px; resize: vertical; }
+.admin-app .adm-vehicle-input :is(input, select, textarea):focus { outline: none; border-color: #7ba449; box-shadow: 0 0 0 3px #8dc73f20; }
+.admin-app .adm-vehicle-dialog .content-image-upload-button { border-radius: 9px; }
+.admin-app .adm-vehicle-dialog .content-image-preview { width: 320px; height: auto; aspect-ratio: 2 / 1; min-width: 0; min-height: 0; max-width: 100%; resize: none; overflow: hidden; justify-self: start; padding: 0; border: 1px solid #e7e9e3; border-radius: 12px; background: #fafbf8; }
+.admin-app .adm-vehicle-dialog .content-image-preview > img { width: 100%; max-height: none; object-fit: cover; }
+.admin-app .adm-vehicle-dialog .content-image-remove,
+.admin-app .adm-vehicle-dialog .content-image-remove:hover { background: transparent; border: 0; box-shadow: none; }
+.admin-app .adm-vehicle-dialog .adm-dialog-footer { padding: 18px 28px; background: #fafbf8; }
+@media (max-width: 560px) {
+  .admin-app .adm-vehicle-dialog .adm-dialog-fields { grid-template-columns: 1fr; padding-inline: 20px; }
+  .admin-app .adm-vehicle-dialog :is(.adm-dialog-top, .adm-dialog-footer) { padding-inline: 20px; }
+  .admin-app .adm-vehicle-dialog .adm-dialog-footer { flex-wrap: wrap; gap: 14px; }
+}
+
+.adm-linked-customer{display:grid;grid-template-columns:1fr 1fr;gap:16px}.adm-booking-leg select{width:100%;min-height:44px}.adm-location-input>select{padding-left:38px}@media(max-width:640px){.adm-linked-customer{grid-template-columns:1fr}}
+

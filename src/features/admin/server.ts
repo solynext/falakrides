@@ -10,6 +10,8 @@ import type {AdminRow} from "./types";
 import type {Prisma} from "@/generated/prisma/client";
 import {queueBookingConfirmation} from "@/features/bookings/confirmation";
 import {deliverNotification} from "./notifications";
+import {bookingItinerary} from "./booking-itinerary";
+import {routeStops} from "./record-links";
 
 type Row = Record<string, unknown>;
 type Delegate = {
@@ -19,7 +21,7 @@ type Delegate = {
   update: (args: Row) => Promise<Row>;
   delete: (args: Row) => Promise<Row>;
 };
-const names: Record<string, string> = {bookings: "booking", customers: "customer", drivers: "driver", vehicles: "vehicle", fares: "fare", areas: "serviceArea", offers: "offer", payments: "payment", feedback: "feedback", notifications: "notification", roles: "user"};
+const names: Record<string, string> = {locations: "location", bookings: "booking", customers: "customer", drivers: "driver", vehicles: "vehicle", fares: "fare", offers: "offer", payments: "payment", feedback: "feedback", notifications: "notification", roles: "user"};
 function table(client: Prisma.TransactionClient | typeof db, module: string): Delegate {
   const name = names[module];
   if (!name) throw new HttpError(404, "Unknown module.");
@@ -41,6 +43,7 @@ export function serialize(module: string, record: Row): AdminRow {
     result.driver = (record.driver as Row | null)?.id ? String((record.driver as Row).id) : "Unassigned";
     result.vehicle = (record.vehicle as Row | null)?.id ? String((record.vehicle as Row).id) : "Unassigned";
     result._vehicleName = String(record.vehicleName || "");
+    result.customerId=String(record.customerId || "");
   }
   if (module === "payments" || module === "notifications") {
     const booking = record.booking as Row | null;
@@ -48,6 +51,7 @@ export function serialize(module: string, record: Row): AdminRow {
     if (module === "payments") {result.customer = String(booking?.customerName || ""); result.amount = String(Number(record.amount) / 100); result._paidAt = record.paidAt instanceof Date ? record.paidAt.toISOString() : "";}
   }
   if (module === "fares") for (const key of ["fare", "hourly", "waiting"]) result[key] = record[key] == null ? "" : String(Number(record[key]) / 100);
+  if (module === "fares") {const [pickup,destination]=routeStops(String(record.route || ""));result.pickup=pickup;result.destination=destination;result.route=String(record.route || "");}
   if (module === "customers") result.trips = String((record._count as {bookings?: number} | undefined)?.bookings ?? 0);
   return result;
 }
@@ -73,23 +77,36 @@ function validate(module: string, input: unknown) {
     if (field.type === "email") schema = schema.refine(value => !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value), "Enter a valid email.");
     if (field.type === "tel") schema = schema.refine(value => !value || /^\+?[\d\s()-]+$/.test(value) && value.replace(/\D/g, "").length >= 8 && value.replace(/\D/g, "").length <= 15, "Enter a valid contact number.");
     if (field.type === "number") schema = schema.refine(value => !value || /^\d+(\.\d{1,2})?$/.test(value) && Number(value) <= 10000000, `${field.label} must be a valid non-negative number.`);
-    if (field.type === "select" && !["driver", "vehicle"].includes(field.key)) schema = schema.refine(value => !value && field.key === "rating" || !!field.options?.includes(value), `Choose a valid ${field.label.toLowerCase()}.`);
+    if (field.type === "select" && !["driver", "vehicle", "vehicleId"].includes(field.key)) schema = schema.refine(value => !value && field.key === "rating" || !!field.options?.includes(value), `Choose a valid ${field.label.toLowerCase()}.`);
     if (field.type === "date") schema = schema.refine(value => !value && !field.required || /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)), "Enter a valid date.");
     if (field.key === "image") schema = schema.refine(value => !value || isSafePublicImage(value), "Use a local /images/ path or Unsplash photo ID.");
-    shape[field.key] = (["category", "description", "image", "caption"].includes(field.key) || module === "bookings" && field.key === "email") ? schema.optional() : schema;
+    if (field.key === "zipCode") schema = schema.max(20).refine(value => !value || /^[a-zA-Z0-9 -]+$/.test(value), "Enter a valid ZIP or postal code.");
+    shape[field.key] = (!field.required && ["category", "description", "image", "caption", "zipCode", "destinations"].includes(field.key) || module === "bookings" && ["email","dropoffDate","dropoffTime"].includes(field.key)) ? schema.optional() : schema;
   }
   shape.id = z.string().optional(); shape._version = z.string().optional(); shape._createdAt = z.string().optional();
+  if(module === "bookings") {shape.customerId=clean.optional();shape.fareId=clean.optional();}
+  if(module === "fares" && input && typeof input === "object") {
+    const legacy=input as Record<string,unknown>;
+    if(typeof legacy.route === "string" && legacy.pickup === undefined && legacy.destination === undefined) {const [pickup,destination]=routeStops(legacy.route);input={...legacy,pickup,destination};}
+  }
   return z.object(shape).strip().parse(input) as Record<string, string>;
 }
 const money = (value: string) => {const [whole, fraction = ""] = value.split("."); return Number(whole || 0) * 100 + Number(fraction.padEnd(2, "0"));};
+async function checkLocation(tx:Prisma.TransactionClient,value:string,previous?:unknown) {
+  if(value === previous)return;
+  if(!await tx.location.findFirst({where:{name:value,status:"Active"}}))throw new HttpError(400,"Choose an active location from Locations.");
+}
 async function mutationData(tx: Prisma.TransactionClient, module: string, row: Record<string, string>, existing: Row | null) {
+  if (module === "vehicles") await tx.$queryRaw`SELECT pg_advisory_xact_lock(7264102)::text`;
   const data: Row = Object.fromEntries(modules[module].fields.map(field => [field.key, row[field.key] ?? ""]));
   for (const key of ["category", "description", "image", "caption"]) if (existing && modules[module].fields.some(field=>field.key===key) && row[key] === undefined) data[key] = existing[key] ?? "";
   if (module === "bookings") {
-    const [pickup, destination, extra] = row.route.split(/\s*(?:→|->)\s*/);
-    if (!pickup || !destination || extra) throw new HttpError(400, "Enter the route as Pickup → Destination.");
-    const pickupAt = new Date(`${row.date}T${row.time}:00+03:00`);
-    if (Number.isNaN(pickupAt.getTime()) || pickupAt.toLocaleDateString("en-CA", {timeZone: "Asia/Riyadh"}) !== row.date) throw new HttpError(400, "Enter a valid pickup date and time.");
+    let itinerary;
+    try {itinerary=bookingItinerary({pickup:row.pickup,destination:row.destination,date:row.date,time:row.time,dropoffDate:row.dropoffDate ?? String(existing?.dropoffDate || ""),dropoffTime:row.dropoffTime ?? String(existing?.dropoffTime || "")},!!existing);}
+    catch(error) {throw new HttpError(400,error instanceof Error ? error.message : "Check the journey details.");}
+    const {pickup,destination,pickupAt,dropoffDate,dropoffTime}=itinerary;
+    await checkLocation(tx,pickup,existing?.pickup);await checkLocation(tx,destination,existing?.destination);
+    if(row.fareId) {const ride=await tx.fare.findUnique({where:{id:row.fareId}});if(!ride || ride.status !== "Active" || routeStops(ride.route).join("→") !== [pickup,destination].join("→"))throw new HttpError(400,"The selected ride is unavailable or does not match these locations.");}
     const driver = row.driver === "Unassigned" ? null : await tx.driver.findUnique({where: {id: row.driver}});
     const vehicle = row.vehicle === "Unassigned" ? null : await tx.vehicle.findUnique({where: {id: row.vehicle}});
     if (row.driver !== "Unassigned" && !driver || row.vehicle !== "Unassigned" && !vehicle) throw new HttpError(400, "Choose an existing driver and vehicle.");
@@ -97,22 +114,45 @@ async function mutationData(tx: Prisma.TransactionClient, module: string, row: R
     if (!Number.isInteger(passengers) || passengers < 1 || passengers > 30 || vehicle && passengers > vehicle.passengers) throw new HttpError(400, "The selected vehicle must fit all passengers.");
     if (vehicle?.status === "Maintenance" || driver?.status === "Off duty") throw new HttpError(400, "The selected driver or vehicle is unavailable.");
     if (row.status === "Confirmed" && (!driver || !vehicle || !row.fare)) throw new HttpError(400, "Assign a driver, vehicle, and fare before confirming.");
-    const customerId = existing ? String(existing.customerId) : (await tx.customer.create({data: {name: row.customer, phone: row.phone, email: row.email || ""}})).id;
-    return {customerId, customerName: row.customer, customerEmail: row.email ?? String(existing?.customerEmail || ""), phone: row.phone, pickup, destination, date: row.date, time: row.time, pickupAt, passengers, fare: row.fare ? money(row.fare) : null, status: row.status, driverId: driver?.id ?? null, vehicleId: vehicle?.id ?? null, vehicleName: vehicle?.name || String(existing?.vehicleName || ""), notes: row.notes, ...(!existing ? {reference: `FR-${randomBytes(6).toString("hex").toUpperCase()}`, idempotencyKey: `admin-${randomBytes(24).toString("hex")}`, luggage: 0, stops: []} : {})};
+    const selectedCustomer=row.customerId ? await tx.customer.findUnique({where:{id:row.customerId}}) : null;
+    if(row.customerId && !selectedCustomer)throw new HttpError(400,"Choose an existing customer or add a new customer.");
+    if(selectedCustomer && selectedCustomer.name !== row.customer)throw new HttpError(400,"The selected customer's name changed. Select the customer again.");
+    const customerId = selectedCustomer?.id || (existing && row.customerId === undefined ? String(existing.customerId) : (await tx.customer.create({data: {name: row.customer, phone: row.phone, email: row.email || ""}})).id);
+    return {customerId, customerName: row.customer, customerEmail: row.email ?? String(existing?.customerEmail || ""), phone: row.phone, pickup, destination, date: row.date, time: row.time, pickupAt, dropoffDate, dropoffTime, passengers, fare: row.fare ? money(row.fare) : null, status: row.status, driverId: driver?.id ?? null, vehicleId: vehicle?.id ?? null, vehicleName: vehicle?.name || String(existing?.vehicleName || ""), notes: row.notes, ...(!existing ? {reference: `FR-${randomBytes(6).toString("hex").toUpperCase()}`, idempotencyKey: `admin-${randomBytes(24).toString("hex")}`, luggage: 0, stops: []} : {})};
   }
   if (module === "customers") delete data.trips;
+  if(module === "drivers" && row.vehicle && row.vehicle !== "Unassigned") {
+    const vehicle=await tx.vehicle.findFirst({where:{OR:[{id:row.vehicle},{name:row.vehicle}]}});
+    if(!vehicle)throw new HttpError(400,"Choose an existing vehicle.");
+    data.vehicle=vehicle.id;
+  } else if(module === "drivers")data.vehicle="";
+  if(module === "drivers")await checkLocation(tx,row.city,existing?.city);
   if (module === "vehicles") {
     for (const key of ["passengers", "luggage"]) {data[key] = Number(row[key]); if (!Number.isInteger(data[key]) || Number(data[key]) < (key === "passengers" ? 1 : 0) || Number(data[key]) > 30) throw new HttpError(400, "Vehicle capacities must be whole numbers from 0 to 30.");}
-    data.category = row.category || String(existing?.category || "Economy");
+    data.category = row.category || String(existing?.category || "");
+    if (!data.category || data.category !== existing?.category && !await tx.vehicleCategory.findUnique({where:{name:String(data.category)}})) throw new HttpError(400, "Choose a category created by an administrator.");
   }
-  if (module === "fares") for (const key of ["fare", "hourly", "waiting"]) data[key] = row[key] ? money(row[key]) : key === "fare" ? null : 0;
+  if (module === "fares") {
+    const [oldPickup,oldDestination]=routeStops(String(existing?.route || ""));
+    await checkLocation(tx,row.pickup,oldPickup);await checkLocation(tx,row.destination,oldDestination);
+    if(row.pickup.toLowerCase() === row.destination.toLowerCase())throw new HttpError(400,"Choose different pickup and drop-off locations.");
+    data.route=`${row.pickup} → ${row.destination}`;delete data.pickup;delete data.destination;
+    for (const key of ["fare", "hourly", "waiting"]) data[key] = row[key] ? money(row[key]) : key === "fare" ? null : 0;
+  }
   if (module === "fares" && !existing) {data.featured = true; data.image = row.image || "/images/header-background.jpg";}
-  if (module === "offers") {data.discount = Number(row.discount); if (!Number.isInteger(data.discount) || Number(data.discount) > 100) throw new HttpError(400, "Discount must be a whole number from 0 to 100.");}
+  if (module === "offers") {
+    const vehicle=await tx.vehicle.findUnique({where:{id:row.vehicleId}});
+    if(!vehicle)throw new HttpError(400,"Select an existing vehicle.");
+    if(row.pickup.toLowerCase() === row.destination.toLowerCase())throw new HttpError(400,"Choose different pickup and drop-off locations.");
+    await checkLocation(tx,row.pickup,existing?.pickup);await checkLocation(tx,row.destination,existing?.destination);
+    return {...data,name:`${vehicle.name} · ${row.pickup} → ${row.destination}`,route:`${row.pickup} → ${row.destination}`,...(!existing ? {code:`OFFER-${randomBytes(8).toString("hex").toUpperCase()}`,discount:0,validUntil:"9999-12-31",terms:"",status:"Active"} : {})};
+  }
   if (module === "feedback") {data.rating = row.type === "Inquiry" ? null : Number(row.rating); if (row.type !== "Inquiry" && !row.rating) throw new HttpError(400, "Choose a rating.");}
   if (module === "payments" || module === "notifications") {
     const booking = row.booking ? await tx.booking.findUnique({where: {reference: row.booking}}) : null;
     if (row.booking && !booking || module === "payments" && !booking) throw new HttpError(400, "Choose an existing booking reference.");
     delete data.booking; data.bookingId = booking?.id ?? null;
+    if(module === "notifications" && booking) {const recipient=row.channel === "Email" ? booking.customerEmail : booking.phone;if(!recipient)throw new HttpError(400,"The selected booking has no contact details for this channel.");data.recipient=recipient;}
     if (module === "notifications" && row.status !== "Draft" && row.status !== existing?.status) throw new HttpError(400, "Use Send notification to deliver a message; delivery status is managed by the server.");
     if (module === "notifications" && existing && ["Sending", "Sent"].includes(String(existing.status))) throw new HttpError(409, "Create a new draft instead of changing a message that has already been sent.");
     if (module === "payments") {
@@ -127,18 +167,18 @@ async function mutationData(tx: Prisma.TransactionClient, module: string, row: R
   return data;
 }
 async function syncPublicRecord(tx: Prisma.TransactionClient, module: string, record: Row) {
-  if (!["vehicles", "fares", "areas", "offers", "feedback"].includes(module)) return;
+  if (!["vehicles", "fares", "locations", "offers", "feedback"].includes(module)) return;
   const values: ContentValues = {};
   if (record.contentIndex != null) {
     const index = record.contentIndex;
     if (module === "vehicles") for (const [field, key] of [["name", "name"], ["description", "description"], ["image", "image"], ["passengers", "passengers"], ["bags", "luggage"]]) values[`vehicle.${index}.${field}`] = String(record[key]);
-    if (module === "areas") values[`location.${index}`] = String(record.name);
+    if (module === "locations") values[`location.${index}`] = String(record.name);
     if (module === "fares") {const [from, to = ""] = String(record.route).split(/\s*→\s*/); for (const [position, value] of [from, to, record.caption, record.image].entries()) values[`route.${index}.${position}`] = String(value);}
   }
   const content = await tx.siteContent.findUniqueOrThrow({where: {id: "main"}});
   await tx.siteContent.update({where: {id: "main", version: content.version}, data: {publishedAt: new Date(), ...(Object.keys(values).length ? {version: {increment: 1}, draft: {...content.draft as ContentValues, ...values}, published: {...content.published as ContentValues, ...values}} : {})}});
 }
-export async function writeRecord(module: string, input: unknown, user: {id: string; role: string}, id?: string) {
+export async function writeRecord(module: string, input: unknown, user: {id: string; role: string}, id?: string, options:{notifyConfirmation?:boolean}={}) {
   if (!canAccess(user.role, module, true)) throw new HttpError(403, "Your role does not allow this action.");
   const row = validate(module, input);
   const result = await db.$transaction(async tx => {
@@ -161,7 +201,7 @@ export async function writeRecord(module: string, input: unknown, user: {id: str
     if (module === "roles" && (row.status !== "Active" || existing?.role !== row.role)) await tx.session.deleteMany({where: {userId: String(record.id)}});
     await tx.auditLog.create({data: {userId: user.id, action: existing ? "update" : "create", resource: module, recordId: String(record.id)}});
     await syncPublicRecord(tx, module, record);
-    const notificationId = module === "bookings" ? await queueBookingConfirmation(tx, record, existing?.status) : null;
+    const notificationId = module === "bookings" && options.notifyConfirmation !== false ? await queueBookingConfirmation(tx, record, existing?.status) : null;
     return {row: serialize(module, record), invitation, notificationId};
   });
   const {notificationId, ...response} = result;
@@ -184,6 +224,6 @@ export async function deleteRecord(module: string, id: string, version: number, 
     } else if (record.version !== version) throw new HttpError(409, "Someone else updated this record. Refresh before removing it.");
     await table(tx, module).delete({where: {...where, ...(module !== "roles" ? {version} : {})}});
     await tx.auditLog.create({data: {userId: user.id, action: "delete", resource: module, recordId: String(record.id)}});
-    if (["vehicles", "fares", "areas", "offers", "feedback"].includes(module)) await tx.siteContent.update({where: {id: "main"}, data: {publishedAt: new Date()}});
+    if (["vehicles", "fares", "locations", "offers", "feedback"].includes(module)) await tx.siteContent.update({where: {id: "main"}, data: {publishedAt: new Date()}});
   });
 }

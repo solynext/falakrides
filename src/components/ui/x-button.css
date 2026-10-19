@@ -1,0 +1,46 @@
+/* Shared appearance for close, dismiss, clear and image-removal controls. */
+button.app-x-button,
+button.app-x-button:is(:hover, :active, :focus, :disabled) {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+button.app-x-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 6px;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+}
+
+button.app-x-button svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+button.app-x-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+button.app-x-button:disabled {
+  cursor: default;
+  opacity: .45;
+}
+
+button.whatsapp-trigger.app-x-button {
+  color: #155b3c;
+}
+
+.app-dialog-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}

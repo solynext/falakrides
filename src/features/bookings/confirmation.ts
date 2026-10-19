@@ -3,7 +3,7 @@ import type {Prisma} from "@/generated/prisma/client";
 export function bookingConfirmationMessage(booking: Record<string, unknown>) {
   const fare = booking.fare == null ? "To be confirmed" : `SAR ${(Number(booking.fare) / 100).toFixed(2)}`;
   return [
-    `Hello ${booking.customerName},`, "", "Your Falak Rides booking is confirmed.", "",
+    `Hello ${booking.customerName},`, "", "Congratulations! Your Falak Rides booking is confirmed. We look forward to welcoming you on board.", "",
     `Booking reference: ${booking.reference}`, `Pickup: ${booking.pickup}`, `Destination: ${booking.destination}`,
     `Pickup date: ${booking.date}`, `Pickup time: ${booking.time} (Saudi Arabia time, GMT+3)`,
     ...(booking.journey === "round-trip" ? [`Return: ${booking.returnDate} at ${booking.returnTime} (Saudi Arabia time)`] : []),

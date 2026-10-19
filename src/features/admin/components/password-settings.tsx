@@ -6,18 +6,20 @@ import Icon from "@/components/ui/icon";
 import {useUnsavedChanges} from "@/components/forms/unsaved-changes";
 import "./password-settings.css";
 
-export default function PasswordSettings() {
+export default function PasswordSettings({embedded = false, onBusyChange}: {embedded?: boolean; onBusyChange?: (busy: boolean) => void}) {
   const form = useRef<HTMLFormElement>(null);
   const pending = useRef(false);
   const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+  const [focusedFields, setFocusedFields] = useState({currentPassword: false, newPassword: false});
   useUnsavedChanges(dirty, () => {form.current?.reset(); setDirty(false);});
   useEffect(() => {if (saved) window.location.replace("/login?password=changed");}, [saved]);
+  useEffect(() => {onBusyChange?.(busy);}, [busy, onBusyChange]);
 
-  return <section className="adm-panel adm-password-settings" aria-labelledby="password-settings-title">
-    <div className="adm-panel-head"><div><h2 id="password-settings-title">Password &amp; security</h2><p>Update the password for your administrator account.</p></div><Icon name="shield" size={20}/></div>
+  return <section className={`adm-panel adm-password-settings ${embedded ? "adm-password-embedded" : ""}`} aria-labelledby={embedded ? "settings-dialog-title" : "password-settings-title"}>
+    {!embedded && <div className="adm-panel-head"><div><h2 id="password-settings-title">Password &amp; security</h2><p>Update the password for your administrator account.</p></div><Icon name="shield" size={20}/></div>}
     <form ref={form} autoComplete="off" onChange={event => {const values = new FormData(event.currentTarget); setDirty([...values.values()].some(Boolean)); setSaved(false); setError("");}} onSubmit={async event => {
       event.preventDefault();
       if (pending.current) return;
@@ -35,8 +37,8 @@ export default function PasswordSettings() {
       finally {pending.current = false; setBusy(false);}
     }}>
       <div className="adm-password-fields">
-        <label>Old password<input type="password" name="currentPassword" autoComplete="off" data-lpignore="true" data-1p-ignore="true" spellCheck={false} required maxLength={128} disabled={busy}/></label>
-        <label>New password<input type="password" name="newPassword" autoComplete="off" data-lpignore="true" data-1p-ignore="true" spellCheck={false} required minLength={4} maxLength={128} aria-describedby="password-settings-help" disabled={busy}/></label>
+        <label>Old password<input type="password" name="currentPassword" autoComplete="off" autoCorrect="off" autoCapitalize="none" data-lpignore="true" data-1p-ignore="true" spellCheck={false} readOnly={!focusedFields.currentPassword} onFocus={() => setFocusedFields(current => ({...current, currentPassword: true}))} required maxLength={128} disabled={busy}/></label>
+        <label>New password<input type="password" name="newPassword" autoComplete="off" autoCorrect="off" autoCapitalize="none" data-lpignore="true" data-1p-ignore="true" spellCheck={false} readOnly={!focusedFields.newPassword} onFocus={() => setFocusedFields(current => ({...current, newPassword: true}))} required minLength={4} maxLength={128} aria-describedby="password-settings-help" disabled={busy}/></label>
         <p id="password-settings-help">Use at least 4 characters.</p>
         {error && <p className="adm-password-error" role="alert">{error}</p>}
         {saved && <p className="adm-password-success" role="status"><Icon name="check" size={17}/>Password changed successfully. Redirecting to sign in...</p>}

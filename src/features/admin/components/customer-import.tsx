@@ -37,7 +37,7 @@ export default function CustomerImport({onClose, onImported}: {onClose: () => vo
   return <dialog ref={dialog} className="adm-dialog customer-import" aria-labelledby="customer-import-title" onCancel={event => {event.preventDefault(); if (!busy) onClose();}} onClick={event => {if (!busy && isDialogBackdropClick(event)) onClose();}}>
     <header className="customer-import-header">
       <h2 id="customer-import-title">Import customers</h2>
-      <button className="customer-import-close" disabled={busy} onClick={onClose} aria-label="Close import"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      <button className="customer-import-close app-x-button" disabled={busy} onClick={onClose} aria-label="Close import"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
     </header>
     <form className="customer-import-body" onSubmit={event => {event.preventDefault(); void importCustomers();}}>
       <input ref={fileInput} type="file" accept=".csv,text/csv" hidden disabled={busy || reading} onChange={event => void selectFile(event.target.files?.[0])}/>
@@ -51,7 +51,7 @@ export default function CustomerImport({onClose, onImported}: {onClose: () => vo
         Link
       </button>
       </div>
-      {source === "link" ? <><div className="customer-import-link-field"><input ref={linkInput} type="url" aria-label="Google Sheets link" placeholder="Paste Google Sheets link" value={link} required disabled={busy} onChange={event => {setLink(event.target.value); setError("");}}/>{link && <button type="button" className="customer-import-clear" aria-label="Clear link" disabled={busy} onClick={() => {setLink(""); setError(""); linkInput.current?.focus();}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>}</div><p className="customer-import-filename">Share as &ldquo;Anyone with the link&rdquo; (Viewer).</p></> : <p className="customer-import-filename" role="status">{filename || "CSV file, up to 1 MB"}</p>}
+      {source === "link" ? <><div className="customer-import-link-field"><input ref={linkInput} type="url" aria-label="Google Sheets link" placeholder="Paste Google Sheets link" value={link} required disabled={busy} onChange={event => {setLink(event.target.value); setError("");}}/>{link && <button type="button" className="customer-import-clear app-x-button" aria-label="Clear link" disabled={busy} onClick={() => {setLink(""); setError(""); linkInput.current?.focus();}}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>}</div><p className="customer-import-filename">Share as &ldquo;Anyone with the link&rdquo; (Viewer).</p></> : <p className="customer-import-filename" role="status">{filename || "CSV file, up to 1 MB"}</p>}
       {error && <p className="customer-import-error" role="alert">{error}</p>}
       <button type="submit" className="adm-button customer-import-submit" disabled={busy || reading || (source === "file" ? !rows.length : !link.trim())}>{busy ? "Submitting..." : "Submit"}</button>
     </form>
