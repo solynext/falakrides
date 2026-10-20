@@ -1,0 +1,30 @@
+.taxi-price-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;align-items:stretch}
+.taxi-price-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;border:1px solid #e7ebe2;border-radius:22px;background:#fff;box-shadow:0 10px 35px #2637190a;transition:box-shadow .2s,transform .2s}
+.taxi-price-card:hover{transform:translateY(-4px);box-shadow:0 18px 42px #26371916}
+.taxi-price-photo{position:relative;display:grid;place-items:center;height:200px;background:linear-gradient(140deg,var(--taxi-light),#eef3e7);color:var(--taxi-lime)}
+.taxi-price-photo img{object-fit:cover}
+.taxi-price-photo-vehicle img{object-fit:cover;padding:0}
+.taxi-price-badge{position:absolute;top:10px;bottom:auto;left:10px;right:auto;display:inline-flex;align-items:center;gap:5px;width:fit-content;max-width:calc(100% - 20px);padding:5px 8px;border:1px solid #ffffffb3;border-radius:30px;background:#fffffff0;color:var(--taxi-dark);font-size:10px;font-weight:500;line-height:1.4;overflow-wrap:anywhere}
+.taxi-price-badge svg{width:12px;height:12px;flex-shrink:0}
+.taxi-price-body{display:flex;flex-direction:column;flex:1;padding:18px}
+.public-site .taxi-price-route{display:grid;grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr);gap:12px;align-items:center;font-size:21px;line-height:1.25;margin:0 0 12px;overflow-wrap:anywhere}
+.taxi-price-vehicle{color:#608235;font-size:12px;font-weight:600;margin-bottom:12px;overflow-wrap:anywhere}
+.taxi-price-route>span{min-width:0}
+.taxi-price-place{display:flex;align-items:center;gap:6px}
+.taxi-price-place svg{flex-shrink:0;color:#6b9839}
+.taxi-price-place>span{min-width:0}
+.taxi-price-place:last-child{justify-content:flex-end}
+.taxi-price-route>span:last-child{text-align:right}
+.taxi-price-route .taxi-price-route-arrow{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#f1f6e9;color:#6b9839}
+.public-site .taxi-price-caption{font-size:12px;margin-bottom:12px}
+.taxi-price-specs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;color:#647452;font-size:12px}
+.taxi-price-specs span{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:7px;background:#f5f7f1}
+.taxi-price-bottom{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-top:12px;border-top:1px solid #edf0e9}
+.taxi-price-bottom small{display:block;color:var(--taxi-muted);font-size:10px;margin-bottom:5px}
+.taxi-price-bottom strong{display:flex;align-items:baseline;flex-wrap:wrap;gap:7px;color:var(--taxi-dark);font:700 28px/1.3 var(--font-taxi-body),sans-serif;letter-spacing:-1px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.taxi-price-bottom .taxi-price-currency{font-size:12px;font-weight:600;letter-spacing:.4px;color:#647452}
+.taxi-price-bottom .taxi-price-quote{font-size:20px;letter-spacing:-.4px}
+.taxi-price-bottom .taxi-button{width:100%;min-height:42px;justify-content:space-between;border-radius:11px;padding:10px 15px;font-size:13px;box-sizing:border-box}
+@media(max-width:1000px){.taxi-price-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.taxi-price-grid{grid-template-columns:1fr}.taxi-price-photo{height:205px}}
+@media(prefers-reduced-motion:reduce){.taxi-price-card{transition:none}.taxi-price-card:hover{transform:none}}
