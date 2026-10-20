@@ -1,4 +1,5 @@
 .taxi-price-carousel{min-width:0;max-width:100%}
+.taxi-price-carousel .taxi-price-photo{height:220px}
 .taxi-price-grid{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 48px)/3.4);gap:16px;align-items:stretch;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;padding:10px 1px 18px;scrollbar-width:none;cursor:grab}
 .taxi-price-grid::-webkit-scrollbar{display:none}
 .taxi-price-card{scroll-snap-align:start;display:flex;flex-direction:column;min-width:0;overflow:hidden;border:1px solid #e6ebde;border-radius:18px;background:#fff;box-shadow:0 4px 12px #26371906;transition:box-shadow .25s,transform .25s,border-color .25s}

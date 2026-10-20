@@ -1,5 +1,4 @@
 "use client";
-import {useState} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {useSiteCatalog,useWebsite} from "@/features/content/public-content";
@@ -11,13 +10,11 @@ export default function LocationCards({serviceId,carousel=true}:{serviceId?:stri
   const {locationCards:allLocations=[]}=useSiteCatalog();
   const locationCards=serviceId?allLocations.filter(location=>location.serviceIds.includes(serviceId)):allLocations;
   const {copy}=useWebsite();
-  const [paused,setPaused]=useState(false);
   if(!locationCards.length)return null;
   const repeats=carousel?Math.max(1,Math.ceil(6/locationCards.length)):1;
   return <section className={`taxi-locations-section ${serviceId&&!carousel?"taxi-locations-compact":""}`} id={serviceId?undefined:"locations"} aria-label={serviceId?"Related Locations":"Our locations"}><div className="taxi-container">
     {serviceId?<h2 className="taxi-related-locations-heading">Related Locations</h2>:<SectionHeading label="Our Locations"><em>Where Would You</em> Like to Go?</SectionHeading>}
-    {carousel&&<div className="taxi-location-controls"><button type="button" aria-label={paused?"Resume scrolling locations":"Pause scrolling locations"} aria-pressed={paused} onClick={()=>setPaused(!paused)}>{paused?"Play":"Pause"}</button></div>}
-    <div className={`taxi-location-marquee ${paused?"is-paused":""} ${carousel?"":"is-static"}`}><div className="taxi-location-track">
+    <div className={`taxi-location-marquee ${carousel?"":"is-static"}`}><div className="taxi-location-track">
       {(carousel?[0,1]:[0]).map(group=><div className={`taxi-location-group ${group?"is-copy":""}`} key={group} aria-hidden={group?true:undefined}>
         {Array.from({length:repeats},(_,repeat)=>locationCards.map(location=><article className={`taxi-location-card ${repeat?"is-repeat":""}`} key={`${repeat}-${location.id}`} aria-hidden={repeat?true:undefined}>
           <Link className="taxi-location-detail-link" href={`/locations/${encodeURIComponent(location.slug)}`} aria-label={`View ${location.name}`} tabIndex={group||repeat?-1:undefined}/>
