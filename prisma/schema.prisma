@@ -138,7 +138,7 @@ model Vehicle {
 
 model Fare {
   id        String @id @default(cuid())
-  route     String @unique
+  route     String
   fare      Int?
   maxFare   Int?
   vehicleId String?
@@ -153,6 +153,8 @@ model Fare {
   version   Int @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([route, vehicleId])
 }
 
 model Location {

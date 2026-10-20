@@ -12,9 +12,9 @@ function load(path,require=()=>{throw Error('Unexpected import');}) {
 }
 const links=load('../../src/features/admin/record-links.ts');
 const {modules}=load('../../src/features/admin/data/modules.ts');
-test('Price and Routes exposes only saved locations, a SAR range, caption, status and ride selection',()=>{
+test('Price and Routes exposes locations, prices, homepage featuring, status and ride selection',()=>{
   assert.equal(modules.fares.title,'Price and Routes');
-  assert.equal(modules.fares.fields.map(field=>field.key).join(','),'pickup,destination,fare,maxFare,caption,status,vehicleId');
+  assert.equal(modules.fares.fields.map(field=>field.key).join(','),'pickup,destination,fare,maxFare,caption,featured,status,vehicleId');
   assert.equal(modules.fares.fields.find(field=>field.key==='vehicleId').required,true);
 });
 test('selecting saved rides and customers fills the corresponding booking fields',()=>{
@@ -80,4 +80,14 @@ test('payments require an existing booking and display its actual customer',asyn
   const row={booking:'FR-ONE',customer:'Wrong customer',amount:'250',method:'Cash',status:'Pending',notes:''};
   const f=fixture();const saved=await f.save('payments',row);assert.equal(saved.row.customer,'Customer');assert.equal(f.written().bookingId,'booking1');assert.equal('customer' in f.written(),false);
   await assert.rejects(fixture().save('payments',{...row,booking:'MISSING'}),{status:400});
+});
+
+
+test('homepage featuring is explicitly controlled by the admin checkbox',async()=>{
+  assert.equal(modules.fares.fields.find(field=>field.key==='featured').type,'checkbox');
+  const row={pickup:'Makkah',destination:'Madinah',fare:'250',maxFare:'250',vehicleId:'vehicle1',status:'Active'};
+  const checked=fixture();await checked.save('fares',{...row,featured:'true'});assert.equal(checked.written().featured,true);
+  const unchecked=fixture();await unchecked.save('fares',{...row,featured:'false'});assert.equal(unchecked.written().featured,false);
+  const omitted=fixture();await omitted.save('fares',row);assert.equal(omitted.written().featured,false);
+  await assert.rejects(fixture().save('fares',{...row,featured:'yes'}),/Choose a valid checkbox value/);
 });

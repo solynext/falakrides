@@ -85,6 +85,7 @@ function validate(module: string, input: unknown) {
   for (const field of definition.fields) {
     let schema = clean;
     if (field.required) schema = schema.min(1, `${field.label} is required.`);
+    if (field.type === "checkbox") schema = schema.refine(value => ["", "true", "false"].includes(value), "Choose a valid checkbox value.");
     if (field.type === "email") schema = schema.refine(value => !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value), "Enter a valid email.");
     if (field.type === "tel") schema = schema.refine(value => !value || /^\+?[\d\s()-]+$/.test(value) && value.replace(/\D/g, "").length >= 8 && value.replace(/\D/g, "").length <= 15, "Enter a valid contact number.");
     if (field.type === "number") schema = schema.refine(value => !value || /^\d+(\.\d{1,2})?$/.test(value) && Number(value) <= 10000000, `${field.label} must be a valid non-negative number.`);
@@ -92,7 +93,7 @@ function validate(module: string, input: unknown) {
     if (field.type === "date") schema = schema.refine(value => !value && !field.required || /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)), "Enter a valid date.");
     if (field.key === "image") schema = schema.refine(value => !value || isSafePublicImage(value), "Use a local /images/ path or Unsplash photo ID.");
     if (field.key === "zipCode") schema = schema.max(20).refine(value => !value || /^[a-zA-Z0-9 -]+$/.test(value), "Enter a valid ZIP or postal code.");
-    shape[field.key] = (!field.required && ["category", "description", "image", "caption", "zipCode", "destinations"].includes(field.key) || module === "bookings" && ["email","dropoffDate","dropoffTime"].includes(field.key)) ? schema.optional() : schema;
+    shape[field.key] = (!field.required && ["category", "description", "image", "caption", "zipCode", "destinations", "featured"].includes(field.key) || module === "bookings" && ["email","dropoffDate","dropoffTime"].includes(field.key)) ? schema.optional() : schema;
   }
   shape.id = z.string().optional(); shape._version = z.string().optional(); shape._createdAt = z.string().optional();
   if(module === "bookings") {shape.customerId=clean.optional();shape.fareId=clean.optional();}
@@ -168,7 +169,8 @@ async function mutationData(tx: Prisma.TransactionClient, module: string, row: R
     data.fare=money(row.fare);data.maxFare=money(row.maxFare);
     if(Number(data.maxFare)<Number(data.fare))throw new HttpError(400,"Maximum price must be at least the minimum price.");
   }
-  if (module === "fares" && !existing) {data.featured = true; data.image = row.image || "/images/header-background.jpg";}
+  if (module === "fares") data.featured = row.featured === undefined ? Boolean(existing?.featured) : row.featured === "true";
+  if (module === "fares" && !existing) { data.image = row.image || "/images/header-background.jpg";}
   if (module === "offers") {
     const vehicle=await tx.vehicle.findUnique({where:{id:row.vehicleId}});
     if(!vehicle)throw new HttpError(400,"Select an existing vehicle.");

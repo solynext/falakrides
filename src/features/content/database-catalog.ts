@@ -10,7 +10,7 @@ export async function databaseCatalog() {
   ]);
   return {
     vehicles: vehicles.map(vehicle => ({id: vehicle.id, name: vehicle.name, category: vehicle.category, image: vehicle.image, description: vehicle.description, passengers: vehicle.passengers, bags: vehicle.luggage})),
-    routes: fares.map(fare => {const [from, to = ""] = fare.route.split(/\s*→\s*/); return [from, to, fare.caption, fare.image || "/images/header-background.jpg", fare.fare === null ? "" : String(fare.fare / 100), fare.maxFare == null ? "" : String(fare.maxFare / 100)];}),
+    routes: fares.map(fare => {const [from, to = ""] = fare.route.split(/\s*→\s*/); return [from, to, fare.caption, fare.image || "/images/header-background.jpg", fare.fare === null ? "" : String(fare.fare / 100), fare.maxFare == null ? "" : String(fare.maxFare / 100), fare.vehicleId || "", fare.id, String(fare.featured)];}),
     fares: fares.map(fare => ({route: fare.route, fare: fare.fare === null ? null : fare.fare / 100, maxFare:fare.maxFare == null ? null : fare.maxFare / 100, vehicleId:fare.vehicleId})),
     locations: locations.map(location => location.name),
     locationCards: locations.map(location=>({id:location.id,slug:location.slug,name:location.name,image:location.image,description:location.description,serviceIds:location.serviceIds})),

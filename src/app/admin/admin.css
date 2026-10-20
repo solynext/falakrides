@@ -1140,4 +1140,5 @@
 .admin-app .adm-table .adm-person{display:inline-flex;max-width:230px;min-width:0;vertical-align:middle;white-space:nowrap}
 .admin-app .adm-table .adm-avatar{flex-shrink:0}
 .admin-app .adm-table .adm-cell-text{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.admin-app .adm-table .adm-cell-sub{display:inline;margin-left:6px;white-space:nowrap}
+.admin-app .adm-table .adm-cell-sub{display:inline;margin-left:6px;white-space:nowrap}.adm-dialog-fields label.adm-featured-checkbox{display:flex;align-items:center;gap:10px;align-self:end;min-height:44px;padding:12px;border:1px solid #e1e7d8;border-radius:10px;background:#f7faf2;cursor:pointer}
+.adm-dialog-fields .adm-featured-checkbox input[type=checkbox]{width:18px;height:18px;min-height:0;padding:0;margin:0;accent-color:#7da63e;flex-shrink:0}
