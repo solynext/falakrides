@@ -1,0 +1,72 @@
+.public-site .taxi-steps-section{background:transparent}
+.booking-process{--process-green:#79a944;--process-ink:#1e352e;--process-spring:cubic-bezier(.2,.8,.2,1.15);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px;list-style:none;margin:0;padding:10px 0;isolation:isolate}
+.booking-process-step{position:relative;min-width:0}
+.public-site .booking-process-card{position:relative;display:flex;flex-direction:column;align-items:center;width:100%;height:100%;box-sizing:border-box;padding:24px 25px 28px;border:0;border-radius:0;background:transparent;color:var(--process-ink);box-shadow:none;font:inherit;text-align:center;cursor:pointer;transition:transform .4s var(--process-spring)}
+.public-site .booking-process-replay{position:absolute;inset:0;z-index:1;width:100%;height:100%;padding:0;border:0;border-radius:inherit;background:transparent;cursor:pointer}
+.booking-process-replay:focus-visible{outline:3px solid var(--process-green);outline-offset:5px}
+.booking-process-symbol{position:relative;display:grid;place-items:center;width:112px;height:112px;margin-bottom:25px}
+.booking-process-ring{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke-width:2;transform:rotate(-90deg);overflow:visible}
+.booking-process-ring-track{stroke:#e5ecdf}
+.booking-process-ring-progress{stroke:var(--process-green);stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;animation:booking-process-progress 1.8s cubic-bezier(.22,.6,.35,1) forwards}
+.booking-process-icon,.booking-process-success{position:absolute;display:grid;place-items:center;width:82px;height:82px;border-radius:50%;transition:opacity .3s,transform .4s var(--process-spring),background .4s}
+.booking-process-icon{background:#f0f5e9;color:#87977b}
+.booking-process-success{opacity:0;transform:scale(.75);background:var(--process-green);color:#fff;box-shadow:0 7px 20px #79a94426}
+.booking-process-success svg{width:34px;height:34px;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.booking-process-success path{stroke-dasharray:1;stroke-dashoffset:1}
+.public-site .booking-process-card h3{font-size:23px;line-height:1.35;letter-spacing:-.3px;color:var(--process-ink);margin:0 0 13px}
+.public-site .booking-process-card p{font-size:13px;line-height:1.85;color:#73806d;margin:0 0 24px;max-width:280px}
+.booking-process-status{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:28px;margin-top:auto;padding:4px 12px;border:1px solid transparent;border-radius:999px;font-size:10px;font-weight:500;letter-spacing:.2px;line-height:1.5;color:#899480;transition:color .4s,background .4s,border-color .4s}
+.booking-process-step[data-state=processing] .booking-process-icon{color:#6e9b39;animation:booking-process-breathe 1.8s ease-in-out infinite}
+.booking-process-step[data-state=processing] .booking-process-icon>svg{animation:booking-process-pin 1.8s ease-in-out both}
+.booking-process-step:nth-child(2)[data-state=processing] .booking-process-icon>svg{animation-name:booking-process-clock}
+.booking-process-step:nth-child(3)[data-state=processing] .booking-process-icon>svg{animation-name:booking-process-car}
+.booking-process-step[data-state=processing] .booking-process-status{color:#648d37;background:transparent;border-color:transparent}
+.booking-process-step[data-state=completed] .booking-process-icon{opacity:0;transform:scale(.7)}
+.booking-process-step[data-state=completed] .booking-process-success{opacity:1;transform:scale(1)}
+.booking-process-step[data-state=completed] .booking-process-success path{animation:booking-process-check .4s ease-out forwards}
+.booking-process-step[data-state=completed] .booking-process-status{color:#5c8735;background:transparent;border-color:transparent}
+.booking-process-connection{position:absolute;z-index:2;top:80px;left:calc(100% - 1px);width:38px;height:2px;background:#dce6d3;pointer-events:none}
+.booking-process-connection-fill{position:absolute;inset:0;background:var(--process-green);transform:scaleX(0);transform-origin:left}
+.booking-process-connection[data-flowing=true] .booking-process-connection-fill{animation:booking-process-connect .6s ease-in-out forwards}
+.booking-process-connection[data-completed=true] .booking-process-connection-fill{transform:scaleX(1)}
+.booking-process-particle{position:absolute;top:-2px;left:0;width:6px;height:6px;border-radius:50%;background:#9dcf6a;box-shadow:0 0 9px 3px #8bbd5755;opacity:0}
+.booking-process-connection[data-flowing=true] .booking-process-particle{animation:booking-process-travel .6s ease-in-out forwards}
+.booking-process-step[data-celebrate=true] .booking-process-success{animation:booking-process-success-pop .4s var(--process-spring) both}
+.booking-process[data-phase=entrance] .booking-process-card{animation:booking-process-enter .6s var(--process-spring) both;animation-delay:calc(var(--step-index)*.1s)}
+.booking-process[data-playing=false] *,.booking-process[data-playing=false] *::before,.booking-process[data-playing=false] *::after{animation-play-state:paused!important}
+@media(hover:hover){.booking-process-card:hover{transform:translateY(-6px)}}
+@keyframes booking-process-progress{to{stroke-dashoffset:0}}
+@keyframes booking-process-check{to{stroke-dashoffset:0}}
+@keyframes booking-process-connect{to{transform:scaleX(1)}}
+@keyframes booking-process-travel{0%{opacity:0;left:0}20%{opacity:1}80%{opacity:1}100%{opacity:0;left:100%}}
+@keyframes booking-process-breathe{0%,100%{box-shadow:0 0 0 0 #79a94400}50%{box-shadow:0 0 0 9px #79a94410}}
+@keyframes booking-process-pin{0%{opacity:.4;transform:scale(.8)}40%,100%{opacity:1;transform:scale(1)}}
+@keyframes booking-process-clock{0%{transform:rotate(-15deg)}45%{transform:rotate(10deg)}100%{transform:rotate(0)}}
+@keyframes booking-process-car{0%{transform:translateX(-6px);opacity:.4}55%{transform:translateX(4px);opacity:1}100%{transform:translateX(0)}}
+@keyframes booking-process-enter{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes booking-process-ripple{from{box-shadow:0 0 0 0 #79a94433}to{box-shadow:0 0 0 16px #79a94400}}
+@media(max-width:900px) and (min-width:761px){.booking-process{gap:24px}.public-site .booking-process-card{padding-inline:16px}.booking-process-connection{width:26px}.public-site .booking-process-card h3{font-size:21px}}
+@media(max-width:760px){.booking-process{grid-template-columns:1fr;gap:30px;max-width:460px;margin-inline:auto}.public-site .booking-process-card{padding:22px 24px 26px}.booking-process-symbol{margin-bottom:20px}.booking-process-connection{top:100%;left:50%;width:2px;height:30px}.booking-process-connection-fill{transform:scaleY(0);transform-origin:top}.booking-process-connection[data-flowing=true] .booking-process-connection-fill{animation-name:booking-process-connect-vertical}.booking-process-connection[data-completed=true] .booking-process-connection-fill{transform:scaleY(1)}.booking-process-particle{top:0;left:-2px}.booking-process-connection[data-flowing=true] .booking-process-particle{animation-name:booking-process-travel-vertical}}
+@keyframes booking-process-connect-vertical{to{transform:scaleY(1)}}
+@keyframes booking-process-travel-vertical{0%{opacity:0;top:0}20%,80%{opacity:1}100%{opacity:0;top:100%}}
+@media(prefers-reduced-motion:reduce){.booking-process *{animation:none!important;transition:none!important}.booking-process-card:hover{transform:none}.booking-process-success path{stroke-dashoffset:0}.booking-process-particle{display:none}}
+
+/* Fine orbit accents and traveling light keep the open layout connected. */
+.booking-process-orbit{position:absolute;inset:-8px;border:1px solid transparent;border-radius:50%;opacity:0;pointer-events:none}
+.booking-process-orbit::before,.booking-process-orbit::after{content:"";position:absolute;inset:0;border:1px solid transparent;border-top-color:#83ad4b;border-radius:50%;transform:rotate(35deg)}
+.booking-process-orbit::after{inset:5px;border-top-color:transparent;border-bottom-color:#b9d49b;transform:rotate(-20deg)}
+.booking-process-step[data-state=processing] .booking-process-orbit{opacity:1;animation:booking-process-orbit 1.8s cubic-bezier(.35,.05,.4,1) both}
+.booking-process-symbol::after{content:"";position:absolute;inset:8px;border:1px solid #89b45b;border-radius:50%;opacity:0;pointer-events:none}
+.booking-process-step[data-celebrate=true] .booking-process-symbol::after{animation:booking-process-success-wave .65s ease-out both}
+.booking-process-step[data-state=completed] .booking-process-ring-track{stroke:#c2d9aa;transition:stroke .4s}
+.booking-process[data-phase=finished] .booking-process-symbol{animation:booking-process-settle .65s var(--process-spring) both;animation-delay:calc(var(--step-index)*.08s)}
+.booking-process-step:nth-child(3)[data-state=processing] .booking-process-icon::after{content:"";position:absolute;left:15px;right:15px;bottom:21px;height:1px;background:repeating-linear-gradient(90deg,#9ebb7c 0 5px,transparent 5px 11px);animation:booking-process-road .45s linear infinite}
+@media(min-width:761px){.booking-process-connection{left:calc(50% + 66px);width:calc(100% - 96px);height:1px;background:repeating-linear-gradient(90deg,#dce6d3 0 5px,transparent 5px 10px)}.booking-process-particle{top:-1px;width:30px;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,#91ba60);box-shadow:4px 0 10px #8bbd5744}.booking-process-connection[data-flowing=true] .booking-process-particle{animation-name:booking-process-light-travel}}
+@keyframes booking-process-orbit{0%{transform:rotate(-110deg) scale(.92);opacity:0}15%{opacity:.8}85%{opacity:.8}100%{transform:rotate(250deg) scale(1);opacity:0}}
+@keyframes booking-process-success-pop{0%{transform:scale(.72);opacity:.2}65%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes booking-process-success-wave{0%{transform:scale(.85);opacity:.6}100%{transform:scale(1.45);opacity:0}}
+@keyframes booking-process-settle{0%{transform:translateY(0)}45%{transform:translateY(-4px)}100%{transform:translateY(0)}}
+@keyframes booking-process-road{to{background-position:-11px 0}}
+@keyframes booking-process-light-travel{0%{left:0;transform:translateX(-100%);opacity:0}15%,85%{opacity:1}100%{left:100%;transform:translateX(-100%);opacity:0}}
+@media(hover:hover){.booking-process-card:hover .booking-process-symbol{transform:translateY(-3px);transition:transform .4s var(--process-spring)}}
+@media(prefers-reduced-motion:reduce){.booking-process-orbit{display:none}.booking-process-symbol::after,.booking-process-icon::after{display:none}.booking-process-card:hover .booking-process-symbol{transform:none}}
