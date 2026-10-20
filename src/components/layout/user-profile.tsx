@@ -30,8 +30,8 @@ export default function UserProfile() {
   const dialog = useRef<HTMLDialogElement>(null);
   const photoInput = useRef<HTMLInputElement>(null);
   const id = useId();
-  const confirmClose = useUnsavedChanges(editing && (fieldsDirty || image !== profile.image || loadingImage), () => {imageRequest.current++; setLoadingImage(false); setFieldsDirty(false); setImage(profile.image); dialog.current?.querySelector("form")?.reset();});
-  function closeProfile() {if (saving) return; confirmClose(() => {imageRequest.current++; setLoadingImage(false); setEditing(false); dialog.current?.close();});}
+  useUnsavedChanges(editing && (fieldsDirty || image !== profile.image || loadingImage), () => {imageRequest.current++; setLoadingImage(false); setFieldsDirty(false); setImage(profile.image); dialog.current?.querySelector("form")?.reset();});
+  function closeProfile() {if (saving) return; imageRequest.current++; setLoadingImage(false); setFieldsDirty(false); setImage(profile.image); dialog.current?.querySelector("form")?.reset(); setEditing(false); dialog.current?.close();}
   const initials = profile.name.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("").toUpperCase();
   useEffect(() => {let active = true; api<typeof emptyProfile>("/api/profile").then(async current => {if (!current.name) {try {const legacy = JSON.parse(localStorage.getItem(storageKey) || "null"); if (legacy?.name) current = await api<typeof emptyProfile>("/api/profile", {method: "PUT", body: JSON.stringify({...emptyProfile, ...legacy, version: current.version})});} catch { /* Keep the server profile if an old device profile is unavailable. */ }} if (active) setProfile(current);}).catch(() => {}).finally(() => {if (active) setProfileLoaded(true);}); return () => {active = false;};}, []);
 

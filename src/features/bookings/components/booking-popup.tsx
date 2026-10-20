@@ -3,7 +3,6 @@
 import {useEffect, useRef, useState} from "react";
 import BrandLogo from "@/components/ui/brand-logo";
 import Icon from "@/components/ui/icon";
-import {useConfirmNavigation} from "@/components/forms/unsaved-changes";
 import Booking from "./booking";
 import "./booking-popup.css";
 
@@ -14,8 +13,7 @@ export default function BookingPopup() {
   const trigger = useRef<HTMLElement | null>(null);
   const [open, setOpen] = useState(false);
   const [preference, setPreference] = useState<Preference>({});
-  const confirm = useConfirmNavigation();
-  function close() {confirm(() => dialog.current?.close());}
+  function close() {setOpen(false); dialog.current?.close();}
   useEffect(() => {
     function show(preference: Preference, source: HTMLElement | null) {
       if (dialog.current?.open) return;

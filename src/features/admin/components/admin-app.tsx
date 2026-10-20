@@ -97,8 +97,8 @@ function RecordDialog({moduleKey,record,definition,drivers,vehicles,locations,se
     finally {setWorking(false);}
   }
   async function perform(action: () => Promise<void>) {if (working || !editable) return; setWorking(true); setRequestError(""); try {await action();} catch (error) {setRequestError(error instanceof Error ? error.message : "Unable to save. Please try again.");} finally {setWorking(false);}}
-  const confirmClose = useUnsavedChanges(JSON.stringify(draft) !== JSON.stringify(record), () => setDraft({...record}));
-  const closeEditor = () => {if (!working) confirmClose(onClose);};
+  useUnsavedChanges(JSON.stringify(draft) !== JSON.stringify(record), () => setDraft({...record}));
+  const closeEditor = () => {if (!working) onClose();};
   const [confirmDelete,setConfirmDelete]=useState(false);
   const [receipt,setReceipt]=useState(false);
   useEffect(()=>{const element=dialog.current;if(element && !element.open) element.showModal();return ()=>element?.close();},[]);

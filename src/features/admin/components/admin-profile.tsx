@@ -22,9 +22,9 @@ export default function AdminProfile({onNavigate}: {onNavigate: (section: string
   const trigger = useRef<HTMLButtonElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const [dirty, setDirty] = useState(false);
-  const confirmClose = useUnsavedChanges(dirty, () => {setDirty(false); dialog.current?.querySelector("form")?.reset();});
+  useUnsavedChanges(dirty, () => {setDirty(false); dialog.current?.querySelector("form")?.reset();});
   const confirmNavigation = useConfirmNavigation();
-  function closeProfile() {confirmClose(() => dialog.current?.close());}
+  function closeProfile() {setDirty(false); dialog.current?.querySelector("form")?.reset(); dialog.current?.close();}
   const initials = profile.name.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("").toUpperCase();
   useEffect(() => {let active = true; api<typeof profile>("/api/admin/profile").then(result => {if (active) setProfile(result);}).catch(() => {}); return () => {active = false;};}, []);
 

@@ -1,2 +1,13 @@
 import type {MetadataRoute} from "next";
-export default function robots():MetadataRoute.Robots {const base=process.env.SITE_URL;return {rules:{userAgent:"*",...(base?{allow:"/"}:{disallow:"/"})},...(base?{sitemap:`${base.replace(/\/$/,"")}/sitemap.xml`}:{})};}
+
+export default function robots(): MetadataRoute.Robots {
+  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "").trim().replace(/\/+$/, "");
+  return {
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      disallow: ["/admin", "/api", "/login", "/booking-confirmation"],
+    },
+    sitemap: `${base}/sitemap.xml`,
+  };
+}

@@ -76,6 +76,5 @@ export default function PriceRouteCards({featuredOnly = true}: {featuredOnly?: b
 
   return <section ref={carousel} className="taxi-price-carousel" aria-label="Prices and routes" aria-roledescription="carousel">
     <div className="taxi-price-grid" id={trackId} ref={track} onPointerDown={startDrag} onPointerMove={dragMove} onPointerUp={endDrag} onPointerCancel={endDrag} onLostPointerCapture={endDrag} onDragStart={event => event.preventDefault()} onClickCapture={event => {if (Date.now() < suppressClickUntil.current) {event.preventDefault(); event.stopPropagation();}}} onWheel={() => {manualUntil.current = Date.now() + 8000;}} tabIndex={0} role="group" aria-label="Available rides" onKeyDown={event => {if (event.target !== event.currentTarget) return; if (event.key === "ArrowLeft" || event.key === "ArrowRight") {event.preventDefault(); move(event.key === "ArrowLeft" ? -1 : 1);}}}>{routes.map((route, index) => <PriceRouteCard key={route[7] || `${route[0]}:${route[1]}:${route[6]}`} route={route} vehicle={vehicles.find(vehicle => vehicle.id === route[6])} slide={`${index + 1} of ${routes.length}`}/>)}</div>
-    {featuredOnly && <div className="taxi-price-see-all"><Link href="/routes">See all prices <Icon size={16}/></Link></div>}
   </section>;
 }

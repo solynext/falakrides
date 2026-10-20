@@ -39,3 +39,10 @@
 
 .taxi-price-grid[data-dragging=true]{scroll-snap-type:none;cursor:grabbing;user-select:none}
 .taxi-price-grid[data-dragging=true] a{pointer-events:none}
+
+#prices-and-routes{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:24px}
+.public-site #prices-and-routes>.taxi-section-heading{grid-column:1/-1;grid-row:1;width:100%;max-width:none;box-sizing:border-box;padding-inline:170px;margin-inline:auto;text-align:center}
+#prices-and-routes>.taxi-price-see-all{grid-column:2;grid-row:1;align-self:start;margin-top:0}
+#prices-and-routes>.taxi-price-carousel,#prices-and-routes>.taxi-note{grid-column:1/-1}
+@media(max-width:850px){.public-site #prices-and-routes>.taxi-section-heading{grid-row:2;padding-inline:0;margin-top:20px}#prices-and-routes>.taxi-price-see-all{justify-self:end}}
+@media(max-width:540px){#prices-and-routes{column-gap:12px}#prices-and-routes>.taxi-price-see-all a{padding:9px 12px;font-size:12px}}

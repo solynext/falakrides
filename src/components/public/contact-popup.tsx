@@ -17,8 +17,8 @@ export default function ContactPopup({open, onClose}: {open: boolean; onClose: (
   const youtube = useContentValue("contact.youtube", "");
   const [dirty, setDirty] = useState(false);
   const [status, setStatus] = useState("");
-  const confirmClose = useUnsavedChanges(open && dirty, () => {form.current?.reset(); setDirty(false);});
-  const close = () => confirmClose(() => dialog.current?.close());
+  useUnsavedChanges(open && dirty, () => {form.current?.reset(); setDirty(false);});
+  const close = () => {form.current?.reset(); setDirty(false); setStatus(""); dialog.current?.close();};
 
   useEffect(() => {
     const element = dialog.current;
