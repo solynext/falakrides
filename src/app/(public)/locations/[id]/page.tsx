@@ -25,10 +25,19 @@ const findLocation=cache(async(id:string)=>{
 type Props={params:Promise<{id:string}>};
 
 function locationSeo(location:{slug:string;name:string;description:string}) {
-  const airportName=location.name.toLowerCase();
-  if(location.slug===canonicalJeddahAirportSlug||airportName.includes("jeddah airport"))return {title:"Jeddah Airport Taxi to Makkah | Falak Rides",description:"Arrange a private Jeddah Airport taxi to Makkah hotels, Madinah or Jeddah, with pickup details and vehicle requirements agreed in advance."};
-  if(airportName.includes("madinah airport"))return {title:"Madinah Airport Taxi Transfers | Falak Rides",description:"Arrange a private Madinah Airport taxi transfer to Madinah hotels or onward to Makkah, with pickup time and vehicle requirements agreed in advance."};
-  return {title:`${location.name} Private Taxi | Falak Rides`,description:location.description};
+  const name=location.name.trim();
+  const normalized=name.toLowerCase();
+  const description=`Private taxi and transfers in ${name}. Airport pickups, Umrah and Ziyarat rides. Request a quote on WhatsApp.`;
+  if(normalized.includes("jeddah airport"))return {title:"Jeddah Airport to Makkah Taxi | Falak Rides",h1:"Jeddah Airport Private Taxi and Transfers",description,schemaName:"Jeddah Airport Taxi to Makkah",schemaDescription:"Arrange a private Jeddah Airport taxi to Makkah hotels, Madinah or Jeddah, with pickup details and vehicle requirements agreed in advance."};
+  if(normalized.includes("madinah airport"))return {title:"Madinah Airport Transfers | Falak Rides",h1:"Madinah Airport to Hotel Transfers",description,schemaName:"Madinah Airport Taxi Transfers",schemaDescription:"Arrange a private Madinah Airport taxi transfer to Madinah hotels or onward to Makkah, with pickup time and vehicle requirements agreed in advance."};
+  if(normalized==="makkah")return {title:"Makkah Taxi Service | Falak Rides",h1:"Private Taxi Service in Makkah",description,schemaName:`${location.name} Private Taxi`,schemaDescription:location.description};
+  if(normalized==="madinah")return {title:"Madinah Taxi Service | Falak Rides",h1:"Private Taxi Service in Madinah",description,schemaName:`${location.name} Private Taxi`,schemaDescription:location.description};
+  if(normalized==="jeddah")return {title:"Jeddah Taxi Service | Falak Rides",h1:"Private Taxi Service in Jeddah",description,schemaName:`${location.name} Private Taxi`,schemaDescription:location.description};
+  if(normalized.includes("makkah ziyarat"))return {title:"Makkah Ziyarat Taxi | Falak Rides",h1:"Private Makkah Ziyarat Taxi",description,schemaName:`${location.name} Private Taxi`,schemaDescription:location.description};
+  if(normalized.includes("madinah ziyarat"))return {title:"Madinah Ziyarat Taxi | Falak Rides",h1:"Private Madinah Ziyarat Taxi",description,schemaName:`${location.name} Private Taxi`,schemaDescription:location.description};
+  const matchesNamedLocation=/\b(taif|miqat|jeddah tours?|kiswa factory|hotel)\b/i.test(name);
+  if(matchesNamedLocation)return {title:`${name} Taxi and Transfers | Falak Rides`,h1:`Private Taxi to ${name}`,description,schemaName:`${location.name} Private Taxi`,schemaDescription:location.description};
+  return {title:`${location.name} Private Taxi | Falak Rides`,h1:location.name,description:location.description,schemaName:`${location.name} Private Taxi`,schemaDescription:location.description};
 }
 
 export async function generateMetadata({params}:Props):Promise<Metadata> {
@@ -45,7 +54,7 @@ export default async function LocationPage({params}:Props) {
   const related=services.filter(service=>service.visible&&location.serviceIds.includes(service.id));
   const destinations=location.destinations.split(/\r?\n/).map(item=>item.trim()).filter(Boolean);
   const seo=locationSeo(location);
-  return <><JsonLd data={{"@context":"https://schema.org","@type":"Service","@id":absoluteUrl(`/locations/${location.slug}#service`),url:absoluteUrl(`/locations/${location.slug}`),name:seo.title.replace(/ \| Falak Rides$/, ""),description:seo.description,image:absoluteImageUrl(location.image||"/images/header-background.jpg"),provider:{"@id":absoluteUrl("/#organization")},areaServed:location.name}}/><PublicPage title={location.name} description="Private transportation to and from this location.">
+  return <><JsonLd data={{"@context":"https://schema.org","@type":"Service","@id":absoluteUrl(`/locations/${location.slug}#service`),url:absoluteUrl(`/locations/${location.slug}`),name:seo.schemaName,description:seo.schemaDescription,image:absoluteImageUrl(location.image||"/images/header-background.jpg"),provider:{"@id":absoluteUrl("/#organization")},areaServed:location.name}}/><PublicPage title={seo.h1} description="Private transportation to and from this location.">
     <div className="taxi-detail-split"><div>{location.image&&<Image src={photo(location.image)} alt={location.name} fill priority sizes="(max-width: 760px) 90vw, 45vw"/>}</div><div>
       <span className="taxi-eyebrow">Our Locations</span><h2>{location.name}</h2><p style={{whiteSpace:"pre-line"}}>{location.description}</p>
       <Link className="taxi-button" href={`/book-a-ride?pickup=${encodeURIComponent(location.name)}`}>{copy.bookNow}</Link>
