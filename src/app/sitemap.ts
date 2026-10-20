@@ -1,6 +1,7 @@
 import type {MetadataRoute} from "next";
 import {readContent} from "@/features/content/store";
 import {websiteFromValues} from "@/features/content/website-model";
+import {absoluteUrl,publicPath} from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,6 @@ function isPublicRecord(record: {slug: string; visible?: boolean; status?: strin
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "").trim().replace(/\/+$/, "");
   const paths = new Set([
     "/", "/about", "/gallery", "/contact", "/book-a-ride", "/services",
     "/routes", "/vehicles", "/offers", "/packages", "/faq", "/policies",
@@ -29,13 +29,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...(catalog?.locationCards ?? []).filter(isPublicRecord)
         .map(item => `/locations/${encodeURIComponent(item.slug)}`),
     ];
-    dynamicPaths.forEach(path => paths.add(path));
+    dynamicPaths.forEach(path => paths.add(publicPath(path)));
   } catch (error) {
     console.error("Failed to fetch dynamic sitemap content; returning static pages.", error);
   }
 
   return Array.from(paths, path => ({
-    url: `${base}${path}`,
+    url: absoluteUrl(path),
     changeFrequency: "monthly",
     priority: path === "/" ? 1 : 0.3,
   }));
