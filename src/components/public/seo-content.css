@@ -1,0 +1,21 @@
+.public-site .seo-breadcrumbs { margin: 0 0 32px; font-size: 13px; }
+.public-site .seo-breadcrumbs ol { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
+.public-site .seo-breadcrumbs li + li::before { content: "/"; margin-right: 8px; color: var(--taxi-muted); }
+.public-site .seo-breadcrumbs a,.public-site .seo-content a,.public-site .seo-guide-card a { color: #527c28; text-decoration: underline; text-underline-offset: 3px; }
+.public-site .seo-content { max-width: 900px; margin-inline: auto; }
+.public-site .seo-content section { margin: 0 0 38px; }
+.public-site .seo-content h2 { font-size: clamp(26px, 3vw, 34px); line-height: 1.2; margin: 0 0 14px; }
+.public-site .seo-content h3 { font-size: 22px; line-height: 1.25; margin: 0 0 10px; }
+.public-site .seo-content p { margin: 0 0 14px; }
+.public-site .seo-content ul,.public-site .seo-content ol { display: grid; gap: 9px; margin: 0 0 18px; padding-left: 24px; color: var(--taxi-dark); line-height: 1.7; }
+.public-site .seo-fare-list,.public-site .seo-guide-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin: 20px 0; }
+.public-site .seo-fare-card,.public-site .seo-guide-card { border: 1px solid #e5e8e1; border-radius: 8px; background: #fff; padding: 20px; }
+.public-site .seo-fare-card p:last-child,.public-site .seo-guide-card p:last-child { margin-bottom: 0; }
+.public-site .seo-fare-card strong { color: var(--taxi-dark); }
+.public-site .seo-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; }
+.public-site .seo-actions .taxi-text-link { margin: 0; }
+.public-site .seo-related-links { list-style: disc; }
+.public-site .seo-guide-card h2 { font-size: 24px; margin-bottom: 10px; }
+.public-site .seo-guide-card h2 a { text-decoration: none; }
+.public-site .seo-guide-article section { margin-bottom: 32px; }
+@media(max-width:700px) { .public-site .seo-fare-list,.public-site .seo-guide-grid { grid-template-columns: 1fr; } .public-site .seo-content section { margin-bottom: 30px; } }

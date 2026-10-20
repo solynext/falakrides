@@ -1,6 +1,7 @@
 import type {MetadataRoute} from "next";
 import {readContent} from "@/features/content/store";
 import {websiteFromValues} from "@/features/content/website-model";
+import {travelGuides} from "@/features/seo/travel-guides";
 import {absoluteUrl,publicPath} from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -16,8 +17,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const paths = new Set([
     "/", "/about", "/gallery", "/contact", "/book-a-ride", "/services",
     "/routes", "/vehicles", "/offers", "/packages", "/faq", "/policies",
+    "/umrah-taxi-prices", "/premium-umrah-transport",
+    "/jeddah-airport-to-makkah-taxi", "/makkah-to-madinah-taxi",
+    "/madinah-to-jeddah-airport-transfer", "/travel-guides",
     "/privacy", "/terms",
   ]);
+  travelGuides.forEach(guide => paths.add(`/travel-guides/${encodeURIComponent(guide.slug)}`));
 
   try {
     // The standard fetcher loads published services, vehicle packages, and locations.
