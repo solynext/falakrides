@@ -19,13 +19,18 @@ export function siteOrigin() {
   return normalizeOrigin(
     process.env.SITE_URL ||
     process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-    process.env.VERCEL_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
   ) || FALLBACK_ORIGIN;
 }
 
 export function absoluteUrl(path = "/") {
   return new URL(path, `${siteOrigin()}/`).toString();
+}
+
+export function absoluteImageUrl(image: string) {
+  if (/^https:\/\//i.test(image)) return image;
+  if (image.startsWith("/")) return absoluteUrl(image);
+  return `https://images.unsplash.com/${image}?auto=format&fit=crop&w=1200&q=85`;
 }
 
 export function publicPath(path: string) {
@@ -37,7 +42,7 @@ export function publicPath(path: string) {
 
 export function pageMetadata({title,description,path,image = DEFAULT_IMAGE}: {title:string;description:string;path:string;image?:string}): Metadata {
   const canonical = absoluteUrl(publicPath(path));
-  const imageUrl = absoluteUrl(image);
+  const imageUrl = absoluteImageUrl(image);
   return {
     title, description,
     alternates: {canonical},
@@ -46,6 +51,6 @@ export function pageMetadata({title,description,path,image = DEFAULT_IMAGE}: {ti
   };
 }
 
-export function jsonLd(value: Record<string, unknown>) {
+export function jsonLd(value: unknown) {
   return JSON.stringify(value).replace(/</g, "\\u003c");
 }

@@ -2,8 +2,9 @@ import {ContentText} from "@/features/content/public-content";
 import PublicPage from "@/components/layout/public-page";
 import Link from "next/link";
 import Icon from "@/components/ui/icon";
+import {pageMetadata} from "@/lib/seo";
 
-export const metadata = {title: "Policies | Falak Rides", description: "Privacy, terms, refunds and cancellation information."};
+export const metadata = pageMetadata({title:"Policies | Falak Rides",description:"Privacy, terms, refunds and cancellation information.",path:"/policies"});
 
 export default function Page() {
   return <PublicPage title={<ContentText id="ui.policies.1" fallback="Policies"/>} description={<ContentText id="ui.policies.12" fallback="Privacy, terms, refunds and cancellation information."/>} >

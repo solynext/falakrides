@@ -15,6 +15,7 @@ function fixture(record,services=[]) {
     if(name==="@/features/content/store")return {readContent:async()=>({published:{}})};
     if(name==="@/features/content/website-model")return {websiteFromValues:()=>({services,copy:{bookNow:"Book now",learnMore:"Learn more"}})};
     if(name==="@/utils/images")return {photo:value=>value};
+    if(name==="@/lib/seo")return {absoluteImageUrl:value=>value,absoluteUrl:value=>`https://falak-ride.vercel.app${value}`,pageMetadata:value=>value};
     return {};
   };
   vm.runInNewContext(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText,{exports,require});
@@ -23,13 +24,13 @@ function fixture(record,services=[]) {
 test("location metadata resolves its own active location",async()=>{
   const f=fixture({id:"makkah",name:"Makkah",description:"Private hotel transfers.",status:"Active"});
   const metadata=await f.exports.generateMetadata({params:Promise.resolve({id:"makkah"})});
-  assert.equal(metadata.title,"Makkah | Falak Rides");assert.equal(metadata.description,"Private hotel transfers.");
+  assert.equal(metadata.title,"Makkah Private Taxi | Falak Rides");assert.equal(metadata.description,"Private hotel transfers.");
   assert.equal(f.queries[0].OR[0].slug,"makkah");assert.equal(f.queries[0].status,"Active");
 });
 test("name-based location URLs resolve and old ID links redirect",async()=>{
   const f=fixture({id:"old-id",slug:"makkah-a1b2c",name:"Makkah",description:"Transfers",status:"Active"});
   const metadata=await f.exports.generateMetadata({params:Promise.resolve({id:"makkah-a1b2c"})});
-  assert.equal(metadata.title,"Makkah | Falak Rides");
+  assert.equal(metadata.title,"Makkah Private Taxi | Falak Rides");
   await assert.rejects(f.exports.generateMetadata({params:Promise.resolve({id:"old-id"})}),{url:"/locations/makkah-a1b2c"});
 });
 test("Related Service shows only the published services selected for this location",async()=>{
@@ -44,6 +45,11 @@ test("Related Service shows only the published services selected for this locati
   assert.ok(output.includes("/services/selected-service"));
   assert.ok(!output.includes("Unrelated service"));
   assert.ok(!output.includes("Draft service"));
+});
+test("duplicate Jeddah Airport public slug redirects without changing or querying either record",async()=>{
+  const f=fixture({id:"kept-duplicate-record",slug:"jeddah-airport-jed-b4dd7",name:"Jeddah Airport",description:"Jeddah Airport",status:"Active"});
+  await assert.rejects(f.exports.generateMetadata({params:Promise.resolve({id:"jeddah-airport-jed-b4dd7"})}),{url:"/locations/jeddah-airport"});
+  assert.equal(f.queries.length,0);
 });
 test("missing, draft and inactive locations cannot open public detail pages",async()=>{
   for(const status of ["Draft","Inactive",undefined]) {

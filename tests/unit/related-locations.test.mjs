@@ -11,6 +11,7 @@ function render(locations) {
     if(name==="react/jsx-runtime")return {jsx:(type,props)=>({type,props}),jsxs:(type,props)=>({type,props})};
     if(name==="@/features/content/public-content")return {useSiteCatalog:()=>({locationCards:locations}),useWebsite:()=>({copy:{bookNow:"Book now"}})};
     if(name==="react")return {useState:value=>[value,()=>{}]};
+    if(name==="@/lib/seo")return {publicPath:value=>value};
     return {};
   };
   vm.runInNewContext(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText,{exports,require});
