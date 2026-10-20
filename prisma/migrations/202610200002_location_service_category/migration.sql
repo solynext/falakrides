@@ -1,0 +1,1 @@
+ALTER TABLE "Location" ADD COLUMN "serviceId" TEXT NOT NULL DEFAULT '';

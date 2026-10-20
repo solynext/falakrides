@@ -13,6 +13,7 @@ export async function databaseCatalog() {
     routes: fares.map(fare => {const [from, to = ""] = fare.route.split(/\s*→\s*/); return [from, to, fare.caption, fare.image || "/images/header-background.jpg", fare.fare === null ? "" : String(fare.fare / 100), fare.maxFare == null ? "" : String(fare.maxFare / 100)];}),
     fares: fares.map(fare => ({route: fare.route, fare: fare.fare === null ? null : fare.fare / 100, maxFare:fare.maxFare == null ? null : fare.maxFare / 100, vehicleId:fare.vehicleId})),
     locations: locations.map(location => location.name),
+    locationCards: locations.map(location=>({id:location.id,slug:location.slug,name:location.name,image:location.image,description:location.description,serviceIds:location.serviceIds})),
     offers: offers.map(offer => ({id: offer.id, title: offer.name, image:offer.vehicle?.image || "", route: offer.route, discountPercent: offer.discount, validUntil: offer.validUntil, terms: offer.terms})),
     reviews: reviews.map(review => ({id: review.id, name: review.customer, rating: review.rating ?? 0, text: review.message})),
   };

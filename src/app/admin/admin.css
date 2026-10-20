@@ -1119,3 +1119,25 @@
 
 .adm-offer-vehicle-image { display: grid; justify-items: start; gap: 8px; font-size: 13px; font-weight: 500; }
 .adm-offer-vehicle-image small { color: var(--adm-muted); font-weight: 400; }
+.admin-app .adm-rating-field{grid-column:1/-1;min-width:0;margin:0;padding:0;border:0;display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.admin-app .adm-rating-field legend{padding:0;font-size:14px;font-weight:500;color:var(--adm-ink)}
+.admin-app .adm-rating-stars{display:flex;align-items:center;gap:5px}
+.admin-app .adm-rating-stars button{width:44px;height:44px;padding:0;border:1px solid transparent;border-radius:14px;background:transparent;color:#d8d9d5;font-size:29px;line-height:1;transition:background .2s ease,color .2s ease,transform .2s cubic-bezier(.2,.8,.2,1),border-color .2s ease,text-shadow .2s ease}
+.admin-app .adm-rating-stars button.selected{color:#f4b740;text-shadow:0 2px 10px #f4b74066;animation:adm-star-pop .34s cubic-bezier(.2,.8,.2,1) both}
+.admin-app .adm-rating-stars button:hover{transform:translateY(-3px) scale(1.12);color:#f4b740;text-shadow:0 2px 12px #f4b74088;background:#fff8e7;border-color:#f4d995}
+.admin-app .adm-rating-stars:has(button:nth-child(1):hover) button:nth-child(-n+1),.admin-app .adm-rating-stars:has(button:nth-child(2):hover) button:nth-child(-n+2),.admin-app .adm-rating-stars:has(button:nth-child(3):hover) button:nth-child(-n+3),.admin-app .adm-rating-stars:has(button:nth-child(4):hover) button:nth-child(-n+4),.admin-app .adm-rating-stars:has(button:nth-child(5):hover) button:nth-child(-n+5){color:#f4b740;text-shadow:0 2px 10px #f4b74066}
+.admin-app .adm-rating-stars:has(button:nth-child(1):hover) button:nth-child(-n+1):hover,.admin-app .adm-rating-stars:has(button:nth-child(2):hover) button:nth-child(-n+2):hover,.admin-app .adm-rating-stars:has(button:nth-child(3):hover) button:nth-child(-n+3):hover,.admin-app .adm-rating-stars:has(button:nth-child(4):hover) button:nth-child(-n+4):hover,.admin-app .adm-rating-stars:has(button:nth-child(5):hover) button:nth-child(-n+5):hover{color:#f4b740}
+.admin-app .adm-rating-stars button:nth-child(1){animation-delay:0ms}.admin-app .adm-rating-stars button:nth-child(2){animation-delay:35ms}.admin-app .adm-rating-stars button:nth-child(3){animation-delay:70ms}.admin-app .adm-rating-stars button:nth-child(4){animation-delay:105ms}.admin-app .adm-rating-stars button:nth-child(5){animation-delay:140ms}
+@keyframes adm-star-pop{0%{transform:scale(.72) rotate(-12deg)}65%{transform:scale(1.18) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
+@media(prefers-reduced-motion:reduce){.admin-app .adm-rating-stars button{transition:none;animation:none!important}.admin-app .adm-rating-stars button:hover{transform:none}}
+.admin-app .adm-rating-stars button:focus-visible{outline:2px solid var(--adm-green);outline-offset:3px}
+.admin-app .adm-rating-field:disabled .adm-rating-stars button{cursor:not-allowed}
+.admin-app .adm-rating-caption{min-height:18px;color:var(--adm-muted);font-size:12px;font-weight:400}
+
+/* Keep every admin table row compact; full values remain in cell tooltips. */
+.admin-app .adm-table :is(th,td):not(:last-child){white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
+.admin-app .adm-table .adm-location-description{white-space:nowrap;min-width:0;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+.admin-app .adm-table .adm-person{display:inline-flex;max-width:230px;min-width:0;vertical-align:middle;white-space:nowrap}
+.admin-app .adm-table .adm-avatar{flex-shrink:0}
+.admin-app .adm-table .adm-cell-text{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-app .adm-table .adm-cell-sub{display:inline;margin-left:6px;white-space:nowrap}

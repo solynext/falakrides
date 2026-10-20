@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   try {
     const requestedResource = new URL(request.url).searchParams.get("resource");
-    const resource = requestedResource === "vehicles" || requestedResource === "locations" || requestedResource === "offers" ? requestedResource : "content";
+    const resource = requestedResource === "vehicles" || requestedResource === "locations" || requestedResource === "offers" || requestedResource === "services" ? requestedResource : "content";
     const user = await requireAdmin(resource, true);
     sameOrigin(request);
     await rateLimit(request,"content-image-uploads",20);

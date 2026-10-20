@@ -19,6 +19,7 @@ export default function HeaderSearch() {
     {title:c.navAbout,href:"/about",text:c.aboutDescription},
     {title:c.navServices,href:"/services",text:c.servicesPageDescription},
     {title:c.navPackages,href:"/packages",text:c.packagesDescription},
+    {title:c.navGallery,href:"/gallery",text:c.galleryDescription},
     {title:c.vehiclesTitle,href:"/vehicles",text:c.vehiclesDescription},
     {title:c.navContact,href:"/contact",text:c.contactDescription},
     {title:c.faqPageTitle,href:"/faq",text:faqs.filter(item=>item.visible).map(item=>`${item.question} ${item.answer}`).join(" ")},

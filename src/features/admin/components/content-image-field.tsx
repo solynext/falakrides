@@ -5,7 +5,7 @@ import {photo} from "@/utils/images";
 import {isSafePublicImage} from "@/features/content/website-model";
 import {MAX_CONTENT_IMAGE_BYTES} from "@/features/content/image-upload";
 
-export default function ContentImageField({value,onChange,disabled=false,id,resource="content",onBusyChange}:{value:string;onChange:(value:string)=>void;disabled?:boolean;id?:string;resource?:"content"|"vehicles"|"locations"|"offers";onBusyChange?:(busy:boolean)=>void}) {
+export default function ContentImageField({value,onChange,disabled=false,id,resource="content",onBusyChange}:{value:string;onChange:(value:string)=>void;disabled?:boolean;id?:string;resource?:"content"|"vehicles"|"locations"|"offers"|"services";onBusyChange?:(busy:boolean)=>void}) {
   const input = useRef<HTMLInputElement>(null);
   const [busy,setBusy] = useState(false);
   const [error,setError] = useState("");

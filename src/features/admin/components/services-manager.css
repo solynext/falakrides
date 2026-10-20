@@ -1,0 +1,20 @@
+.services-manager{width:100%;min-width:0}
+.admin-app .services-page-editor{width:min(620px,calc(100vw - 32px));max-width:620px;padding:0;border:1px solid var(--adm-line);border-radius:12px;background:#fff}
+.services-page-editor .adm-dialog-top{padding:20px 24px;align-items:center;border-bottom:1px solid var(--adm-line)}
+.services-page-editor .adm-dialog-top h2{margin:0;font-size:20px}
+.services-dialog-fields{padding:24px;background:#fff}
+.services-page-editor .website-service-record{padding:0;border:0;background:transparent}
+.services-page-editor .website-service-core{display:grid;grid-template-columns:1fr;gap:18px}
+.services-page-editor .website-service-core>label{display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:600;color:var(--adm-ink)}
+.service-required{color:var(--adm-muted)}
+.services-page-editor .website-service-core input,.services-page-editor .website-service-core textarea{border:1px solid var(--adm-line);background:#fff;color:var(--adm-ink);border-radius:8px;padding:10px 12px;font-size:14px;line-height:1.6}
+.services-page-editor :is(input,textarea):focus-visible{outline:2px solid var(--adm-green);outline-offset:1px}
+.services-page-editor :is(input,textarea)::placeholder{color:#989e98}
+.services-page-editor .website-service-core small{font-size:11px;font-weight:400;line-height:1.6;color:var(--adm-muted)}
+.service-url-preview{padding:9px 12px;border-radius:6px;background:var(--adm-soft);color:var(--adm-muted);font-size:12px;font-weight:400;overflow-wrap:anywhere}
+.service-minimal-image{display:grid;gap:10px;font-size:13px;font-weight:600;color:var(--adm-ink)}
+.services-page-editor .service-minimal-image .content-image-upload-button{background:#fff;color:var(--adm-ink);border:1px solid var(--adm-line);border-radius:8px;font-size:12px}
+.services-page-editor .service-minimal-image .content-image-preview{max-width:240px;height:130px;overflow:hidden;border-radius:8px}
+.services-page-editor .adm-dialog-footer{padding:16px 24px;background:#fff;border-top:1px solid var(--adm-line)}
+.services-page-editor .adm-dialog-footer>div{flex-wrap:wrap;gap:8px}
+@media(max-width:600px){.services-page-editor .adm-dialog-top,.services-page-editor .adm-dialog-footer,.services-dialog-fields{padding:18px}.services-page-editor .website-service-core input,.services-page-editor .website-service-core textarea{font-size:16px}}

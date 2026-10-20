@@ -1,4 +1,5 @@
 import {config} from "dotenv";
+import {serviceSlug} from "../src/features/services/slug";
 import {randomUUID} from "node:crypto";
 import {databaseAdapter} from "../src/lib/db/adapter";
 import {PrismaClient} from "../src/generated/prisma/client";
@@ -22,7 +23,7 @@ async function main() {try {
       await tx.siteSettings.create({data: {...initialSettings, phone: published["contact.phone"] || initialSettings.phone, email: published["contact.email"] || initialSettings.email}});
       for (const [index, vehicle] of vehicles.entries()) await tx.vehicle.create({data: {name: published[`vehicle.${index}.name`] || vehicle.name, category: vehicle.category, description: published[`vehicle.${index}.description`] || vehicle.description, image: published[`vehicle.${index}.image`] || vehicle.image, passengers: Number(published[`vehicle.${index}.passengers`] || vehicle.passengers), luggage: Number(published[`vehicle.${index}.bags`] || vehicle.bags), plate: `CATALOG-${index + 1}`, contentIndex: index}});
       for (const [index, route] of routes.entries()) await tx.fare.create({data: {route: `${published[`route.${index}.0`] || route[0]} → ${published[`route.${index}.1`] || route[1]}`, caption: published[`route.${index}.2`] || route[2], image: published[`route.${index}.3`] || route[3], featured: true, status: "Active", contentIndex: index}});
-      for (const [index, location] of locations.entries()) await tx.location.create({data: {name: published[`location.${index}`] || location, description: location, image:"/images/header-background.jpg", contentIndex: index}});
+      for (const [index, location] of locations.entries()) await tx.location.create({data: {slug:`${serviceSlug(published[`location.${index}`] || location)||"location"}-${randomUUID().slice(0,5)}`,name: published[`location.${index}`] || location, description: location, image:"/images/header-background.jpg", contentIndex: index}});
     });
     console.log("Migrated existing public copy, catalog, settings, and saved content. No fictional admin records imported.");
   }

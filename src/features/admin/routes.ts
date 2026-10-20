@@ -1,5 +1,5 @@
 export const adminRoutes: Record<string, string> = {
-  overview: "dashboard", bookings: "bookings", customers: "customers",
+  overview: "dashboard", bookings: "bookings", services: "services", customers: "customers",
   drivers: "drivers", vehicles: "vehicles", fares: "price-and-routes",
   offers: "offers-and-packages", payments: "payments", feedback: "feedback",
   content: "website-content", reports: "reports", roles: "team-and-roles", settings: "settings",

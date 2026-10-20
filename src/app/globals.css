@@ -2041,9 +2041,6 @@ html, body, main,
   text-underline-offset: 4px;
 }
 
-.route-feedback { width: min(100% - 40px, 680px); margin: 100px auto; padding: 30px; }
-.route-feedback h1 { font-size: clamp(32px, 5vw, 48px); line-height: 1.2; }
-.route-feedback .actions { justify-content: flex-start; gap: 24px; }
 
 .public-page{min-height:65vh;padding-top:70px;padding-bottom:80px}.public-page-heading{max-width:760px;margin-bottom:42px}.public-page-heading h1{font-size:clamp(36px,5vw,64px);line-height:1.12;margin:18px 0;letter-spacing:-2px}.public-page-heading p,.public-prose p{line-height:1.8;color:#59665f}.public-prose{max-width:800px}.public-prose h2{margin:32px 0 12px}.public-prose .button{margin-top:24px}.public-contact,.public-footer-links{display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin-bottom:40px}.public-footer-links{padding:20px 6%}.public-booking{margin-top:60px}
 
@@ -2374,3 +2371,33 @@ button.floating-chat.whatsapp-trigger {
 @media(max-height:500px) and (max-width:900px) {
   .whatsapp-panel { position: fixed; top: 12px; bottom: 12px; right: 80px; width: min(380px, calc(100vw - 100px)); max-height: none; }
 }
+
+/* Give single-selection dropdown arrows a consistent inset across the app. */
+select:not([multiple]):not([size]),select:not([multiple])[size="1"]{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  padding-right:32px!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23626862' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important;
+  background-repeat:no-repeat!important;
+  background-size:16px 16px!important;
+  background-position:right 10px center!important;
+}
+@media(forced-colors:active){select:not([multiple]):not([size]),select:not([multiple])[size="1"]{appearance:auto!important;-webkit-appearance:auto!important;background-image:none!important}}
+/* Shared dropdown styling for public forms and admin controls. */
+select:not([multiple]):not([size]),select:not([multiple])[size="1"]{
+  min-height:42px;
+  border:1px solid #dce2d7!important;
+  border-radius:10px!important;
+  background-color:#fff!important;
+  color:var(--brand-dark,#29322b);
+  box-shadow:0 1px 2px #26351c05;
+  line-height:1.5;
+  cursor:pointer;
+  transition:border-color .18s,box-shadow .18s,background-color .18s;
+}
+select:not([multiple]):not([size]):hover:not(:disabled),select:not([multiple])[size="1"]:hover:not(:disabled){border-color:#a6b794!important;background-color:#fcfdfb!important}
+select:not([multiple]):not([size]):focus,select:not([multiple])[size="1"]:focus{outline:none!important;border-color:var(--brand-lime,#8dc73f)!important;box-shadow:0 0 0 3px #8dc73f20}
+select:not([multiple]):not([size]):disabled,select:not([multiple])[size="1"]:disabled{background-color:#f5f6f3!important;color:#92988d;box-shadow:none;cursor:not-allowed;opacity:.7}
+select:not([multiple]):not([size]) option,select:not([multiple])[size="1"] option{background:#fff;color:var(--brand-dark,#29322b)}
+@media(prefers-reduced-motion:reduce){select{transition:none!important}}
+@media(forced-colors:active){select:not([multiple]):not([size]),select:not([multiple])[size="1"]{border-color:ButtonText!important;background-color:Canvas!important;color:CanvasText;box-shadow:none}select:focus{outline:2px solid Highlight!important}}

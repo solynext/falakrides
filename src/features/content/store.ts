@@ -1,12 +1,17 @@
-import {websiteField} from "./website-model";
+import {websiteField, websiteFromValues, WEBSITE_FIELD} from "./website-model";
+import {readServices} from "@/features/services/server";
 import {db} from "@/lib/db";
 import {databaseCatalog} from "./database-catalog";
 import type {ContentDocument, ContentValues} from "./types";
 export {validateValues} from "./validation";
 
 export async function readContent(): Promise<ContentDocument> {
-  const [record, catalog] = await Promise.all([db.siteContent.findUniqueOrThrow({where: {id: "main"}}), databaseCatalog()]);
-  return {version: record.version, draft: {[websiteField.id]:websiteField.value,...record.draft as ContentValues}, published: {[websiteField.id]:websiteField.value,...record.published as ContentValues}, updatedAt: record.updatedAt.toISOString(), publishedAt: record.publishedAt?.toISOString() || null, catalog};
+  const [record, catalog, services] = await Promise.all([db.siteContent.findUniqueOrThrow({where: {id: "main"}}), databaseCatalog(), readServices()]);
+  const published = {[websiteField.id]:websiteField.value,...record.published as ContentValues};
+  const draft = {[websiteField.id]:websiteField.value,...record.draft as ContentValues};
+  published[WEBSITE_FIELD]=JSON.stringify({...websiteFromValues(published),services:services.services});
+  draft[WEBSITE_FIELD]=JSON.stringify({...websiteFromValues(draft),services:services.services});
+  return {version: record.version, draft, published, updatedAt: record.updatedAt.toISOString(), publishedAt: `${record.publishedAt?.toISOString() || ""}:services:${services.version}`, catalog};
 }
 export async function updateContent(version: number, values: ContentValues, publish: boolean, userId?: string): Promise<ContentDocument> {
   await db.$transaction(async tx => {

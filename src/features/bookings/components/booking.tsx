@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {useId, useRef, useState} from "react";
 import Icon from "@/components/ui/icon";
@@ -11,12 +11,12 @@ import {api} from "@/lib/api-client";
 type Details = {name: string; email: string; phone: string; pickup: string; destination: string; date: string; time: string; returnDate: string; returnTime: string; vehicle: string; passengers: string; luggage: string; address: string; notes: string; roundTrip: boolean};
 
 
-export default function Booking({preference}: {preference?: {vehicle?: string; package?: string}} = {}) {
+export default function Booking({preference}: {preference?: {vehicle?: string; package?: string;pickup?:string}} = {}) {
   const {vehicles, locations} = useSiteCatalog();
   const {whatsapp} = useSiteContact();
-  const initial: Details = {name: "", email: "", phone: "", pickup: "", destination: "", date: "", time: "", returnDate: "", returnTime: "", vehicle: vehicles.find(item => item.name.toLowerCase() === preference?.vehicle?.toLowerCase())?.name || "", passengers: "1", luggage: "1", address: "", notes: [preference?.package ? `Requested package: ${preference.package}` : "", preference?.vehicle && !vehicles.some(item => item.name.toLowerCase() === preference.vehicle?.toLowerCase()) ? `Requested vehicle: ${preference.vehicle}` : ""].filter(Boolean).join("\n"), roundTrip: false};
+  const initial: Details = {name: "", email: "", phone: "", pickup: locations.find(location=>location===preference?.pickup)||"", destination: "", date: "", time: "", returnDate: "", returnTime: "", vehicle: vehicles.find(item => item.name.toLowerCase() === preference?.vehicle?.toLowerCase())?.name || "", passengers: "1", luggage: "1", address: "", notes: [preference?.package ? `Requested package: ${preference.package}` : "", preference?.vehicle && !vehicles.some(item => item.name.toLowerCase() === preference.vehicle?.toLowerCase()) ? `Requested vehicle: ${preference.vehicle}` : ""].filter(Boolean).join("\n"), roundTrip: false};
   const [details, setDetails] = useState<Details>(initial);
-  const [dirty, setDirty] = useState(Boolean(preference?.vehicle || preference?.package));
+  const [dirty, setDirty] = useState(Boolean(preference?.vehicle || preference?.package || preference?.pickup));
   const [error, setError] = useState("");
   const [preview, setPreview] = useState(false);
   const [status, setStatus] = useState("");

@@ -31,6 +31,7 @@ export default async function Footer() {
             <Link href="/services"><Icon name="car" size={17}/>{c.navServices}</Link>
             {ziyarat && <Link href={`/services/${ziyarat.slug}`}><Icon name="pin" size={17}/>{ziyarat.title}</Link>}
             <Link href="/packages"><Icon name="bag" size={17}/>{c.navPackages}</Link>
+            <Link href="/gallery">{c.navGallery}</Link>
           </nav>
           <nav aria-label="Company">
             <Link href="/about"><Icon name="user" size={17}/>{c.navAbout}</Link>

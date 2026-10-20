@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {useEffect, useRef, useState} from "react";
 import BrandLogo from "@/components/ui/brand-logo";
@@ -7,7 +7,7 @@ import {useConfirmNavigation} from "@/components/forms/unsaved-changes";
 import Booking from "./booking";
 import "./booking-popup.css";
 
-type Preference = {vehicle?: string; package?: string};
+type Preference = {vehicle?: string; package?: string; pickup?:string};
 export default function BookingPopup() {
   const dialog = useRef<HTMLDialogElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -30,7 +30,7 @@ export default function BookingPopup() {
       const url = new URL(target.href, location.href);
       if (url.origin !== location.origin || url.pathname.replace(/\/$/, "") !== "/book-a-ride") return;
       event.preventDefault();
-      show({vehicle: url.searchParams.get("vehicle")?.slice(0, 100), package: url.searchParams.get("package")?.slice(0, 100)}, target);
+      show({pickup:url.searchParams.get("pickup")?.slice(0,150),vehicle: url.searchParams.get("vehicle")?.slice(0, 100), package: url.searchParams.get("package")?.slice(0, 100)}, target);
     }
     function vehicle(event: Event) {const value = (event as CustomEvent<string>).detail; if (typeof value === "string") show({vehicle: value.slice(0, 100)}, document.activeElement as HTMLElement);}
     document.addEventListener("click", click, true);

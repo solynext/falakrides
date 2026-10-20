@@ -31,6 +31,8 @@ test("old section links redirect to their matching canonical page without loops"
  for(const slug of [...Object.values(adminRoutes),'__proto__','unknown'])assert.equal(adminLegacyRedirect(slug),undefined);
 });
 test("legacy admin root opens dashboard and unknown URLs are rejected",()=>{
+ assert.equal(adminSectionFromPath("/admin/services"),"services");
+ assert.equal(adminSectionFromPath("/admin/services/"),"services");
  assert.equal(adminSectionFromPath("/admin"),"overview");
  assert.equal(adminSectionFromPath("/admin/"),"overview");
  for(const path of ["/admin/unknown","/admin/bookings/extra","/website-content","/admin/__proto__"])assert.equal(adminSectionFromPath(path),undefined);

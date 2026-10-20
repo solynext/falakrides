@@ -32,7 +32,7 @@ export function serialize(module: string, record: Row): AdminRow {
   const result: AdminRow = {id: String(record.id), _version: String(record.version ?? 1), _createdAt: record.createdAt instanceof Date ? record.createdAt.toISOString() : String(record.createdAt || "")};
   for (const field of modules[module].fields) {
     const value = record[field.key];
-    result[field.key] = value == null ? "" : String(value);
+    result[field.key] = field.key==="serviceIds" ? JSON.stringify(value ?? []) : value == null ? "" : String(value);
   }
   if (module === "bookings") {
     result.id = String(record.reference);
@@ -67,6 +67,12 @@ export async function adminSnapshot(user: {id: string; role: string}) {
     data[key] = records.map(record => serialize(key, record));
   }));
   // Surface incoming inquiries in the existing feedback workflow.
+  if(canAccess(user.role,"locations")) {
+    const catalog=await db.serviceCatalog.findUnique({where:{id:"main"}});
+    const services=(catalog?.services || []) as {id:string;title:string}[];
+    data.serviceCategories=services.map(service=>({id:service.id,name:service.title}));
+    for(const location of data.locations)location._serviceNames=(JSON.parse(location.serviceIds) as string[]).map(id=>services.find(service=>service.id===id)?.title || "Unavailable service").join(", ") || "Unassigned";
+  }
   const settings = canAccess(user.role, "settings") ? await db.siteSettings.findUniqueOrThrow({where: {id: "main"}}) : null;
   const notices = await db.noticeState.findMany({where: {userId: user.id}});
   return {data, settings, notices, user: {id: user.id, name: (await db.user.findUniqueOrThrow({where: {id: user.id}})).name, role: user.role}};
@@ -82,7 +88,7 @@ function validate(module: string, input: unknown) {
     if (field.type === "email") schema = schema.refine(value => !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value), "Enter a valid email.");
     if (field.type === "tel") schema = schema.refine(value => !value || /^\+?[\d\s()-]+$/.test(value) && value.replace(/\D/g, "").length >= 8 && value.replace(/\D/g, "").length <= 15, "Enter a valid contact number.");
     if (field.type === "number") schema = schema.refine(value => !value || /^\d+(\.\d{1,2})?$/.test(value) && Number(value) <= 10000000, `${field.label} must be a valid non-negative number.`);
-    if (field.type === "select" && !["driver", "vehicle", "vehicleId"].includes(field.key)) schema = schema.refine(value => !value && field.key === "rating" || !!field.options?.includes(value), `Choose a valid ${field.label.toLowerCase()}.`);
+    if (field.type === "select" && !["driver", "vehicle", "vehicleId", "serviceId"].includes(field.key)) schema = schema.refine(value => !value && field.key === "rating" || !!field.options?.includes(value), `Choose a valid ${field.label.toLowerCase()}.`);
     if (field.type === "date") schema = schema.refine(value => !value && !field.required || /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)), "Enter a valid date.");
     if (field.key === "image") schema = schema.refine(value => !value || isSafePublicImage(value), "Use a local /images/ path or Unsplash photo ID.");
     if (field.key === "zipCode") schema = schema.max(20).refine(value => !value || /^[a-zA-Z0-9 -]+$/.test(value), "Enter a valid ZIP or postal code.");
@@ -105,6 +111,19 @@ async function checkLocation(tx:Prisma.TransactionClient,value:string,previous?:
 async function mutationData(tx: Prisma.TransactionClient, module: string, row: Record<string, string>, existing: Row | null) {
   if (module === "vehicles") await tx.$queryRaw`SELECT pg_advisory_xact_lock(7264102)::text`;
   const data: Row = Object.fromEntries(modules[module].fields.map(field => [field.key, row[field.key] ?? ""]));
+  if(module==="locations") {
+    const catalog=await tx.serviceCatalog.findUnique({where:{id:"main"}});
+    const services=(catalog?.services || []) as {id:string}[];
+    let serviceIds:unknown;
+    try {serviceIds=JSON.parse(row.serviceIds);}catch {throw new HttpError(400,"Select at least one service from Our Services.");}
+    if(!Array.isArray(serviceIds)||!serviceIds.length||serviceIds.length>60||serviceIds.some(id=>typeof id!=="string"||!services.some(service=>service.id===id))||new Set(serviceIds).size!==serviceIds.length)throw new HttpError(400,"Select valid services from Our Services without duplicates.");
+    data.serviceIds=serviceIds;
+    if(!existing) {
+      const name=row.name.normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,100).replace(/-$/g,"")||"location";
+      data.slug=`${name}-${randomBytes(3).toString("hex").slice(0,5)}`;
+      while(await tx.location.findUnique({where:{slug:String(data.slug)}}))data.slug=`${name}-${randomBytes(3).toString("hex").slice(0,5)}`;
+    }
+  }
   for (const key of ["category", "description", "image", "caption"]) if (existing && modules[module].fields.some(field=>field.key===key) && row[key] === undefined) data[key] = existing[key] ?? "";
   if (module === "bookings") {
     let itinerary;
@@ -194,6 +213,7 @@ export async function writeRecord(module: string, input: unknown, user: {id: str
   if (!canAccess(user.role, module, true)) throw new HttpError(403, "Your role does not allow this action.");
   const row = validate(module, input);
   const result = await db.$transaction(async tx => {
+    if(module==="locations")await tx.serviceCatalog.updateMany({where:{id:"main"},data:{version:{increment:1}}});
     if (module === "roles") await tx.$queryRaw`SELECT pg_advisory_xact_lock(7264101)::text`;
     const where = module === "bookings" ? {reference: id} : {id};
     const existing = id ? await table(tx, module).findUnique({where}) : null;
@@ -227,6 +247,7 @@ export async function writeRecord(module: string, input: unknown, user: {id: str
 export async function deleteRecord(module: string, id: string, version: number, user: {id: string; role: string}) {
   if (!canAccess(user.role, module, true)) throw new HttpError(403, "Your role does not allow this action.");
   await db.$transaction(async tx => {
+    if(module==="locations")await tx.serviceCatalog.updateMany({where:{id:"main"},data:{version:{increment:1}}});
     if (module === "roles") await tx.$queryRaw`SELECT pg_advisory_xact_lock(7264101)::text`;
     const where = module === "bookings" ? {reference: id} : {id};
     const record = await table(tx, module).findUnique({where});

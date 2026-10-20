@@ -158,10 +158,12 @@ model Fare {
 model Location {
   id          String @id @default(cuid())
   name        String @unique
+  slug        String @unique
   image       String
   description String
   zipCode     String @default("")
   destinations String @default("")
+  serviceIds  String[] @default([])
   status      String @default("Active")
   contentIndex Int? @unique
   version     Int @default(1)
@@ -317,6 +319,13 @@ model SiteContent {
   published   Json
   updatedAt   DateTime @updatedAt
   publishedAt DateTime?
+}
+
+model ServiceCatalog {
+  id        String @id @default("main")
+  version   Int @default(0)
+  services  Json
+  updatedAt DateTime @updatedAt
 }
 
 model SiteSettings {
