@@ -1803,7 +1803,7 @@ export const contentFields: ContentField[] = [
   {id:"layout.bannerImage",section:"Current website",label:"Inner-page banner background",value:"/images/reference/hero-umrah.webp",kind:"image"},
   websiteField,
   {id:"contact.facebook",section:"contact",label:"Facebook profile",value:"https://www.facebook.com/profile.php?id=61573320659090"},
-  {id:"contact.instagram",section:"contact",label:"Instagram profile",value:"https://www.instagram.com/alfalakrides/"},
+  {id:"contact.instagram",section:"contact",label:"Instagram profile",value:"https://www.instagram.com/falakrides/"},
   {id:"contact.linkedin",section:"contact",label:"LinkedIn profile",value:"https://www.linkedin.com/company/145242047/"},
   {id:"contact.tiktok",section:"contact",label:"TikTok profile",value:"https://www.tiktok.com/@al.falak.rides"},
   {id:"contact.youtube",section:"contact",label:"YouTube channel",value:"https://www.youtube.com/@FalakRides"},

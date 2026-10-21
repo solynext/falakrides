@@ -5,7 +5,9 @@ import "./social-links.css";
 
 export default function SocialLinks() {
   const facebook = useContentValue("contact.facebook", "").trim() || "https://www.facebook.com/profile.php?id=61573320659090";
-  const instagram = useContentValue("contact.instagram", "").trim() || "https://www.instagram.com/alfalakrides/";
+  const savedInstagram = useContentValue("contact.instagram", "").trim();
+  const instagram = !savedInstagram || /^https:\/\/(?:www\.)?instagram\.com\/alfalakrides\/?$/i.test(savedInstagram)
+    ? "https://www.instagram.com/falakrides/" : savedInstagram;
   const linkedin = useContentValue("contact.linkedin", "").trim() || "https://www.linkedin.com/company/145242047/";
   const tiktok = useContentValue("contact.tiktok", "").trim() || "https://www.tiktok.com/@al.falak.rides";
   const youtube = useContentValue("contact.youtube", "").trim() || "https://www.youtube.com/@FalakRides";
