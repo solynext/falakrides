@@ -1,0 +1,22 @@
+.contact-popup-social { margin-top: 20px; padding-top: 14px; border-top: 1px solid #dfe8d5; }
+.contact-popup-social > span { font-size: 12px; color: #778571; }
+.contact-page-social { margin: 24px 0 36px; text-align: center; }
+.contact-page-social .contact-popup-social { margin-top: 0; padding-top: 0; border-top: 0; }
+.contact-page-social .contact-popup-social nav { justify-content: center; }
+.contact-popup-social nav { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.contact-popup-social .contact-social-button { --social-shadow: #253c2026; position: relative; isolation: isolate; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #ffffff45; border-radius: 14px; color: #fff; box-shadow: inset 0 1px 0 #ffffff35, 0 4px 10px var(--social-shadow); transition: transform .2s ease, box-shadow .2s ease, filter .2s ease; }
+.contact-popup-social .contact-social-button::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: linear-gradient(145deg, #ffffff25, transparent 60%); pointer-events: none; }
+.contact-popup-social .contact-social-button > svg { width: 21px; height: 21px; filter: drop-shadow(0 1px 1px #00000018); }
+.contact-popup-social .contact-social-button:hover { transform: translateY(-3px); filter: brightness(1.07); box-shadow: inset 0 1px 0 #ffffff50, 0 8px 16px var(--social-shadow); }
+.contact-popup-social .contact-social-button:active { transform: translateY(0) scale(.96); }
+.contact-popup-social .contact-social-button:focus-visible { outline: 2px solid #263e2b; outline-offset: 4px; }
+.contact-popup-social .contact-social-facebook { --social-shadow: #1877f233; background: linear-gradient(145deg, #298bff, #1260db); }
+.contact-popup-social .contact-social-instagram { --social-shadow: #d6297638; background: radial-gradient(circle at 25% 110%, #ffdc80 0, #fcaf45 18%, #f77737 30%, transparent 55%), linear-gradient(140deg, #7638c0, #c13584 50%, #e1306c); }
+.contact-popup-social .contact-social-linkedin { --social-shadow: #0a66c233; background: linear-gradient(145deg, #1685d5, #075da9); }
+.contact-popup-social .contact-social-tiktok { --social-shadow: #15222d33; background: linear-gradient(145deg, #303c45, #10171c); }
+.contact-social-tiktok > svg { filter: drop-shadow(-1px -1px 0 #25f4ee) drop-shadow(1px 1px 0 #fe2c55) !important; }
+.contact-popup-social .contact-social-youtube { --social-shadow: #ee232333; background: linear-gradient(145deg, #ff4545, #e10d19); }
+@media (prefers-reduced-motion: reduce) {
+  .contact-popup-social nav > a { transition: none; }
+  .contact-popup-social nav > a:hover, .contact-popup-social nav > a:active { transform: none; }
+}

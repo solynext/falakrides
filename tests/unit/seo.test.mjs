@@ -26,6 +26,17 @@ test("page metadata has absolute canonical, Open Graph and Twitter URLs",()=>{
   assert.equal(metadata.twitter.images[0],"https://falak-ride.vercel.app/images/header-background.jpg");
 });
 
+test("SEO origin skips invalid or local settings and uses the next production candidate",()=>{
+  assert.equal(load({SITE_URL:"http://localhost:3000",VERCEL_PROJECT_PRODUCTION_URL:"production.example"}).siteOrigin(),"https://production.example");
+  assert.equal(load({SITE_URL:"http://127.0.0.1:3000",NEXT_PUBLIC_SITE_URL:"https://public.example/path"}).siteOrigin(),"https://public.example");
+  assert.equal(load({SITE_URL:"https://user:password@example.com",VERCEL_PROJECT_PRODUCTION_URL:"production.example"}).siteOrigin(),"https://production.example");
+  assert.equal(load({SITE_URL:"not a hostname",NEXT_PUBLIC_SITE_URL:"http://[::1]:3000"}).siteOrigin(),"https://falak-ride.vercel.app");
+});
+
+test("an explicit production domain takes precedence over the Vercel hostname",()=>{
+  assert.equal(load({SITE_URL:"https://www.example.com/route",VERCEL_PROJECT_PRODUCTION_URL:"project.vercel.app",VERCEL_URL:"preview.vercel.app"}).siteOrigin(),"https://www.example.com");
+});
+
 test("JSON-LD serialization remains parseable and escapes markup",()=>{
   const seo=load({});
   const output=seo.jsonLd({name:"Falak <Rides>"});

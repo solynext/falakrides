@@ -1,8 +1,7 @@
 "use client";
-import Image from "next/image";
+import LocationCardImage from "./location-card-image";
 import Link from "next/link";
 import {useSiteCatalog,useWebsite} from "@/features/content/public-content";
-import {photo} from "@/utils/images";
 import {SectionHeading} from "./sections";
 import "./location-cards.css";
 import {publicPath} from "@/lib/seo";
@@ -19,7 +18,7 @@ export default function LocationCards({serviceId,carousel=true}:{serviceId?:stri
       {(carousel?[0,1]:[0]).map(group=><div className={`taxi-location-group ${group?"is-copy":""}`} key={group} aria-hidden={group?true:undefined}>
         {Array.from({length:repeats},(_,repeat)=>locationCards.map(location=><article className={`taxi-location-card ${repeat?"is-repeat":""}`} key={`${repeat}-${location.id}`} aria-hidden={repeat?true:undefined}>
           <Link className="taxi-location-detail-link" href={publicPath(`/locations/${encodeURIComponent(location.slug)}`)} aria-label={`View ${location.name}`} tabIndex={group||repeat?-1:undefined}/>
-          {location.image&&<Image src={photo(location.image,800)} alt={`${location.name} destination`} fill sizes="(max-width: 600px) 230px, 280px"/>}
+          <LocationCardImage name={location.name} image={location.image}/>
           <div className="taxi-location-body"><h3>{location.name}</h3><Link className="taxi-button taxi-location-book" href={`/book-a-ride?pickup=${encodeURIComponent(location.name)}`} tabIndex={group||repeat?-1:undefined}><span>{copy.bookNow}</span><span className="taxi-location-book-arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></Link></div>
         </article>))}
       </div>)}

@@ -55,6 +55,10 @@ The map illustration and provided catalog photography are preserved visual conte
 
 ### Vercel environment
 
+The verified public deployment is `https://falak-ride.vercel.app` (with a hyphen). Set production `SITE_URL=https://falak-ride.vercel.app` and `BETTER_AUTH_URL=https://falak-ride.vercel.app`, unless a verified custom canonical domain replaces it. SEO URLs ignore malformed or loopback settings and fall back to the next configured production origin. The preview deployment hostname is never selected automatically for canonical URLs.
+
+After deploying, verify `/robots.txt` returns `Allow: /` and a sitemap URL on the canonical domain. Verify `/sitemap.xml` contains `/jeddah-airport-to-makkah-taxi` and `/makkah-to-madinah-taxi`, both return HTTP 200, and each page's canonical URL uses the same domain. These pages read active route fares and listed vehicle capacities from the published catalog; do not copy prices into static marketing text. Exact route direction matters, and airport or Ziyarat destinations must not be matched as city transfers.
+
 `.env.local` is deliberately excluded from GitHub and is not sent to Vercel. In Vercel, open the project **Settings → Environment Variables** and add these for **Production** (and **Preview** if used):
 
 - `DATABASE_URL`: your Neon pooled PostgreSQL connection string.

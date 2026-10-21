@@ -6,8 +6,11 @@ const DEFAULT_IMAGE = "/images/header-background.jpg";
 function normalizeOrigin(value?: string) {
   const candidate = value?.trim();
   if (!candidate) return "";
+  if (candidate.includes("://") && !/^https?:\/\//i.test(candidate)) return "";
   try {
     const url = new URL(/^https?:\/\//i.test(candidate) ? candidate : `https://${candidate}`);
+    if (!["http:", "https:"].includes(url.protocol) || url.username || url.password ||
+      ["localhost", "127.0.0.1", "0.0.0.0", "[::1]"].includes(url.hostname) || url.hostname.endsWith(".localhost")) return "";
     url.protocol = "https:";
     return url.origin;
   } catch {
@@ -16,11 +19,8 @@ function normalizeOrigin(value?: string) {
 }
 
 export function siteOrigin() {
-  return normalizeOrigin(
-    process.env.SITE_URL ||
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.VERCEL_PROJECT_PRODUCTION_URL,
-  ) || FALLBACK_ORIGIN;
+  return [process.env.SITE_URL, process.env.NEXT_PUBLIC_SITE_URL, process.env.VERCEL_PROJECT_PRODUCTION_URL]
+    .map(normalizeOrigin).find(Boolean) || FALLBACK_ORIGIN;
 }
 
 export function absoluteUrl(path = "/") {

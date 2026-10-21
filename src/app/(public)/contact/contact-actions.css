@@ -1,0 +1,22 @@
+.contact-all-links { --contact-icon-size: clamp(24px, calc((100vw - 150px) / 8), 56px); --contact-icon-gap: clamp(4px, 1vw, 10px); display: flex; justify-content: center; align-items: center; gap: clamp(28px, 5vw, 52px); margin: 0 0 36px; }
+.contact-quick-links { display: flex; flex-wrap: nowrap; gap: var(--contact-icon-gap); }
+.contact-quick-links > a { position: relative; display: flex; align-items: center; }
+.contact-quick-links .taxi-contact-icon { box-sizing: border-box; display: grid; place-items: center; width: var(--contact-icon-size); height: var(--contact-icon-size); border: 1px solid #ffffff45; border-radius: 14px; color: #fff; background: linear-gradient(145deg, #298bff, #1260db); box-shadow: inset 0 1px 0 #ffffff35, 0 4px 10px #1877f233; transition: transform .2s ease, filter .2s ease; }
+.contact-all-links svg,
+.contact-all-links .contact-social-button > svg { width: min(28px, calc(var(--contact-icon-size) - 12px)); height: min(28px, calc(var(--contact-icon-size) - 12px)); }
+.contact-all-links .contact-page-social { margin: 0; }
+.contact-all-links .contact-popup-social nav { flex-wrap: nowrap; gap: var(--contact-icon-gap); margin: 0; }
+.contact-all-links .contact-social-button { box-sizing: border-box; width: var(--contact-icon-size); height: var(--contact-icon-size); }
+.contact-link-group,
+.contact-all-links .contact-popup-social { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.contact-all-links .contact-group-label,
+.contact-all-links .contact-popup-social > span { display: inline-block; padding: 4px 10px; border: 1px solid #dfe8d5; border-radius: 999px; background: #f5f8f1; color: #617354; font-size: 11px; font-weight: 600; line-height: 18px; white-space: nowrap; }
+.public-site .contact-quick-links h2 { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.contact-quick-links > a:nth-child(2) .taxi-contact-icon { background: linear-gradient(145deg, #32d779, #128c47); box-shadow: inset 0 1px 0 #ffffff35, 0 4px 10px #128c4733; }
+.contact-quick-links > a:nth-child(3) .taxi-contact-icon { background: linear-gradient(145deg, #a06ada, #7140ae); box-shadow: inset 0 1px 0 #ffffff35, 0 4px 10px #7140ae33; }
+.contact-quick-links > a:hover .taxi-contact-icon { transform: translateY(-3px); filter: brightness(1.07); }
+.contact-quick-links > a:focus-visible { outline: 2px solid #263e2b; outline-offset: 5px; border-radius: 14px; }
+@media (prefers-reduced-motion: reduce) {
+  .contact-quick-links .taxi-contact-icon { transition: none; }
+  .contact-quick-links > a:hover .taxi-contact-icon { transform: none; }
+}

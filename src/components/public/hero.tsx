@@ -7,7 +7,10 @@ import {photo} from "@/utils/images";
 import ContactPopup from "./contact-popup";
 export default function PublicHero() {
   const {slides:allSlides,copy:c}=useWebsite();
-  const slides=allSlides.filter(slide=>slide.visible);
+  const slides=allSlides.filter(slide=>slide.visible).map(slide=>{
+    const text=slide.text.trim();
+    return {...slide,text:text.match(/^[\s\S]*?[.!?\u061f\u3002](?=\s|$)/)?.[0] ?? text};
+  });
   const [active, setActive] = useState(0);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);

@@ -46,7 +46,8 @@
 .public-site .taxi-hero .taxi-button {
   min-width: 180px;
 }
-.taxi-hero-actions { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; }
+.taxi-slide-copy { padding-bottom: 150px; }
+.taxi-hero-actions { position: absolute; bottom: 65px; left: 0; right: 0; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; }
 .public-site .taxi-hero .taxi-hero-message { gap: 9px; background: #ffffff20; border: 1px solid #ffffffa6; color: #fff; }
 .public-site .taxi-hero .taxi-hero-message:hover { background: #ffffff35; color: #fff; }
 @media (max-width: 480px) {
