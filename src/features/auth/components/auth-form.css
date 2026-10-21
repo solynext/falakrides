@@ -1,50 +1,47 @@
-.admin-app.adm-auth-app { display:grid; grid-template-columns:minmax(0,1fr); width:100%; place-items:center; height:auto; min-height:100svh; padding:40px 24px; overflow:visible; background:#fff; }
-.admin-app .adm-auth { display:grid; grid-template-columns:1fr 1fr; width:100%; max-width:1080px; min-height:480px; margin:auto; padding:0; gap:0; overflow:hidden; border:1px solid #e0e7de; border-radius:24px; background:linear-gradient(135deg,#f8f7fbbf 0%,#f1f3f8bf 55%,#eef3f5bf 100%); box-shadow:0 20px 60px #183d320c; }
-.adm-auth-story { position:relative; display:flex; flex-direction:column; min-width:0; padding:28px 40px; background:transparent; color:#2a2b34; }
-.adm-auth-brand { display:inline-flex; align-self:flex-start; padding:0; background:transparent; }
-.adm-auth-story-copy { margin-block:auto; padding-block:24px; }
-.adm-auth-eyebrow { display:flex; align-items:center; gap:9px; color:#64746b; font-size:10px; line-height:1.6; letter-spacing:1.5px; }
-.adm-auth-eyebrow>span { width:6px; height:6px; flex-shrink:0; border-radius:50%; background:#15803d; box-shadow:0 0 0 4px #15803d12; }
-.admin-app .adm-auth-story h1 { margin:18px 0; font-size:clamp(40px,4.2vw,56px); line-height:1.12; letter-spacing:-2px; font-weight:500; }
-.adm-auth-story h1 em { color:#15803d; font-style:normal; }
-.admin-app .adm-auth-story-copy p { max-width:360px; color:#64746b; font-size:14px; line-height:1.9; }
-.adm-auth-story-footer { display:flex; flex-wrap:wrap; gap:20px; padding-top:20px; border-top:1px solid #e0e7de; }
-.adm-auth-story-footer>span { display:flex; align-items:center; gap:7px; color:#64746b; font-size:11px; }
-.adm-auth-form-side { position:relative; display:flex; flex-direction:column; min-width:0; padding:24px 40px; }
-.adm-auth-top-link { display:flex; align-items:center; gap:8px; align-self:flex-end; color:#64745f; font-size:11px; }
-.adm-auth-top-link:hover { color:#15803d; }
-.adm-auth-card { width:100%; max-width:340px; margin:auto; padding:8px 0; }
-.adm-auth-heading { margin-bottom:14px; }
-.adm-auth-heading .adm-cms-pin-icon { width:36px; height:36px; margin-bottom:10px; border:1px solid #e3e3e8; background:#f0f0f2; }
-.adm-auth-heading .adm-overline { display:block; color:#6e7f65; font-size:9px; letter-spacing:1.1px; margin-bottom:10px; }
-.admin-app .adm-auth-heading h2 { font-size:32px; font-weight:500; letter-spacing:-1.2px; line-height:1.2; margin-bottom:10px; }
-.admin-app .adm-auth-heading p { color:#6c7665; font-size:12px; line-height:1.7; }
-.adm-auth-card form { display:grid; gap:10px; }
-.admin-app .adm-auth-card label { font-size:12px; color:#4a5645; gap:8px; }
-.admin-app .adm-auth-card input { min-height:46px; padding:12px 14px; font-size:14px; border-radius:8px; border-color:#dfe5d9; background:#fff; }
-.admin-app .adm-auth-card .adm-button { display:flex; width:100%; min-height:46px; justify-content:center; margin-top:4px; border-radius:8px; gap:12px; background:#15803d; box-shadow:0 4px 8px #15803d12; transition:background .2s; }
-.admin-app .adm-auth-card .adm-button:hover { background:#166534; }
-.admin-app .adm-auth-card .adm-account-error { padding:12px 14px; border:1px solid #e3b8b0; border-radius:8px; background:#faece7; color:#963d32; overflow-wrap:anywhere; }
-.adm-auth-secure { display:flex; justify-content:center; align-items:center; gap:7px; color:#74816b; font-size:9px; line-height:1.5; margin-top:12px; }
-.adm-auth-form-footer { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; color:#74816b; font-size:9px; }
-.adm-auth-form-footer>span:first-child { font-size:9px; letter-spacing:1.1px; }
-@media(max-width:950px) and (min-width:701px) {
-  .adm-auth-story { padding:30px 36px 26px 28px; }
-  .admin-app .adm-auth-story h1 { font-size:40px; }
-  .adm-auth-form-side { padding:26px 24px; }
+.admin-app.adm-auth-app { display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; width: 100%; min-height: 100svh; height: auto; padding: 40px 20px; overflow: visible; background: #f5f7f5; }
+.admin-app .adm-auth { width: 100%; max-width: 460px; margin: auto; padding: 0; border: 1px solid #e0e7de; border-radius: 18px; background: #fff; box-shadow: 0 12px 40px #183d320a; }
+.adm-auth-form-side { display: flex; flex-direction: column; min-width: 0; padding: 28px 36px; }
+.adm-auth-top-link { display: flex; align-items: center; gap: 8px; align-self: flex-start; color: #64746b; font-size: 12px; }
+.adm-auth-top-link:hover { color: #15803d; }
+.adm-auth-card { width: 100%; margin: 28px auto; }
+.adm-auth-brand { display: inline-flex; margin-bottom: 28px; }
+.adm-auth-heading { margin-bottom: 24px; }
+.adm-auth-heading .adm-overline { display: block; margin-bottom: 10px; color: #64746b; font-size: 10px; font-weight: 600; letter-spacing: 1.2px; }
+.admin-app .adm-auth-heading h1, .admin-app .adm-auth-heading h2 { margin: 0 0 10px; color: #21352b; font-size: 30px; font-weight: 600; letter-spacing: -.7px; line-height: 1.25; }
+.admin-app .adm-auth-heading p { margin: 0; color: #64746b; font-size: 13px; line-height: 1.7; }
+.adm-auth-card form { display: grid; gap: 16px; }
+.admin-app .adm-auth-card label { font-size: 13px; color: #34483b; gap: 8px; }
+.admin-app .adm-auth-card input { min-height: 48px; padding: 12px 14px; font-size: 16px; border: 1px solid #dce4dc; border-radius: 8px; background: #fff; }
+.admin-app .adm-auth-card input:focus-visible { outline: 2px solid #15803d; outline-offset: 2px; }
+.admin-app .adm-auth-card .adm-button { display: flex; width: 100%; min-height: 48px; justify-content: center; margin-top: 4px; border-radius: 8px; gap: 12px; background: #15803d; color: #fff; transition: background .2s; }
+.admin-app .adm-auth-card .adm-button:hover { background: #166534; }
+.admin-app .adm-auth-card .adm-account-error { padding: 12px 14px; border: 1px solid #e3b8b0; border-radius: 8px; background: #faece7; color: #963d32; overflow-wrap: anywhere; }
+.adm-auth-secure { display: flex; justify-content: center; align-items: center; gap: 7px; margin-top: 20px; color: #64746b; font-size: 11px; line-height: 1.6; text-align: center; }
+.adm-auth-secure > svg { flex-shrink: 0; }
+.adm-auth-form-footer { display: flex; justify-content: space-between; gap: 8px; padding-top: 18px; border-top: 1px solid #edf0ed; color: #64746b; font-size: 10px; }
+.adm-auth-form-footer > span:first-child { letter-spacing: 1px; }
+@media (min-width: 900px) {
+  .admin-app .adm-auth { max-width: 1040px; aspect-ratio: 2 / 1; display: flex; align-items: center; }
+  .adm-auth-form-side { width: 100%; padding: 28px 48px; }
+  .adm-auth-card { display: grid; grid-template-columns: 1fr 1fr; column-gap: 64px; margin: 24px auto; }
+  .adm-auth-brand { grid-column: 1; grid-row: 1; align-self: end; margin-bottom: 24px; }
+  .adm-auth-heading { grid-column: 1; grid-row: 2; align-self: start; margin-bottom: 0; }
+  .adm-auth-card form { grid-column: 2; grid-row: 1 / 3; }
+  .adm-auth-secure { grid-column: 2; grid-row: 3; }
 }
-@media(max-width:700px) {
-  .admin-app.adm-auth-app { padding:16px 12px; }
-  .admin-app .adm-auth { grid-template-columns:minmax(0,1fr); min-height:0; border-radius:20px; }
-  .adm-auth-story { padding:26px 28px 32px; overflow:hidden; }
-  .adm-auth-story-copy { margin:0; padding-block:32px 0; }
-  .admin-app .adm-auth-story h1 { font-size:36px; margin-block:16px 12px; }
-  .admin-app .adm-auth-story-copy p { font-size:12px; }
-  .adm-auth-story-footer { display:none; }
-  .adm-auth-form-side { padding:22px 26px; }
-  .adm-auth-card { max-width:420px; padding:26px 0; }
-  .admin-app .adm-auth-heading h2 { font-size:30px; }
-  .admin-app .adm-auth-card input { font-size:16px; }
+@media (max-width: 480px) {
+  .admin-app.adm-auth-app { padding: 20px 12px; }
+  .adm-auth-form-side { padding: 24px; }
+}
+@media (max-width: 899px) {
+  .adm-auth-heading .adm-overline,
+  .admin-app .adm-auth-heading p,
+  .adm-auth-secure,
+  .adm-auth-form-footer { display: none; }
+  .adm-auth-brand { margin-bottom: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-app .adm-auth-card .adm-button { transition: none; }
 }
 
 .adm-auth-password-field { display: grid; gap: 8px; }

@@ -24,7 +24,7 @@ export default function AuthForm({token, passwordChanged = false}: {token?: stri
     return () => clearInterval(timer);
   }, [retryUntil]);
   const router = useRouter();
-  return <main className="adm-auth"><aside className="adm-auth-story"><div className="adm-auth-brand"><BrandLogo size={48}/></div><div className="adm-auth-story-copy"><span className="adm-auth-eyebrow"><span/>THE FALAK RIDES WORKSPACE</span><h1>Every journey.<br/><em>One place.</em></h1><p>A little more clarity. A smoother day.<br/>Your rides, your team, and the road ahead.</p></div><div className="adm-auth-story-footer"><span><Icon name="shield" size={16}/>Secure access</span><span><Icon name="car" size={16}/>Connected operations</span></div></aside><section className="adm-auth-form-side"><Link className="adm-auth-top-link" href="/">Back to website<Icon size={15}/></Link><div className="adm-auth-card"><div className="adm-auth-heading"><span className="adm-cms-pin-icon"><Icon name="shield" size={25}/></span><span className="adm-overline">YOUR WORKSPACE, READY WHEN YOU ARE</span><h2>{token ? "Activate your account" : "Welcome back."}</h2><p>{token ? "Set your password to get started." : "Sign in to manage your Falak Rides workspace."}</p></div><form onSubmit={async event => {
+  return <main className="adm-auth"><section className="adm-auth-form-side" aria-labelledby="admin-sign-in-title"><Link className="adm-auth-top-link" href="/">Back to website<Icon size={15}/></Link><div className="adm-auth-card"><div className="adm-auth-brand"><BrandLogo size={48}/></div><div className="adm-auth-heading"><span className="adm-overline">FALAK RIDES ADMINISTRATION</span><h1 id="admin-sign-in-title">{token ? "Activate your account" : "Admin sign in"}</h1><p>{token ? "Set your password to get started." : "Enter your email and password to access the admin dashboard."}</p></div><form onSubmit={async event => {
     event.preventDefault(); if (pending.current || Date.now() < retryUntil) return; pending.current = true; setBusy(true); setError("");
     const data = new FormData(event.currentTarget);
     try {
@@ -46,5 +46,5 @@ export default function AuthForm({token, passwordChanged = false}: {token?: stri
     {retrySeconds > 0 && <p role="status" className="adm-account-error">Too many sign-in attempts. Try again in {retrySeconds} seconds.</p>}
     {error && <p role="alert" className="adm-account-error">{error}</p>}
     <button type="submit" className="adm-button" disabled={busy || retrySeconds > 0}>{retrySeconds > 0 ? `Try again in ${retrySeconds}s` : busy ? "Please wait..." : token ? "Activate account" : "Sign in"}<Icon size={17}/></button>
-  </form><div className="adm-auth-secure"><Icon name="shield" size={15}/>Protected access for authorized team members</div></div><footer className="adm-auth-form-footer"><span>FALAK RIDES</span><span>Your journey, made comfortable.</span></footer></section></main>;
+  </form><div className="adm-auth-secure"><Icon name="shield" size={15}/>Protected access for authorized team members</div></div><footer className="adm-auth-form-footer"><span>FALAK RIDES</span><span>Administration</span></footer></section></main>;
 }
