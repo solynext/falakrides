@@ -1,3 +1,5 @@
+"use client";
+
 import {ContentText} from "@/features/content/public-content";
 import Image from "next/image";
 import Link from "next/link";
