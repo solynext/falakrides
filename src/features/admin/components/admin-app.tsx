@@ -207,6 +207,36 @@ export default function AdminApp({initial}: {initial: Snapshot}) {
   const [status,setStatus]=useState("All statuses");
   const [dateFilter,setDateFilter]=useState("All dates");
   const [menu,setMenu]=useState(false);
+  useEffect(() => {
+    if (!menu || !window.matchMedia("(max-width: 800px)").matches) return;
+    const sidebar = document.getElementById("admin-navigation");
+    const workArea = document.querySelector<HTMLElement>(".adm-work-area");
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const focusable = () => Array.from(sidebar?.querySelectorAll<HTMLElement>('a[href], button:not(:disabled)') || []);
+    const focusTimer = window.setTimeout(() => {
+      focusable()[0]?.focus();
+      if (workArea) workArea.inert = true;
+    }, 210);
+    const keydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {event.preventDefault(); setMenu(false);}
+      if (event.key !== "Tab") return;
+      const items = focusable();
+      const first = items[0], last = items.at(-1);
+      if (event.shiftKey && document.activeElement === first) {event.preventDefault(); last?.focus();}
+      else if (!event.shiftKey && document.activeElement === last) {event.preventDefault(); first?.focus();}
+    };
+    const media = window.matchMedia("(max-width: 800px)");
+    const resize = () => {if (!media.matches) setMenu(false);};
+    media.addEventListener("change", resize);
+    document.addEventListener("keydown", keydown);
+    return () => {
+      clearTimeout(focusTimer);
+      if (workArea) workArea.inert = false;
+      media.removeEventListener("change", resize);
+      document.removeEventListener("keydown", keydown);
+      previousFocus?.focus();
+    };
+  }, [menu]);
   const [loggingOut,setLoggingOut]=useState(false);
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [logoutError,setLogoutError]=useState("");

@@ -1,0 +1,166 @@
+/* Small-screen corrections only. Desktop rules remain in their original files. */
+@media (max-width: 1100px) {
+  :root .public-site .public-header-shell .header { gap: 12px; padding-inline: 20px; }
+  :root .public-site .public-header-shell .header > .brand { margin-right: 0; }
+  :root .public-site .reference-nav { gap: 12px; }
+  :root .public-site .header-search { min-width: 0; }
+  :root .public-site .header-search-panel { min-width: 0; }
+  :root .public-site .falak-booking { grid-template-columns: minmax(0, 1fr); }
+  :root .public-site .falak-booking-summary { position: static; }
+  :root .admin-app :is(.adm-page-actions, .cms-primary-actions, .cms-editor-heading, .cms-find-bar, .adm-settings-footer) { flex-wrap: wrap; }
+  :root .admin-app :is(.website-record-fields, .website-copy-grid, .adm-dialog-fields) > * { min-width: 0; }
+  :root .admin-app .cms-history button { font-size: 13px; }
+  :root .admin-app .adm-topbar { gap: 12px; }
+  :root .admin-app .adm-breadcrumb { flex-wrap: wrap; gap: 8px; min-width: 0; }
+  :root .admin-app .adm-topbar-right { min-width: 0; gap: 10px; }
+  :root .admin-app .adm-profile { display: block; }
+  :root .admin-app .adm-global-search-submit span { display: inline; }
+}
+
+@media (max-width: 900px) {
+  :root .public-site .taxi-why-photo { min-width: 0; min-height: 0; width: 100%; }
+  :root .public-site :is(.taxi-introduction, .taxi-why, .taxi-faq) > * { min-width: 0; }
+  :root .public-site .taxi-location-marquee { overflow-x: auto; overscroll-behavior-x: contain; }
+  :root .public-site .taxi-location-track { animation: none; transform: none; }
+  :root .public-site .taxi-location-body .taxi-location-book { min-height: 44px; }
+  :root .public-site :is(h1, h2, h3, p, a, label),
+  :root .admin-app :is(h1, h2, h3, p, label) { overflow-wrap: anywhere; }
+  :root .public-site :is(.taxi-container, .taxi-slide-copy, .taxi-vehicle-card, .taxi-detail-grid > article, .contact-popup-layout > *, .inquiry-fields),
+  :root .admin-app :is(.adm-main > *, .website-record-heading > div, .cms-editor-layout > *, .adm-dialog-fields > *) { min-width: 0; }
+  :root .public-site .taxi-page-banner nav { flex-wrap: wrap; }
+  :root .public-site .taxi-page-banner nav > span { overflow-wrap: anywhere; }
+  :root .public-site .taxi-footer :is(nav, .taxi-footer-contact, .taxi-footer-account) { flex-wrap: wrap; }
+  :root .public-site .taxi-footer-inquiry { min-width: 0; }
+  :root .public-site .taxi-footer-inquiry input { min-width: 0; }
+  :root .public-site .taxi-button { white-space: normal; text-align: center; }
+  :root .public-site :is(.reference-menu-toggle, .header-search-mobile-toggle) { min-width: 44px; min-height: 44px; }
+  :root .public-site .reference-nav :is(a, button) { min-height: 44px; white-space: normal; }
+  :root .public-site .reference-navigation .reference-nav { width: min(360px, calc(100% - 24px)); }
+  :root .public-site .header-search form input { min-width: 0; font-size: 16px; }
+  :root .public-site .header-search form button { min-height: 44px; }
+  :root .public-site .taxi-hero { height: auto; min-height: 440px; display: grid; }
+  :root .public-site .taxi-hero .taxi-slide { position: relative; grid-area: 1 / 1; }
+  :root .public-site .taxi-slide-copy { padding: 48px 0; height: 100%; }
+  :root .public-site .taxi-hero-actions { position: static; margin-top: 12px; width: 100%; }
+  :root .public-site .taxi-slide-copy :is(h1, h2) { font-size: clamp(30px, 5.4vw, 45px); }
+  :root .public-site .taxi-slide-copy p { margin-bottom: 16px; }
+  :root .public-site .taxi-hero-actions .taxi-button { min-height: 48px; }
+  :root .public-site .ride-top { flex-wrap: wrap; gap: 10px; }
+  :root .public-site .ride-top > .ride-assurance { display: flex; flex-wrap: wrap; margin-left: 0; }
+  :root .public-site .ride-heading { flex-wrap: wrap; }
+  :root .public-site .ride-timezone { display: inline-flex; white-space: normal; }
+  :root .public-site .falak-booking-section-heading { flex-wrap: wrap; }
+  :root .public-site .falak-booking-timezone { display: inline-flex; flex-wrap: wrap; }
+  :root .public-site .contact-popup :is(input, textarea) { font-size: 16px; }
+  :root .public-site .gallery-card-open { display: grid; opacity: 1; transform: none; }
+  :root .public-site .gallery-lightbox-arrow { width: 44px; height: 44px; }
+  :root .public-site .gallery-search input { font-size: 16px; }
+  :root .public-site .gallery-heading-row { flex-wrap: wrap; }
+  :root .public-site .gallery-lightbox-content { grid-template-rows: minmax(0, 1fr) auto; }
+  :root .public-site .gallery-lightbox-image { height: 100%; }
+  :root .public-site .gallery-lightbox-caption { overflow-wrap: anywhere; }
+  :root .public-site .whatsapp-panel { overflow-y: auto; max-height: calc(100dvh - 110px); }
+  :root .admin-app :is(.adm-button, .adm-icon-button, .adm-row-action, .adm-text-button, .website-tabs button, .website-record-actions button, .cms-page-tabs button, .cms-section-nav button) { min-height: 44px; }
+  :root .admin-app .adm-button { white-space: normal; text-align: center; }
+  :root .admin-app .adm-icon-button { min-width: 44px; }
+  :root .admin-app .adm-panel-head { flex-wrap: wrap; }
+  :root .admin-app .adm-table-scroll { overflow-x: auto; max-width: 100%; }
+  :root .admin-app .adm-table :is(th, td):not(:last-child),
+  :root .admin-app .adm-table :is(.adm-location-description, .adm-cell-text, .adm-person) { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+  :root .admin-app .adm-table :is(th, td) { min-width: 130px; }
+  :root .admin-app .adm-table td:last-child { min-width: 160px; white-space: normal; }
+  :root .admin-app .adm-table .adm-person { max-width: 230px; }
+  :root .admin-app :is(.adm-dialog, .adm-account-dialog, .adm-settings-popup, .customer-import, .services-page-editor, .cms-review-dialog) { max-height: calc(100dvh - 24px); overflow-y: auto; }
+  :root .admin-app .cms-section-heading { display: block; }
+  :root .admin-app .cms-section-nav { min-width: 0; }
+  :root .admin-app .cms-section-nav nav { max-width: 100%; }
+  :root .admin-app .content-image-preview { max-width: 100%; }
+  :root .admin-app .content-image-preview > img { max-width: 100%; height: auto; }
+  :root .admin-app .cms-sticky-heading > .cms-page-actions { position: static; width: 100%; margin-left: 0; }
+  :root .admin-app .cms-sticky-heading > .cms-page-actions .cms-primary-actions { width: 100%; }
+}
+
+@media (max-width: 899px) {
+  :root .admin-app .adm-auth-heading .adm-overline,
+  :root .admin-app .adm-auth-heading p { display: block; }
+  :root .admin-app .adm-auth-secure,
+  :root .admin-app .adm-auth-form-footer { display: flex; flex-wrap: wrap; }
+}
+
+@media (max-width: 800px) {
+  :root .admin-app .adm-sidebar { display: flex; visibility: hidden; transition: transform .2s, visibility .2s; }
+  :root .admin-app .adm-sidebar.is-open { visibility: visible; }
+  :root .admin-app .adm-preview-banner > .adm-badge { display: inline-flex; }
+  :root .admin-app .adm-preview-banner { flex-wrap: wrap; }
+  :root .admin-app .adm-analytics-grid { grid-template-columns: minmax(0, 1fr); }
+  :root .admin-app .adm-status-legend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  :root .admin-app .adm-topbar { height: auto; min-height: 66px; padding-block: 10px; flex-wrap: wrap; }
+  :root .admin-app .adm-topbar-right { flex: 1; justify-content: flex-end; flex-wrap: wrap; }
+  :root .admin-app .adm-breadcrumb { flex: 1 1 100%; }
+  :root .admin-app .adm-topbar-right .adm-global-search { display: flex; width: auto; max-width: none; flex: 1; min-width: 0; }
+  :root .admin-app .adm-global-search input { min-width: 0; }
+  :root .admin-app .adm-global-search-submit span { display: inline; }
+}
+
+@media (max-width: 600px) {
+  :root .unsaved-dialog { max-height: calc(100dvh - 24px); overflow-y: auto; padding: 22px; }
+  :root .app-confirm .app-confirm-actions { flex-wrap: wrap; }
+  :root .app-confirm .app-confirm-actions button { flex-basis: 100px; white-space: normal; }
+  :root .public-site .taxi-container { width: calc(100% - 32px); }
+  :root .public-site .taxi-slide-copy { width: calc(100% - 32px); padding-block: 38px; }
+  :root .public-site .taxi-hero-actions { gap: 10px; }
+  :root .public-site .taxi-hero-actions .taxi-button { flex: 1 1 120px; min-width: 0; padding-inline: 12px; }
+  :root .public-site .taxi-page-banner h1 { font-size: clamp(30px, 8vw, 36px); }
+  :root .public-site :is(.taxi-detail-grid article, .taxi-vehicle-card) { padding-inline: 18px; }
+  :root .public-site .taxi-footer-account { gap: 12px; }
+  :root .public-site .taxi-price-results { flex-wrap: wrap; }
+  :root .public-site :is(.taxi-price-results button, .gallery-filters button, .falak-date-shortcuts button) { min-height: 44px; }
+  :root .public-site .contact-popup-fields { grid-template-columns: minmax(0, 1fr); }
+  :root .public-site .contact-popup-close { width: 44px; height: 44px; }
+  :root .public-site .contact-popup-form-panel { padding-top: 26px; }
+  :root .public-site .falak-booking-grid { grid-template-columns: minmax(0, 1fr); }
+  :root .public-site .falak-booking-vehicle-grid > label:first-child { grid-column: auto; }
+  :root .public-site .falak-booking :is(.falak-booking-details, .falak-booking-summary) { padding: 18px 14px; }
+  :root .public-site .ride-top > .ride-assurance { order: 3; flex-basis: 100%; }
+  :root .public-site .ride-top { position: relative; }
+  :root .public-site .taxi-price-filters { grid-template-columns: minmax(0, 1fr); }
+  :root .admin-app .adm-breadcrumb > span:first-of-type { display: inline; }
+  :root .admin-app .adm-topbar-right { gap: 8px; }
+  :root .admin-app .adm-global-search-submit { min-height: 44px; }
+  :root .admin-app .adm-global-search-submit span { display: inline; }
+  :root .admin-app .adm-topbar-right .adm-global-search { flex-basis: 100%; order: 2; }
+  :root .admin-app .adm-profile { display: block; }
+  :root .admin-app .adm-page-actions { flex-wrap: wrap; }
+  :root .admin-app .adm-page-actions .adm-button { flex: 1 1 120px; }
+  :root .admin-app .adm-table-toolbar > div { min-width: 0; flex-wrap: wrap; }
+  :root .admin-app .adm-table-toolbar :is(select, .adm-search) { width: 100%; min-width: 0; max-width: 100%; flex-basis: 100%; }
+  :root .admin-app .adm-search input { min-width: 0; }
+  :root .admin-app :is(.adm-dialog-top, .adm-dialog-footer, .adm-dialog-footer > div, .adm-driver-row, .website-gallery-actions) { flex-wrap: wrap; }
+  :root .admin-app .adm-dialog-top > :is(h2, div) { min-width: 0; }
+  :root .admin-app .adm-dialog-fields { grid-template-columns: minmax(0, 1fr); padding-inline: 16px; }
+  :root .admin-app .adm-dialog-fields .wide { grid-column: 1 / -1; }
+  :root .admin-app .adm-dialog-footer .adm-button { flex: 1 1 100px; }
+  :root .admin-app .website-toolbar label { width: 100%; min-width: 0; }
+  :root .admin-app .website-record-heading { gap: 10px; }
+  :root .admin-app .website-record-heading > div { max-width: 100%; }
+  :root .admin-app :is(.website-record-fields, .website-copy-grid, .website-service-core, .cms-diff) { grid-template-columns: minmax(0, 1fr); }
+  :root .admin-app :is(.cms-developer-option, .cms-developer-heading) { flex-wrap: wrap; }
+  :root .admin-app .cms-review-dialog { overflow-y: auto; }
+  :root .admin-app .cms-review-list { max-height: none; }
+  :root .admin-app .cms-review-actions { position: static; }
+  :root .admin-app .adm-chart { padding-inline: 12px; gap: 8px; }
+  :root .admin-app .adm-chart-x { flex-wrap: wrap; }
+  :root .admin-app .adm-chart-summary > strong { overflow-wrap: anywhere; }
+  :root .admin-app .adm-notifications { position: fixed; top: 12px; right: 12px; width: calc(100vw - 24px); max-height: calc(100dvh - 24px); overflow-y: auto; }
+  :root .admin-app.adm-auth-app { overflow-y: auto; height: auto; min-height: 100dvh; }
+  :root .admin-app .adm-auth-heading .adm-overline { display: block; }
+  :root .admin-app .adm-auth-heading p { display: block; }
+  :root .admin-app .adm-auth-secure, :root .admin-app .adm-auth-form-footer { display: flex; flex-wrap: wrap; }
+}
+
+@media (max-width: 374px) {
+  :root .admin-app .adm-stat-grid { grid-template-columns: minmax(0, 1fr); }
+  :root .admin-app .adm-status-legend { grid-template-columns: minmax(0, 1fr); }
+  :root .admin-app .customer-import-sources { grid-template-columns: minmax(0, 1fr); }
+  :root .public-site .gallery-grid { columns: 1; }
+}

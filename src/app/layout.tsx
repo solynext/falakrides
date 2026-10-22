@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {siteOrigin} from "@/lib/seo";
 import "./globals.css";
 import "@/components/ui/x-button.css";
+import "./responsive.css";
 import {UnsavedChangesProvider} from "@/components/forms/unsaved-changes";
 export const metadata: Metadata = {
  metadataBase: new URL(siteOrigin()),
