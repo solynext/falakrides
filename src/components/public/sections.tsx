@@ -18,18 +18,18 @@ export function WhyChooseUs(){const {copy:c}=useWebsite();const {whatsapp}=useSi
 export function BookingCallout(){const {copy:c}=useWebsite();return <section className="taxi-booking-callout" aria-labelledby="booking-callout-title">{c.calloutImage && <Image className="taxi-callout-photo" src={photo(c.calloutImage)} alt="" fill sizes="100vw"/>}<div className="taxi-container"><span className="taxi-eyebrow">{c.calloutLabel}</span><h2 id="booking-callout-title">{c.calloutTitle}</h2><p className="taxi-callout-accent">Confirm Your Route, Fare &amp; Pickup</p><p>{c.calloutText}</p><Link className="taxi-button" href="/contact">{c.navContact} <Icon size={16}/></Link></div></section>;}
 export function ReviewsSection({reviews}:{reviews:PublicCatalog["reviews"]}) {
   const {copy:c}=useWebsite();
+  const {email}=useSiteContact();
   const cards = reviews;
   if (!cards.length) return null;
   return <section className="taxi-reviews-section taxi-reviews-simple" aria-labelledby="traveller-reviews-title">
     <div className="taxi-container">
-      <div className="taxi-reviews-heading"><h2 id="traveller-reviews-title"><em>{c.reviewsAccent}</em> {c.reviewsTitle}</h2><p>Comfortable journeys. Memorable experiences.</p></div>
+      <div className="taxi-reviews-heading"><h2 id="traveller-reviews-title"><em>{c.reviewsAccent}</em> {c.reviewsTitle}</h2><p>Comfortable journeys. Memorable experiences. <a className="taxi-write-review" href={`mailto:${email}?subject=${encodeURIComponent("My Falak Rides review")}`}>Write a review</a></p></div>
       <div className="taxi-review-grid" tabIndex={0} role="region" aria-label="Traveller reviews, scroll horizontally">{cards.map(review=><blockquote key={review.id}>
         <span className="taxi-review-quote-mark" aria-hidden="true">&ldquo;</span>
         <span className="taxi-review-stars" role="img" aria-label={`${review.rating} out of 5 stars`}>{"\u2605".repeat(Math.max(0,Math.min(5,review.rating)))}</span>
         <p>{review.text}</p>
         <footer className="taxi-review-card-footer"><span className="taxi-review-avatar" aria-hidden="true">{review.name.split(" ").map(part=>part.charAt(0)).slice(0,2).join("")}</span><div><cite>{review.name}</cite><span className="taxi-review-journey">{review.journey || "Falak Rides traveller"}</span>{review.isSample&&<span className="taxi-review-sample">Sample review</span>}</div></footer>
       </blockquote>)}</div>
-      {cards.some(review=>review.isSample)&&<p className="taxi-reviews-demo-note">Sample reviews are illustrative examples, not customer testimonials.</p>}
     </div>
   </section>;
 }
