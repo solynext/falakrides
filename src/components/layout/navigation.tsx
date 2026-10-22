@@ -11,7 +11,7 @@ export default function Navigation() {
   const items = [
     {label:c.navHome,href:"/"}, {label:c.navAbout,href:"/about"},
     {label:c.navServices,links:services.filter(item=>item.visible).map(item=>[item.title,`/services/${item.slug}`])},
-    {label:c.navPackages,links:[[c.allPackages,"/packages"],...vehicles.filter(item=>item.visible).map(item=>[`${item.name} Packages`,`/packages/${item.slug}`])]},
+    {label:"Vichles",links:[[c.allPackages,"/packages"],...vehicles.filter(item=>item.visible).map(item=>[`${item.name} Packages`,`/packages/${item.slug}`])]},
     {label:c.navGallery,href:"/gallery"}, {label:c.navContact,href:"/contact"},
   ];
   const pathname = usePathname();

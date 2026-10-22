@@ -1,16 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import {usePathname} from "next/navigation";
 import {useEffect, useState} from "react";
 import "./special-offer-button.css";
 
 export default function SpecialOfferButton() {
   const [visible, setVisible] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
+    if (pathname !== "/") return;
     const timer = window.setTimeout(() => setVisible(true), 5000);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [pathname]);
+
+  if (pathname !== "/") return null;
 
   return <div className={`special-offer-wrap${visible ? " is-visible" : ""}`}>
     <Link className="special-offer-button" href="/offers" aria-label="View special offers, up to 50% off">

@@ -245,6 +245,7 @@
 .public-site .taxi-faq h2 { font-size: clamp(32px, 3.5vw, 44px); line-height: 1.2; font-weight: 600; letter-spacing: -.5px; color: #24372c; margin-bottom: 24px; }
 .public-site .taxi-faq h2 em { color: #6d983e; }
 .public-site .taxi-faq-list { display: grid; gap: 10px; margin-top: 0; }
+.public-site .taxi-faq-subheading { margin: 18px 0 2px; color: #344b36; font-size: 15px; font-weight: 600; line-height: 1.4; }
 .public-site .taxi-faq-list details { border: 1px solid #dce5d7; border-radius: 7px; background: #fff; overflow: hidden; }
 .public-site .taxi-faq-list details[open] { border-color: #b7cfa2; background: #f8f8fa; }
 .public-site .taxi-faq-list summary { padding: 17px 18px; gap: 16px; font-size: 14px; font-weight: 600; line-height: 1.6; color: #2c4232; }

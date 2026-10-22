@@ -1,7 +1,7 @@
 .public-site .special-offer-wrap {
   position: fixed;
   z-index: 40;
-  top: 44%;
+  top: 35%;
   right: 18px;
   display: flex;
   align-items: center;
@@ -63,7 +63,7 @@
 .public-site .special-offer-dismiss:hover { background: #ffe8e9; box-shadow: 0 4px 12px #5e08085c; transform: rotate(90deg) scale(1.08); }
 .public-site .special-offer-dismiss:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 @media (max-width: 600px) {
-  .public-site .special-offer-wrap { top: 46%; right: 12px; }
+  .public-site .special-offer-wrap { top: 38%; right: 12px; }
   .public-site .special-offer-button { width: min(214px, calc(100vw - 24px)); min-height: 56px; padding-left: 62px; }
   .public-site .special-offer-discount { width: 70px; height: 70px; }
   .public-site .special-offer-label { font-size: clamp(17px, 5.6vw, 19px); }

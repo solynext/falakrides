@@ -1,0 +1,71 @@
+.taxi-offer-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  padding-bottom: 24px;
+}
+.taxi-offer-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e7e9e4;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 24px #172d260a;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.taxi-offer-card:hover {
+  transform: translateY(-3px);
+  border-color: #d5dfcb;
+  box-shadow: 0 16px 34px #172d2615;
+}
+.taxi-offer-image {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #edf1e9;
+}
+.taxi-offer-image img { position: relative !important; display: block; width: 100%; height: auto !important; object-fit: contain; transition: filter .35s ease; }
+.taxi-offer-card:hover .taxi-offer-image img { filter: brightness(1.03); }
+.taxi-offer-discount {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 5px;
+  border: 1px solid #ffffff70;
+  border-radius: 999px;
+  background: #c8202d;
+  box-shadow: 0 2px 6px #64101630;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 7px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: .35px;
+  text-transform: uppercase;
+}
+.taxi-offer-card .taxi-offer-discount { color: #fff; }
+.taxi-offer-content { display: flex; flex-direction: column; align-items: flex-start; min-height: 205px; padding: 18px; }
+.taxi-offer-content h3 { margin: 0 0 9px; color: #23382b; font-size: 19px; line-height: 1.35; }
+.taxi-offer-content p { margin: 0 0 10px; color: #687268; font-size: 13px; line-height: 1.65; }
+.taxi-offer-content .taxi-offer-route { color: #455b48; font-weight: 600; }
+.taxi-offer-content .taxi-offer-valid { font-size: 12px; }
+.taxi-offer-content .taxi-offer-terms { margin-top: 4px; }
+.taxi-offer-content .taxi-button { margin-top: auto; min-height: 44px; border-radius: 9px; padding: 11px 16px; font-size: 13px; }
+.taxi-offer-discount-inline { position: static; margin-bottom: 10px; }
+.taxi-offer-empty { grid-column: 1 / -1; }
+.taxi-offer-empty .taxi-offer-content { min-height: 0; }
+@media (max-width: 700px) {
+  .taxi-offer-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .taxi-offer-content { min-height: 0; padding: 16px; }
+  .taxi-offer-content .taxi-button { margin-top: 12px; }
+}
+@media (max-width: 520px) {
+  .taxi-offer-list { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .taxi-offer-card, .taxi-offer-image img { transition: none; }
+  .taxi-offer-card:hover, .taxi-offer-card:hover .taxi-offer-image img { transform: none; }
+}

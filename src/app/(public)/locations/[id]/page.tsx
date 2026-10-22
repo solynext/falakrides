@@ -5,6 +5,7 @@ import Link from "next/link";
 import {notFound,permanentRedirect} from "next/navigation";
 import PublicPage from "@/components/layout/public-page";
 import {SectionHeading} from "@/components/public/sections";
+import RelatedPrices from "@/components/public/related-prices";
 import {db} from "@/lib/db";
 import {readContent} from "@/features/content/store";
 import {websiteFromValues} from "@/features/content/website-model";
@@ -59,6 +60,7 @@ export default async function LocationPage({params}:Props) {
       <span className="taxi-eyebrow">Our Locations</span><h2>{location.name}</h2><p style={{whiteSpace:"pre-line"}}>{location.description}</p>
       <Link className="taxi-button" href={`/book-a-ride?pickup=${encodeURIComponent(location.name)}`}>{copy.bookNow}</Link>
     </div></div>
+    <RelatedPrices serviceTitle={location.name} locationName={location.name}/>
     {location.name.trim().toLowerCase()==="makkah"&&<section className="seo-content" aria-labelledby="makkah-taxi-heading"><h2 id="makkah-taxi-heading">Private taxi in Makkah</h2><p>Share your Makkah pickup and destination, travel date, passenger count and luggage when requesting a private city ride. For journeys beyond the city, ask the team to confirm the route, vehicle preference and total fare in SAR.</p><ul className="seo-related-links"><li><Link href="/services/city-wise-services">Makkah city and intercity taxi services</Link></li><li><Link href="/umrah-taxi-prices">Published Umrah taxi prices and quote guidance</Link></li><li><Link href="/makkah-to-madinah-taxi">Makkah to Madinah private taxi</Link></li><li><Link href="/book-a-ride?pickup=Makkah">Request a private taxi in Makkah</Link></li></ul></section>}
     {!!related.length&&<section aria-labelledby="related-services-title"><SectionHeading label={location.name}><span id="related-services-title">Related Service</span></SectionHeading><div className="taxi-service-grid">{related.map(service=><Link className="taxi-service-card" href={`/services/${service.slug}`} key={service.id}><div>{service.image&&<Image src={photo(service.image)} alt={service.title} fill sizes="(max-width: 700px) 90vw, 30vw"/>}</div><h3>{service.title}</h3><span>{copy.learnMore} →</span></Link>)}</div></section>}
     {!!destinations.length&&<div className="taxi-detail-grid"><article><h2>Supported destinations</h2><ul>{destinations.map((destination,index)=><li key={index}>{destination}</li>)}</ul></article></div>}
