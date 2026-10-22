@@ -1,0 +1,6 @@
+.taxi-related-prices { margin-block: 48px; min-width: 0; }
+.taxi-related-prices > .taxi-section-heading { margin-bottom: 28px; }
+.taxi-related-prices .taxi-price-empty { text-align: center; padding: 24px 16px; }
+@media (max-width: 600px) {
+  .taxi-related-prices { margin-block: 32px; }
+}

@@ -14,7 +14,7 @@ const links=load('../../src/features/admin/record-links.ts');
 const {modules}=load('../../src/features/admin/data/modules.ts');
 test('Price and Routes exposes locations, prices, homepage featuring, status and ride selection',()=>{
   assert.equal(modules.fares.title,'Price and Routes');
-  assert.equal(modules.fares.fields.map(field=>field.key).join(','),'pickup,destination,fare,maxFare,caption,featured,status,vehicleId');
+  assert.equal(modules.fares.fields.map(field=>field.key).join(','),'serviceId,pickup,destination,fare,maxFare,caption,featured,status,vehicleId');
   assert.equal(modules.fares.fields.find(field=>field.key==='vehicleId').required,true);
 });
 test('selecting saved rides and customers fills the corresponding booking fields',()=>{
@@ -33,13 +33,14 @@ test('booking selection supplies payment details and the correct notification ch
   assert.equal(links.applyBookingLink(payment,undefined,'payments').customer,'');
 });
 class HttpError extends Error {constructor(status,message){super(message);this.status=status;}}
-function fixture() {
+function fixture(existing=null) {
   let written;
   const booking={id:'booking1',reference:'FR-ONE',customerName:'Customer',customerEmail:'one@example.com',phone:'+966500000000'};
-  const delegate={findUnique:async()=>null,create:async({data})=>{written=data;return {...data,id:'saved',version:1,booking};}};
+  const delegate={findUnique:async()=>existing,create:async({data})=>{written=data;return {...data,id:'saved',version:1,booking};},update:async({data})=>{written=data;return {...existing,...data,id:existing.id,version:2};}};
   const db={driver:delegate,fare:delegate,notification:delegate,payment:delegate,
     vehicle:{findUnique:async({where})=>where.id==='vehicle1'?{id:'vehicle1'}:null,findFirst:async({where})=>where.OR.some(item=>item.id==='vehicle1'||item.name==='Saved car')?{id:'vehicle1'}:null},
     location:{findFirst:async({where})=>['Makkah','Madinah'].includes(where.name)?{name:where.name}:null},
+    serviceCatalog:{findUnique:async()=>({services:[{id:'airport',title:'Airport transfers'},{id:'ziyarat',title:'Ziyarat services'}]})},
     booking:{findUnique:async({where})=>where.reference==='FR-ONE'?booking:null},
     auditLog:{create:async()=>{}},siteContent:{findUniqueOrThrow:async()=>({draft:{},published:{}}),update:async()=>{}},$transaction:async action=>action(db)};
   const service=load('../../src/features/admin/server.ts',name=>{
@@ -54,7 +55,7 @@ function fixture() {
     if(['./booking-itinerary','./notifications','@/features/bookings/confirmation'].includes(name))return {};
     throw Error(name);
   });
-  return {save:(module,row)=>service.writeRecord(module,row,{id:'admin',role:'Administrator'}),written:()=>written};
+  return {save:(module,row)=>service.writeRecord(module,row,{id:'admin',role:'Administrator'},existing?.id),written:()=>written};
 }
 test('driver vehicles resolve to saved IDs and reject unknown vehicles or locations',async()=>{
   const row={name:'Driver',phone:'',city:'Makkah',vehicle:'Saved car',status:'Available'};
@@ -69,6 +70,18 @@ test('fares derive routes from saved locations and reject unavailable stops',asy
   await assert.rejects(fixture().save('fares',{...row,vehicleId:'missing'}),{status:400});
   await assert.rejects(fixture().save('fares',{...row,pickup:'Missing'}),{status:400});
   await assert.rejects(fixture().save('fares',{...row,destination:'Makkah'}),{status:400});
+});
+
+test('route service categories save and reload by ID, reject unknown services, and remain optional for legacy routes',async()=>{
+  const row={pickup:'Makkah',destination:'Madinah',fare:'250',maxFare:'350',vehicleId:'vehicle1',status:'Active'};
+  const f=fixture();const saved=await f.save('fares',{...row,serviceId:'airport'});
+  assert.equal(f.written().serviceId,'airport');assert.equal(saved.row.serviceId,'airport');
+  const unknown=fixture();await assert.rejects(unknown.save('fares',{...row,serviceId:'missing'}),{status:400});assert.equal(unknown.written(),undefined);
+  const legacy=fixture();await legacy.save('fares',row);assert.equal(legacy.written().serviceId,null);
+  const edit=fixture({id:'fare1',version:1,route:'Makkah → Madinah',serviceId:'airport'});
+  await edit.save('fares',{...row,_version:'1'});assert.equal(edit.written().serviceId,'airport');
+  const clear=fixture({id:'fare1',version:1,route:'Makkah → Madinah',serviceId:'airport'});
+  await clear.save('fares',{...row,_version:'1',serviceId:''});assert.equal(clear.written().serviceId,null);
 });
 test('linked notifications use the booking recipient even if a different address is submitted',async()=>{
   const row={booking:'FR-ONE',recipient:'wrong@example.com',channel:'Email',message:'Update',status:'Draft'};

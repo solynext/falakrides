@@ -74,9 +74,19 @@ try {
           const clicked=await evaluate(`(() => {const b=document.querySelector(${JSON.stringify(selector)});if(!b||b.disabled||!b.getClientRects().length||getComputedStyle(b).display==='none')return false;b.click();return true;})()`);
           if(!clicked)continue;
           await new Promise(r=>setTimeout(r,350));
+          if(route==='/admin/price-and-routes' && await evaluate(`!!document.querySelector('dialog[open] #adm-fare-service-category')`)){
+            const selected=await evaluate(`(() => {const select=document.querySelector('#adm-fare-service-category');const option=[...select.options].find(o=>o.value&&!o.disabled);if(!option)return null;select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));return {id:option.value,label:option.textContent};})()`);
+            if(selected){
+              await new Promise(r=>setTimeout(r,50));
+              const value=await evaluate(`document.querySelector('#adm-fare-service-category').value`);
+              if(value!==selected.id)throw Error('Route service category selection was not retained');
+              interactions.push({route,width,selectedCategory:selected});
+            }
+          }
           const state=await evaluate(`(() => {const e=document.querySelector('dialog[open]')||document.querySelector('.reference-nav[data-open="true"]')||document.querySelector('.header-search-panel[data-mobile-open="true"]');if(!e)return null;const r=e.getBoundingClientRect();return {class:e.className,left:r.left,right:r.right,top:r.top,bottom:r.bottom,scroll:e.scrollWidth,client:e.clientWidth};})()`);
           if(state){interactions.push({route,width,selector,state});if(state.left< -1||state.right>width+1||state.top< -1||state.bottom>height+1||state.scroll>state.client+2)throw Error('Interactive overflow: '+JSON.stringify({route,width,selector,state}));}
           await evaluate(`(() => {const d=document.querySelector('dialog[open]');if(d){const b=d.querySelector('button[aria-label^="Close"]');if(b)b.click();else d.close();}const menu=document.querySelector('.reference-menu-toggle[aria-expanded="true"]');menu?.click();const search=document.querySelector('.header-search-mobile-toggle[aria-expanded="true"]');search?.click();})()`);
+          if(route==='/admin/price-and-routes')await evaluate(`document.querySelector('.unsaved-dialog[open] .unsaved-discard')?.click()`);
           await new Promise(r=>setTimeout(r,100));
         }
         if(route==='/admin/website-content'){

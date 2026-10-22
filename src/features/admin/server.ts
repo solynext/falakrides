@@ -67,7 +67,7 @@ export async function adminSnapshot(user: {id: string; role: string}) {
     data[key] = records.map(record => serialize(key, record));
   }));
   // Surface incoming inquiries in the existing feedback workflow.
-  if(canAccess(user.role,"locations")) {
+  if(canAccess(user.role,"locations") || canAccess(user.role,"fares")) {
     const catalog=await db.serviceCatalog.findUnique({where:{id:"main"}});
     const services=(catalog?.services || []) as {id:string;title:string}[];
     data.serviceCategories=services.map(service=>({id:service.id,name:service.title}));
@@ -98,6 +98,7 @@ function validate(module: string, input: unknown) {
   shape.id = z.string().optional(); shape._version = z.string().optional(); shape._createdAt = z.string().optional();
   if(module === "bookings") {shape.customerId=clean.optional();shape.fareId=clean.optional();}
   if(module === "offers") {shape.discount=shape.discount.optional();shape.terms=shape.terms.optional();}
+  if(module === "fares") shape.serviceId=clean.optional();
   if(module === "fares" && input && typeof input === "object") {
     const legacy=input as Record<string,unknown>;
     if(typeof legacy.route === "string" && legacy.pickup === undefined && legacy.destination === undefined) {const [pickup,destination]=routeStops(legacy.route);input={...legacy,pickup,destination};}
@@ -159,6 +160,13 @@ async function mutationData(tx: Prisma.TransactionClient, module: string, row: R
     if (!data.category || data.category !== existing?.category && !await tx.vehicleCategory.findUnique({where:{name:String(data.category)}})) throw new HttpError(400, "Choose a category created by an administrator.");
   }
   if (module === "fares") {
+    const serviceId = row.serviceId === undefined ? String(existing?.serviceId || "") : row.serviceId;
+    if (serviceId && serviceId !== existing?.serviceId) {
+      const catalog = await tx.serviceCatalog.findUnique({where: {id: "main"}});
+      const services = (catalog?.services || []) as {id:string}[];
+      if (!services.some(service => service.id === serviceId)) throw new HttpError(400, "Choose a service category from Our Services.");
+    }
+    data.serviceId = serviceId || null;
     const [oldPickup,oldDestination]=routeStops(String(existing?.route || ""));
     await checkLocation(tx,row.pickup,oldPickup);await checkLocation(tx,row.destination,oldDestination);
     if(row.pickup.toLowerCase() === row.destination.toLowerCase())throw new HttpError(400,"Choose different pickup and drop-off locations.");

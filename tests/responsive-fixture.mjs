@@ -22,8 +22,8 @@ await build({
     Object.assign(data.bookings[0],{customer:'A traveller with a longer customer name',pickup:'Jeddah Airport',destination:'Makkah hotel',route:'Jeddah Airport → Makkah hotel',status:'Pending',date:'2026-10-22',fare:'250',passengers:'4',luggage:'3',email:'traveller@example.test'});
     Object.assign(data.customers[0],{name:'Sample Customer',email:'traveller@example.test'});
     Object.assign(data.vehicles[0],{name:'Family vehicle',status:'Available',passengers:'6',luggage:'4'});
-    data.serviceCategories=[];
     const values=Object.fromEntries(contentFields.map(f=>[f.id,f.value]));
+    data.serviceCategories=websiteFromValues(values).services.map(service=>({id:service.id,name:service.title}));
     const document={version:1,draft:values,published:values,updatedAt:null,publishedAt:null,catalog:{locations:[],routes:[],vehicles:[],offers:[],reviews:[]}};
     const snapshot={data,settings:{...initialSettings,version:1},notices:[],user:{id:'test',name:'Test Administrator',role:'Administrator'}};
     window.fetch=async (url,options)=>{
