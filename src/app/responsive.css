@@ -164,3 +164,42 @@
   :root .admin-app .customer-import-sources { grid-template-columns: minmax(0, 1fr); }
   :root .public-site .gallery-grid { columns: 1; }
 }
+
+/* Compact title hierarchy for phones; tablet and desktop sizes stay unchanged. */
+@media (max-width: 600px) {
+  :root .public-site .taxi-hero .taxi-slide-copy :is(h1, h2),
+  :root .public-site .taxi-page-banner h1 {
+    font-size: 26px;
+    line-height: 1.25;
+  }
+
+  :root .public-site.public-site :is(.taxi-section-heading, .taxi-introduction, .taxi-why, .taxi-faq, .taxi-detail-split, .taxi-detail-grid, .taxi-footer-top, .taxi-booking-callout, .gallery-heading-row, .seo-content, .seo-guide-card, .taxi-legal) h2,
+  :root .public-site .taxi-booking-callout p.taxi-callout-accent {
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  :root .public-site.public-site :is(.taxi-service-card, .taxi-vehicle-card, .taxi-benefit, .taxi-steps, .contact-popup, .falak-booking) h3,
+  :root .public-site .taxi-contact-cards h2,
+  :root .public-site .seo-content h3 {
+    font-size: 20px;
+    line-height: 1.35;
+  }
+
+  :root .public-site.public-site :is(.contact-popup, .ride-heading, .public-profile-dialog, .inquiry-intro) :is(h2, h3),
+  :root .public-site .gallery-lightbox-caption h2 {
+    font-size: 22px;
+    line-height: 1.3;
+  }
+
+  :root .admin-app .adm-page-title h1,
+  :root .admin-app .adm-auth-heading :is(h1, h2) {
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  :root .admin-app.admin-app :is(.adm-dialog, .adm-account-dialog, .cms-review-dialog, .cms-developer-heading, .adm-next-step, .adm-report) h2 {
+    font-size: 20px;
+    line-height: 1.35;
+  }
+}
