@@ -442,7 +442,7 @@
 .taxi-reviews-heading{text-align:center;margin:0 auto 48px;max-width:780px}
 .taxi-reviews-heading h2{color:var(--taxi-accent);font-size:clamp(30px,3.2vw,44px);line-height:1.25;margin:0 0 16px}
 .taxi-reviews-heading h2 em{color:var(--taxi-lime);font-style:normal}
-.taxi-reviews-heading p{color:#777;font-size:17px;margin:0;line-height:1.7}
+.taxi-reviews-heading .taxi-reviews-description{color:#777;font-size:17px;margin:0;line-height:1.7}
 .taxi-reviews-simple .taxi-review-grid{display:grid;grid-template-columns:none;grid-template-rows:1fr;grid-auto-flow:column;grid-auto-columns:calc((100% - 56px)/3);gap:28px;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;padding-bottom:0;scrollbar-width:none;-ms-overflow-style:none}
 .taxi-reviews-simple blockquote{scroll-snap-align:start;display:flex;flex-direction:column;min-width:0;margin:0;padding:30px;border:1px solid #e1e5e8;border-radius:22px;background:#f8f9fa;box-shadow:none}
 .taxi-reviews-simple blockquote::before{content:none}
@@ -460,7 +460,7 @@
 .taxi-reviews-heading .taxi-write-review:hover{text-decoration:underline}
 .taxi-reviews-heading .taxi-write-review:focus-visible{outline:2px solid var(--taxi-lime);outline-offset:4px}
 @media(max-width:1050px){.taxi-reviews-simple .taxi-review-grid{grid-auto-columns:calc((100% - 22px)/2);gap:22px}}
-@media(max-width:640px){.taxi-reviews-simple{padding:56px 0}.taxi-reviews-heading{margin-bottom:30px}.taxi-reviews-heading p{font-size:15px}.taxi-reviews-simple .taxi-review-grid{grid-auto-columns:88%;gap:18px}.taxi-reviews-simple blockquote{padding:25px}.taxi-reviews-simple blockquote>p{font-size:15px}}
+@media(max-width:640px){.taxi-reviews-simple{padding:56px 0}.taxi-reviews-heading{margin-bottom:30px}.taxi-reviews-heading .taxi-reviews-description{font-size:15px}.taxi-reviews-simple .taxi-review-grid{grid-auto-columns:88%;gap:18px}.taxi-reviews-simple blockquote{padding:25px}.taxi-reviews-simple blockquote>p{font-size:15px}}
 
 /* Responsive optimized media reserves space without stretching vehicle photos. */
 .public-site .taxi-why-photo { position: relative; width: 100%; min-width: 0; aspect-ratio: 800 / 390; }

@@ -1,0 +1,15 @@
+.taxi-reviews-heading .taxi-write-review{display:inline;padding:0;border:0;border-radius:0;background:none;box-shadow:none;cursor:pointer;text-transform:none;letter-spacing:normal}
+.taxi-review-dialog{position:fixed;inset:0;width:min(520px,calc(100% - 32px));max-height:90dvh;margin:auto;padding:32px;border:1px solid #e1e5dc;border-radius:20px;background:#fff;color:var(--taxi-accent,#2a2b34);overflow-y:auto;text-align:left;box-shadow:0 24px 80px #0003}
+.taxi-review-dialog::backdrop{background:#161d27a6}
+.public-site .taxi-review-dialog h2{font-size:28px;line-height:1.25;padding-right:22px;margin:0 0 12px}
+.taxi-review-dialog>p{font-size:14px;line-height:1.7;color:#72766d;margin:0 0 22px}
+.taxi-review-close{position:absolute;right:14px;top:12px;display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;background:none;color:#555;font-size:28px;cursor:pointer}
+.taxi-review-dialog fieldset{display:grid;gap:16px;border:0;padding:0;margin:0;min-width:0}
+.taxi-review-dialog label{display:grid;gap:7px;margin:0;font-size:13px;color:#454a40}
+.taxi-review-dialog input,.taxi-review-dialog select,.taxi-review-dialog textarea{width:100%;min-width:0;border:1px solid #dce2d5;border-radius:7px;background:#fafbf8;color:#2a2b34;padding:11px 12px;font:inherit;box-sizing:border-box}
+.taxi-review-dialog textarea{resize:vertical}
+.taxi-review-dialog .taxi-button{justify-content:center;margin:2px 0 0}
+.taxi-review-error{margin:0;color:#aa3524;font-size:13px;line-height:1.6}
+.taxi-review-success p{font-size:15px;color:#4b6334;line-height:1.7}
+.taxi-review-dialog button:disabled{opacity:.65;cursor:wait}
+@media(max-width:480px){.taxi-review-dialog{padding:26px 22px}.public-site .taxi-review-dialog h2{font-size:25px}}

@@ -9,6 +9,7 @@ import type {PublicCatalog} from "@/features/content/types";
 import {photo} from "@/utils/images";
 import BookingProcess from "./booking-process";
 import WhatsAppIcon from "@/components/ui/whatsapp-icon";
+import WriteReview from "./write-review";
 export function SectionHeading({label,children,description}:{label:React.ReactNode;children:React.ReactNode;description?:React.ReactNode}) {return <div className="taxi-section-heading"><span>{label}</span><h2>{children}</h2>{description&&<p>{description}</p>}</div>;}
 export function Introduction(){const {copy:c}=useWebsite();const company=useSiteCompany();return <section className="taxi-container taxi-introduction"><div><span className="taxi-eyebrow">{c.introLabel}</span><h2>{c.introTitle}<br/><em>{c.introAccent}</em></h2><p>{c.introText}</p><p>{c.introText2}</p>{[["shield",c.benefit1Title,c.benefit1Text],["car",c.benefit2Title,c.benefit2Text]].map(([icon,title,text])=><div className="taxi-benefit" key={icon}><span><Icon name={icon} size={34}/></span><div><h3>{title}</h3><p>{text}</p></div></div>)}<Link className="taxi-text-link" href="/about">{c.introLink} <Icon size={16}/></Link></div><div className="taxi-intro-photo">{c.introImage && <Image src={photo(c.introImage)} alt={c.introImageAlt} fill sizes="(max-width: 760px) 90vw, 45vw"/>}<div><span>{company.name.toUpperCase()}</span><strong>{c.introCaption}</strong><small>{c.destinations}</small></div></div></section>;}
 export function ServiceCards(){const {services,copy:c}=useWebsite();return <div className="taxi-service-grid">{services.filter(service=>service.visible).map(service=><Link href={`/services/${service.slug}`} className="taxi-service-card" key={service.id}><div>{service.image && <Image src={photo(service.image)} alt={service.title} fill sizes="(max-width: 700px) 90vw, 30vw"/>}</div><h3>{service.title}</h3><span>{c.learnMore} <Icon size={16}/></span></Link>)}</div>;}
@@ -18,12 +19,10 @@ export function WhyChooseUs(){const {copy:c}=useWebsite();const {whatsapp}=useSi
 export function BookingCallout(){const {copy:c}=useWebsite();return <section className="taxi-booking-callout" aria-labelledby="booking-callout-title">{c.calloutImage && <Image className="taxi-callout-photo" src={photo(c.calloutImage)} alt="" fill sizes="100vw"/>}<div className="taxi-container"><span className="taxi-eyebrow">{c.calloutLabel}</span><h2 id="booking-callout-title">{c.calloutTitle}</h2><p className="taxi-callout-accent">Confirm Your Route, Fare &amp; Pickup</p><p>{c.calloutText}</p><Link className="taxi-button" href="/contact">{c.navContact} <Icon size={16}/></Link></div></section>;}
 export function ReviewsSection({reviews}:{reviews:PublicCatalog["reviews"]}) {
   const {copy:c}=useWebsite();
-  const {email}=useSiteContact();
   const cards = reviews;
-  if (!cards.length) return null;
   return <section className="taxi-reviews-section taxi-reviews-simple" aria-labelledby="traveller-reviews-title">
     <div className="taxi-container">
-      <div className="taxi-reviews-heading"><h2 id="traveller-reviews-title"><em>{c.reviewsAccent}</em> {c.reviewsTitle}</h2><p>Comfortable journeys. Memorable experiences. <a className="taxi-write-review" href={`mailto:${email}?subject=${encodeURIComponent("My Falak Rides review")}`}>Write a review</a></p></div>
+      <div className="taxi-reviews-heading"><h2 id="traveller-reviews-title"><em>{c.reviewsAccent}</em> {c.reviewsTitle}</h2><div className="taxi-reviews-description">Comfortable journeys. Memorable experiences. <WriteReview/></div></div>
       <div className="taxi-review-grid" tabIndex={0} role="region" aria-label="Traveller reviews, scroll horizontally">{cards.map(review=><blockquote key={review.id}>
         <span className="taxi-review-quote-mark" aria-hidden="true">&ldquo;</span>
         <span className="taxi-review-stars" role="img" aria-label={`${review.rating} out of 5 stars`}>{"\u2605".repeat(Math.max(0,Math.min(5,review.rating)))}</span>
