@@ -63,7 +63,7 @@ export function serialize(module: string, record: Row): AdminRow {
 export async function adminSnapshot(user: {id: string; role: string}) {
   const data: Record<string, AdminRow[]> = Object.fromEntries(Object.keys(modules).map(key => [key, []]));
   await Promise.all(Object.keys(names).filter(key => canAccess(user.role, key)).map(async key => {
-    const records = await table(db, key).findMany({orderBy: {createdAt: "desc"}, include: includes(key)});
+    const records = await table(db, key).findMany({...(key === "feedback" ? {where: {type: {not: "Review"}}} : {}), orderBy: {createdAt: "desc"}, include: includes(key)});
     data[key] = records.map(record => serialize(key, record));
   }));
   // Surface incoming inquiries in the existing feedback workflow.
@@ -180,7 +180,7 @@ async function mutationData(tx: Prisma.TransactionClient, module: string, row: R
     if(!Number.isInteger(discount) || discount<0 || discount>100)throw new HttpError(400,"Discount must be a whole percentage from 0 to 100.");
     return {...data,image:vehicle.image || "",discount,terms:row.terms ?? String(existing?.terms || ""),name:`${vehicle.name} · ${row.pickup} → ${row.destination}`,route:`${row.pickup} → ${row.destination}`,...(!existing ? {code:`OFFER-${randomBytes(8).toString("hex").toUpperCase()}`,validUntil:"9999-12-31",status:"Active"} : {})};
   }
-  if (module === "feedback") {data.rating = row.type === "Inquiry" ? null : Number(row.rating); if (row.type !== "Inquiry" && !row.rating) throw new HttpError(400, "Choose a rating.");}
+  if (module === "feedback") data.rating = null;
   if (module === "payments" || module === "notifications") {
     const booking = row.booking ? await tx.booking.findUnique({where: {reference: row.booking}}) : null;
     if (row.booking && !booking || module === "payments" && !booking) throw new HttpError(400, "Choose an existing booking reference.");

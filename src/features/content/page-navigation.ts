@@ -16,6 +16,7 @@ section("home","Hero slides").collection="slides";
 section("gallery","Gallery photos").collection="gallery";
 const copyGroups: Record<string,string> = {Introduction:"Introduction", "Booking steps":"How booking works",Benefits:"Why choose us"};
 for (const field of websiteCopyFields) {
+  if (field.key.startsWith("reviews")) continue;
   let page="home", label=copyGroups[field.group] || field.group;
   if(field.group==="Navigation & buttons" || field.group==="Footer") {page="shared";label=field.group;}
   if(field.group==="Gallery") {page="gallery";label="Gallery introduction";}

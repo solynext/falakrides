@@ -18,7 +18,7 @@
 }
 
 @media (max-width: 900px) {
-  :root .public-site .taxi-why-photo { min-width: 0; min-height: 0; width: 100%; }
+  :root .public-site .taxi-why-photo { min-width: 0; min-height: 0; width: 100%; aspect-ratio: 800 / 520; }
   :root .public-site :is(.taxi-introduction, .taxi-why, .taxi-faq) > * { min-width: 0; }
   :root .public-site .taxi-location-marquee { overflow-x: auto; overscroll-behavior-x: contain; }
   :root .public-site .taxi-location-track { animation: none; transform: none; }
@@ -109,6 +109,9 @@
   :root .public-site .taxi-container { width: calc(100% - 32px); }
   :root .public-site .taxi-slide-copy { width: calc(100% - 32px); padding-block: 38px; }
   :root .public-site .taxi-hero-actions { gap: 10px; }
+  :root .public-site .taxi-why-actions { width: 100%; margin-inline: 0; gap: 10px; }
+  :root .public-site .taxi-why-actions > .taxi-button { flex: 1 1 0; min-width: 0; padding: 12px 10px; gap: 7px; font-size: 12px; white-space: nowrap; }
+  :root .public-site .taxi-why-actions svg { flex-shrink: 0; }
   :root .public-site .taxi-hero-actions .taxi-button { flex: 1 1 120px; min-width: 0; padding-inline: 12px; }
   :root .public-site .taxi-page-banner h1 { font-size: clamp(30px, 8vw, 36px); }
   :root .public-site :is(.taxi-detail-grid article, .taxi-vehicle-card) { padding-inline: 18px; }
@@ -124,7 +127,7 @@
   :root .public-site .ride-top > .ride-assurance { order: 3; flex-basis: 100%; }
   :root .public-site .ride-top { position: relative; }
   :root .public-site .taxi-price-filters { grid-template-columns: minmax(0, 1fr); }
-  :root .admin-app .adm-breadcrumb > span:first-of-type { display: inline; }
+  :root .admin-app .adm-breadcrumb > :is(span, strong) { display: none; }
   :root .admin-app .adm-topbar-right { gap: 8px; }
   :root .admin-app .adm-global-search-submit { min-height: 44px; }
   :root .admin-app .adm-global-search-submit span { display: inline; }
@@ -156,6 +159,10 @@
   :root .admin-app .adm-auth-heading .adm-overline { display: block; }
   :root .admin-app .adm-auth-heading p { display: block; }
   :root .admin-app .adm-auth-secure, :root .admin-app .adm-auth-form-footer { display: flex; flex-wrap: wrap; }
+}
+
+@media (max-width: 420px) {
+  :root .public-site .taxi-why-actions { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 374px) {

@@ -38,7 +38,7 @@ const currency = (value: string | number) => `SAR ${Number(value || 0).toLocaleS
 const groups = [
   {label:"WORKSPACE",items:[["overview","Dashboard","grid"],["bookings","Bookings","calendar"],["services","Our Services","window"],["locations","Locations","pin"],["customers","Customers","users"]]},
   {label:"OPERATIONS",items:[["drivers","Drivers","driver"],["vehicles","Vehicles","vehicle"],["fares","Price and Routes","route"]]},
-  {label:"BUSINESS",items:[["offers","Offers & packages","ticket"],["payments","Payments","wallet"],["feedback","Feedback","star"]]},
+  {label:"BUSINESS",items:[["offers","Offers & packages","ticket"],["payments","Payments","wallet"],["feedback","Inquiries & complaints","message"]]},
   {label:"MANAGEMENT",items:[["content","Website content","window"],["reports","Reports","chart"],["roles","Team & roles","access"],["settings","Settings","sliders"]]},
 ];
 function AdminIcon({name,size=20}:{name:string;size?:number}) {
@@ -165,18 +165,8 @@ function RecordDialog({moduleKey,record,definition,drivers,vehicles,locations,se
           const options=isDriver ? drivers.map(driver=>({value:driver.id,label:driver.name,disabled:driver.status === "Off duty"})) : vehicleOptions.map(option=>({...option,disabled:option.disabled || Number(vehicles.find(vehicle=>vehicle.id===option.value)?.passengers || 0)<Number(draft.passengers || 1)}));
           return <label key={field.key}>{field.label}<SavedRecordSelect value={draft[field.key] === "Unassigned" ? "" : draft[field.key] || ""} options={options} placeholder="Unassigned" disabled={!editable || working} onChange={value=>setDraft(current=>{const next={...current,[field.key]:value || "Unassigned"};if(!isDriver)next.fareId="";if(isDriver && value){const driver=drivers.find(driver=>driver.id===value);const vehicle=vehicles.find(vehicle=>vehicle.id===driver?.vehicle || vehicle.name===driver?.vehicle);if(vehicle && vehicle.status !== "Maintenance" && Number(vehicle.passengers)>=Number(current.passengers || 1))next.vehicle=vehicle.id;}return next;})}/></label>;
         }
-        if (moduleKey === "feedback" && field.key === "rating") {
-          const rating = Number(draft.rating || 0);
-          const inquiry = draft.type === "Inquiry";
-          return <fieldset key={field.key} className="adm-rating-field" disabled={!editable || working || inquiry}>
-            <div className="adm-rating-stars" role="radiogroup" aria-label="Rating from 1 to 5 stars">
-              {[1,2,3,4,5].map(value => <button key={value} type="button" role="radio" aria-checked={rating === value} aria-label={`${value} star${value === 1 ? "" : "s"}`} title={`${value} star${value === 1 ? "" : "s"}`} tabIndex={rating === value || (!rating && value === 1) ? 0 : -1} className={value <= rating ? "selected" : ""} onClick={() => setDraft(current => ({...current,rating:String(value)}))} onKeyDown={event => {if (["ArrowRight","ArrowUp"].includes(event.key)) {event.preventDefault();const next=Math.min(5,value+1);setDraft(current=>({...current,rating:String(next)}));document.getElementById(`adm-rating-${next}`)?.focus();} else if (["ArrowLeft","ArrowDown"].includes(event.key)) {event.preventDefault();const next=Math.max(1,value-1);setDraft(current=>({...current,rating:String(next)}));document.getElementById(`adm-rating-${next}`)?.focus();}}} id={`adm-rating-${value}`}>★</button>)}
-            </div>
-            <span className="adm-rating-caption" aria-live="polite">{inquiry ? "Ratings do not apply to inquiries" : rating ? `${rating} out of 5 stars` : "Choose a rating"}</span>
-          </fieldset>;
-        }
         if (field.type === "checkbox") return <label key={field.key} className="adm-featured-checkbox"><input type="checkbox" checked={draft[field.key] === "true"} disabled={!editable || working} onChange={event => setDraft({...draft, [field.key]: String(event.target.checked)})}/><span>{field.label}</span></label>;
-        let options=field.options; if (moduleKey === "feedback" && field.key === "rating" && draft.type === "Inquiry") options = [""];
+        let options=field.options;
         if(moduleKey==="bookings"&&field.key==="driver")options=["Unassigned",...drivers.map(row=>row.id)];
         if(moduleKey==="bookings"&&field.key==="vehicle")options=["Unassigned",...vehicles.map(row=>row.id)];
         if(options&&draft[field.key]&&!options.includes(draft[field.key]))options=[draft[field.key],...options];

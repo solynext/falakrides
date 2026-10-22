@@ -134,7 +134,8 @@ test("page navigation assigns each editable field and copy field once without op
  const sections=contentPages.flatMap(page=>page.sections);
  for(const page of contentPages)assert.ok(page.sections.length,page.id);
  for(const field of editableContentFields.filter(field=>field.kind!=="website"))assert.equal(sections.filter(section=>section.fields.includes(field.id)).length,1,field.id);
- for(const field of websiteCopyFields)assert.equal(sections.filter(section=>section.copy.includes(field.key)).length,1,field.key);
+ for(const field of websiteCopyFields)assert.equal(sections.filter(section=>section.copy.includes(field.key)).length,field.key.startsWith("reviews")?0:1,field.key);
+ assert.ok(sections.every(section=>section.label!=="Reviews"));
  assert.ok(sections.every(section=>!section.collection||["slides","faqs","gallery"].includes(section.collection)));
  assert.ok(sections.every(section=>section.collection!=="services"));
  assert.equal(contentPages.find(page=>page.id==="home").sections[0].collection,"slides");
