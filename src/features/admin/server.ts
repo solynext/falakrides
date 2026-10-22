@@ -63,7 +63,7 @@ export function serialize(module: string, record: Row): AdminRow {
 export async function adminSnapshot(user: {id: string; role: string}) {
   const data: Record<string, AdminRow[]> = Object.fromEntries(Object.keys(modules).map(key => [key, []]));
   await Promise.all(Object.keys(names).filter(key => canAccess(user.role, key)).map(async key => {
-    const records = await table(db, key).findMany({...(key === "feedback" ? {where: {type: {not: "Review"}}} : {}), orderBy: {createdAt: "desc"}, include: includes(key)});
+    const records = await table(db, key).findMany({orderBy: {createdAt: "desc"}, include: includes(key)});
     data[key] = records.map(record => serialize(key, record));
   }));
   // Surface incoming inquiries in the existing feedback workflow.
@@ -93,7 +93,7 @@ function validate(module: string, input: unknown) {
     if (field.type === "date") schema = schema.refine(value => !value && !field.required || /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)), "Enter a valid date.");
     if (field.key === "image") schema = schema.refine(value => !value || isSafePublicImage(value), "Use a local /images/ path or Unsplash photo ID.");
     if (field.key === "zipCode") schema = schema.max(20).refine(value => !value || /^[a-zA-Z0-9 -]+$/.test(value), "Enter a valid ZIP or postal code.");
-    shape[field.key] = (!field.required && ["category", "description", "image", "caption", "zipCode", "destinations", "featured"].includes(field.key) || module === "bookings" && ["email","dropoffDate","dropoffTime"].includes(field.key)) ? schema.optional() : schema;
+    shape[field.key] = (!field.required && ["category", "description", "image", "caption", "zipCode", "destinations", "featured", "journey", "isSample"].includes(field.key) || module === "bookings" && ["email","dropoffDate","dropoffTime"].includes(field.key)) ? schema.optional() : schema;
   }
   shape.id = z.string().optional(); shape._version = z.string().optional(); shape._createdAt = z.string().optional();
   if(module === "bookings") {shape.customerId=clean.optional();shape.fareId=clean.optional();}
@@ -188,7 +188,21 @@ async function mutationData(tx: Prisma.TransactionClient, module: string, row: R
     if(!Number.isInteger(discount) || discount<0 || discount>100)throw new HttpError(400,"Discount must be a whole percentage from 0 to 100.");
     return {...data,image:vehicle.image || "",discount,terms:row.terms ?? String(existing?.terms || ""),name:`${vehicle.name} · ${row.pickup} → ${row.destination}`,route:`${row.pickup} → ${row.destination}`,...(!existing ? {code:`OFFER-${randomBytes(8).toString("hex").toUpperCase()}`,validUntil:"9999-12-31",status:"Active"} : {})};
   }
-  if (module === "feedback") data.rating = null;
+  if (module === "feedback") {
+    data.featured = row.featured === "true";
+    data.isSample = row.isSample === "true";
+    data.journey = row.journey ?? String(existing?.journey || "");
+    if (data.featured && (row.type !== "Review" || row.status !== "Approved")) throw new HttpError(400, "Approve the review before featuring it on the homepage.");
+    if (row.type === "Review") {
+      const rating = Number(row.rating);
+      if (!Number.isInteger(rating) || rating < 1 || rating > 5) throw new HttpError(400, "Choose a star rating from 1 to 5.");
+      data.rating = rating;
+      if (row.status === "Resolved") throw new HttpError(400, "Choose Pending or Approved for a review.");
+    } else {
+      data.rating = null;
+      if (row.status === "Approved") throw new HttpError(400, "Only reviews can be approved for the homepage.");
+    }
+  }
   if (module === "payments" || module === "notifications") {
     const booking = row.booking ? await tx.booking.findUnique({where: {reference: row.booking}}) : null;
     if (row.booking && !booking || module === "payments" && !booking) throw new HttpError(400, "Choose an existing booking reference.");

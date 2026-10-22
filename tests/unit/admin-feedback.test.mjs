@@ -40,26 +40,48 @@ function fixture() {
 }
 const admin = {id:'admin', role:'Administrator'};
 
-test('admin feedback contains inquiries and complaints without rating or review moderation controls', () => {
-  const definition = modules.feedback;
-  assert.equal(definition.fields.some(field => field.key === 'rating'), false);
-  assert.equal(definition.columns.includes('rating'), false);
-  assert.deepEqual(Array.from(definition.fields.find(field => field.key === 'type').options), ['Inquiry','Complaint']);
-  assert.deepEqual(Array.from(definition.fields.find(field => field.key === 'status').options), ['Pending','Resolved']);
+const review = {customer:'Traveller',type:'Review',rating:'5',message:'Comfortable family transfer.',status:'Approved',featured:'true',isSample:'true',journey:'Jeddah to Makkah'};
+test('admin exposes review approval, featuring and sample controls', () => {
+  assert.deepEqual(Array.from(modules.feedback.fields.find(field=>field.key==='type').options), ['Review','Inquiry','Complaint']);
+  for (const key of ['rating','status','featured','isSample','journey']) assert.ok(modules.feedback.fields.some(field=>field.key===key));
+});
+test('approved featured reviews persist rating and sample details', async () => {
+  const f=fixture();
+  await f.service.writeRecord('feedback',review,admin);
+  assert.equal(f.writes[0].rating,5);
+  assert.equal(f.writes[0].featured,true);
+  assert.equal(f.writes[0].isSample,true);
+  assert.equal(f.writes[0].journey,'Jeddah to Makkah');
+});
+test('pending reviews and inquiries cannot be featured', async () => {
+  const f=fixture();
+  for (const change of [{status:'Pending'},{type:'Inquiry'}]) await assert.rejects(f.service.writeRecord('feedback',{...review,...change},admin),/Approve the review/);
+  assert.equal(f.writes.length,0);
+});
+test('invalid ratings and review statuses cannot be saved', async () => {
+  const f=fixture();
+  for (const rating of ['0','6','2.5']) await assert.rejects(f.service.writeRecord('feedback',{...review,rating},admin));
+  await assert.rejects(f.service.writeRecord('feedback',{...review,status:'Resolved',featured:'false'},admin));
+  assert.equal(f.writes.length,0);
+});
+test('inquiries save without a star rating', async () => {
+  const f=fixture();
+  await f.service.writeRecord('feedback',{customer:'Traveller',type:'Inquiry',rating:'',message:'Pickup question',status:'Pending'},admin);
+  assert.equal(f.writes[0].rating,null);
+  assert.equal(f.writes[0].featured,false);
+});
+test('admin snapshot includes stored reviews for management', async () => {
+  const f=fixture(); await f.service.adminSnapshot(admin);
+  assert.equal(f.queries[0].where,undefined);
 });
 
-test('inquiries and complaints save without a rating; reviews are rejected without writing', async () => {
-  const f = fixture();
-  for (const type of ['Inquiry','Complaint']) {
-    await f.service.writeRecord('feedback', {customer:'Traveller', type, message:'Please help with my journey.', status:'Pending'}, admin);
-    assert.equal(f.writes.at(-1).rating, null);
-  }
-  await assert.rejects(f.service.writeRecord('feedback', {customer:'Traveller', type:'Review', message:'Old review', status:'Pending'}, admin));
-  assert.equal(f.writes.length, 2);
-});
-
-test('admin snapshot excludes historical reviews without deleting stored records', async () => {
-  const f = fixture();
-  await f.service.adminSnapshot(admin);
-  assert.deepEqual(JSON.parse(JSON.stringify(f.queries[0].where)), {type:{not:'Review'}});
+test('public catalogue requests only approved featured reviews and preserves sample labels', async () => {
+  let query;
+  const empty={findMany:async()=>[]};
+  const db={vehicle:empty,fare:empty,location:empty,offer:empty,feedback:{findMany:async args=>{query=args;return [{id:'sample',customer:'Traveller',rating:4,message:'Smooth journey',journey:'Makkah to Madinah',isSample:true}];}}};
+  const {databaseCatalog}=load('../../src/features/content/database-catalog.ts',()=>({db}));
+  const catalog=await databaseCatalog();
+  assert.deepEqual(JSON.parse(JSON.stringify(query.where)),{type:'Review',status:'Approved',featured:true});
+  assert.equal(catalog.reviews[0].isSample,true);
+  assert.equal(catalog.reviews[0].journey,'Makkah to Madinah');
 });

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/components/ui/icon";
 import {useSiteCompany, useSiteContact, useWebsite} from "@/features/content/public-content";
+import type {PublicCatalog} from "@/features/content/types";
 import {photo} from "@/utils/images";
 import BookingProcess from "./booking-process";
 import WhatsAppIcon from "@/components/ui/whatsapp-icon";
@@ -15,6 +16,23 @@ export function VehicleCards({showNote=true}:{showNote?:boolean}={}){const {vehi
 export function BookingSteps(){const {copy:c}=useWebsite();return <section className="taxi-steps-section"><div className="taxi-container"><SectionHeading label={c.stepsLabel} description={c.stepsDescription}><em>{c.stepsAccent}</em> {c.stepsTitle}</SectionHeading><BookingProcess steps={[{icon:"pin",title:c.step1Title,description:c.step1Text},{icon:"clock",title:c.step2Title,description:c.step2Text},{icon:"car",title:c.step3Title,description:c.step3Text}]}/></div></section>;}
 export function WhyChooseUs(){const {copy:c}=useWebsite();const {whatsapp}=useSiteContact();return <section className="taxi-container taxi-why"><div className="taxi-why-photo">{c.whyImage && <Image src={photo(c.whyImage)} alt="Illustrative premium vehicle" fill sizes="(max-width: 760px) 90vw, (max-width: 1200px) 45vw, 535px"/>}</div><div><span className="taxi-eyebrow">{c.whyLabel}</span><h2>{c.whyTitle}<br/><em>{c.whyAccent}</em></h2><p>{c.whyText}</p><ul className="taxi-checklist">{c.whyBenefits.split("\n").filter(Boolean).map((item,index)=><li key={index}><Icon name="check" size={18}/>{item}</li>)}</ul><div className="taxi-why-actions"><Link className="taxi-button" href="/book-a-ride">{c.bookNow}</Link><a className="taxi-button taxi-why-whatsapp" href={whatsapp} target="_blank" rel="noopener noreferrer" aria-label="Chat with Falak Rides on WhatsApp"><WhatsAppIcon size={18}/>WhatsApp</a></div></div></section>;}
 export function BookingCallout(){const {copy:c}=useWebsite();return <section className="taxi-booking-callout" aria-labelledby="booking-callout-title">{c.calloutImage && <Image className="taxi-callout-photo" src={photo(c.calloutImage)} alt="" fill sizes="100vw"/>}<div className="taxi-container"><span className="taxi-eyebrow">{c.calloutLabel}</span><h2 id="booking-callout-title">{c.calloutTitle}</h2><p className="taxi-callout-accent">Confirm Your Route, Fare &amp; Pickup</p><p>{c.calloutText}</p><Link className="taxi-button" href="/contact">{c.navContact} <Icon size={16}/></Link></div></section>;}
+export function ReviewsSection({reviews}:{reviews:PublicCatalog["reviews"]}) {
+  const {copy:c}=useWebsite();
+  const cards = reviews;
+  if (!cards.length) return null;
+  return <section className="taxi-reviews-section taxi-reviews-simple" aria-labelledby="traveller-reviews-title">
+    <div className="taxi-container">
+      <div className="taxi-reviews-heading"><h2 id="traveller-reviews-title"><em>{c.reviewsAccent}</em> {c.reviewsTitle}</h2><p>Comfortable journeys. Memorable experiences.</p></div>
+      <div className="taxi-review-grid" tabIndex={0} role="region" aria-label="Traveller reviews, scroll horizontally">{cards.map(review=><blockquote key={review.id}>
+        <span className="taxi-review-quote-mark" aria-hidden="true">&ldquo;</span>
+        <span className="taxi-review-stars" role="img" aria-label={`${review.rating} out of 5 stars`}>{"\u2605".repeat(Math.max(0,Math.min(5,review.rating)))}</span>
+        <p>{review.text}</p>
+        <footer className="taxi-review-card-footer"><span className="taxi-review-avatar" aria-hidden="true">{review.name.split(" ").map(part=>part.charAt(0)).slice(0,2).join("")}</span><div><cite>{review.name}</cite><span className="taxi-review-journey">{review.journey || "Falak Rides traveller"}</span>{review.isSample&&<span className="taxi-review-sample">Sample review</span>}</div></footer>
+      </blockquote>)}</div>
+      {cards.some(review=>review.isSample)&&<p className="taxi-reviews-demo-note">Sample reviews are illustrative examples, not customer testimonials.</p>}
+    </div>
+  </section>;
+}
 const bookingAirportFaqs = [
   ["Is my booking confirmed when I submit a request?", "A request or generated reference does not establish a confirmed reservation. Confirm availability, the total fare in SAR and pickup arrangements directly with the team before travelling."],
   ["What details should I send for an airport pickup?", "Share your arrival airport, flight number, arrival date and time, destination, passenger count and luggage requirements. Ask the team to confirm the meeting point and any waiting charges."],

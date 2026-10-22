@@ -437,47 +437,27 @@
   content: none;
 }
 
-/* Public review summary and cards */
-.taxi-reviews-section{background:linear-gradient(145deg,#f8faf5 0%,var(--taxi-light) 100%);padding:90px 0}
-.taxi-reviews-summary{display:grid;grid-template-columns:minmax(240px,.8fr) minmax(0,1.4fr);gap:38px;align-items:center;margin:0 0 34px;padding:18px;background:#fff;border:1px solid #e9ede4;border-radius:20px;box-shadow:0 16px 48px #27351b0b}
-.taxi-rating-overview{min-height:220px;padding:28px;border-radius:15px;background:linear-gradient(145deg,#f4f8ee,#edf4e4);display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
-.taxi-rating-kicker{display:flex;align-items:center;gap:9px;color:#66705d;font-size:14px}
-.taxi-rating-kicker>span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#e1edcf;color:#6d9f31;font-size:17px}
-.taxi-rating-overview>strong{margin:6px 0 2px;color:var(--taxi-accent);font-size:58px;line-height:1;font-weight:700;letter-spacing:-2px}
-.taxi-rating-overview>strong small{font-size:21px;font-weight:500;letter-spacing:0;color:#777f70}
-.taxi-rating-stars,.taxi-review-stars{color:#e4a91c;letter-spacing:4px;font-size:24px;line-height:1.5}
-.taxi-rating-count{margin-top:7px;color:#747c6e;font-size:13px}
-.taxi-rating-breakdown{padding:18px 24px}
-.taxi-rating-breakdown h3{margin:0 0 4px;font-size:20px}
-.taxi-rating-breakdown>p{margin:0 0 20px;font-size:14px}
-.taxi-rating-row{display:grid;grid-template-columns:58px minmax(0,1fr) 38px;gap:12px;align-items:center;margin:13px 0;color:#626b5b;font-size:13px}
-.taxi-rating-row>small{text-align:right;font-size:12px;color:#7b8275}
-.taxi-rating-track{height:10px;overflow:hidden;border-radius:99px;background:#edf0e9}
-.taxi-rating-track>span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#9cc95d,var(--taxi-lime));transition:width .5s ease}
-.taxi-review-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:100%;max-width:none;margin-inline:0}
-.taxi-review-grid blockquote{margin:0;min-width:0;padding:25px;background:#fff;border:1px solid #e9ede4;border-radius:16px;box-shadow:0 10px 30px #27351b08;transition:transform .2s ease,box-shadow .2s ease}
-.taxi-review-grid blockquote:hover{transform:translateY(-3px);box-shadow:0 16px 36px #27351b12}
-.taxi-review-author{display:flex;align-items:center;gap:11px}
-.taxi-review-avatar{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:50%;background:#edf4e4;color:#6b9638;font-size:16px;font-weight:700}
-.taxi-review-grid cite{font-style:normal;font-weight:700;color:var(--taxi-accent)}
-.taxi-review-stars{display:block;margin:12px 0 4px;font-size:17px;letter-spacing:3px}
-.taxi-review-grid p{margin:0;color:#687064;font-size:14px;line-height:1.7}
-@media(max-width:760px){.taxi-reviews-summary{grid-template-columns:1fr;gap:12px;padding:12px;border-radius:16px}.taxi-rating-overview{min-height:190px;padding:23px}.taxi-rating-overview>strong{font-size:50px}.taxi-rating-breakdown{padding:18px 12px}.taxi-rating-breakdown>p{margin-bottom:14px}.taxi-rating-row{grid-template-columns:52px minmax(0,1fr) 34px;gap:8px}.taxi-review-grid{grid-template-columns:1fr;gap:14px}.taxi-review-grid blockquote{padding:21px}}
-@media(prefers-reduced-motion:reduce){.taxi-review-grid blockquote,.taxi-rating-track>span{transition:none}.taxi-review-grid blockquote:hover{transform:none}}
-.taxi-review-grid blockquote{position:relative;overflow:hidden;padding:24px 25px 18px;border:1px solid #e7ecdf;border-radius:18px;background:linear-gradient(160deg,#fff 0%,#fff 74%,#f8fbf4 100%);box-shadow:0 12px 32px #2330180b}
-.taxi-review-grid blockquote::before{position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,var(--taxi-lime),#d6e7bf);content:""}
-.taxi-review-grid blockquote:hover{transform:translateY(-5px);border-color:#d9e6cb;box-shadow:0 20px 42px #23301815}
-.taxi-review-card-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.taxi-review-author{min-width:0;gap:12px}
-.taxi-review-avatar{flex-basis:46px;width:46px;height:46px;border:3px solid #fff;box-shadow:0 0 0 1px #e2ead8,0 4px 12px #20301612;background:linear-gradient(145deg,#edf5e3,#dfedcf);font-size:17px}
-.taxi-review-grid cite{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px}
-.taxi-review-score{display:inline-flex;align-items:center;gap:5px;flex:none;padding:6px 9px;border:1px solid #f0e2bd;border-radius:10px;background:#fffaf0;color:#6b5a30;font-size:12px;font-weight:700}
-.taxi-review-score>span{color:#e4a91c;font-size:14px}
-.taxi-review-stars{margin:15px 0 8px;font-size:16px;letter-spacing:3px}
-.taxi-review-grid p{min-height:72px;font-size:14px;line-height:1.75;color:#626c5e}
-.taxi-review-card-footer{display:flex;align-items:center;gap:7px;margin-top:15px;padding-top:13px;border-top:1px solid #edf0e9;color:#87907f;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
-.taxi-review-quote-mark{height:22px;color:#8fb957;font-family:Georgia,serif;font-size:28px;line-height:1}
-@media(max-width:760px){.taxi-review-grid blockquote{padding:22px 20px 17px}.taxi-review-grid p{min-height:0}}
+/* Simple traveller review cards */
+.taxi-reviews-simple{padding:80px 0;background:radial-gradient(ellipse at 10% 35%,#8dc73f09,transparent 45%),#f8f9fa}
+.taxi-reviews-heading{text-align:center;margin:0 auto 48px;max-width:780px}
+.taxi-reviews-heading h2{color:var(--taxi-accent);font-size:clamp(30px,3.2vw,44px);line-height:1.25;margin:0 0 16px}
+.taxi-reviews-heading h2 em{color:var(--taxi-lime);font-style:normal}
+.taxi-reviews-heading p{color:#777;font-size:17px;margin:0;line-height:1.7}
+.taxi-reviews-simple .taxi-review-grid{display:grid;grid-template-columns:none;grid-template-rows:1fr;grid-auto-flow:column;grid-auto-columns:calc((100% - 56px)/3);gap:28px;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;padding-bottom:18px;scrollbar-width:thin;scrollbar-color:var(--taxi-lime) #e8edde}
+.taxi-reviews-simple blockquote{scroll-snap-align:start;display:flex;flex-direction:column;min-width:0;margin:0;padding:30px;border:1px solid #e1e5e8;border-radius:22px;background:#f8f9fa;box-shadow:none}
+.taxi-reviews-simple blockquote::before{content:none}
+.taxi-reviews-simple .taxi-review-quote-mark{display:block;color:#cfe2ad;font:44px/1 Georgia,serif;margin-bottom:20px}
+.taxi-reviews-simple .taxi-review-stars{display:block;color:var(--taxi-lime);font-size:23px;line-height:1.4;letter-spacing:1px;margin-bottom:14px}
+.taxi-reviews-simple blockquote>p{flex:1;color:#4c4c4c;font-size:16px;line-height:1.8;margin:0 0 26px}
+.taxi-reviews-simple .taxi-review-card-footer{display:flex;align-items:center;gap:15px;margin:0;padding:20px 0 0;border-top:1px solid #d3e5b6;background:none;text-transform:none;letter-spacing:0}
+.taxi-reviews-simple .taxi-review-avatar{display:grid;place-items:center;flex:0 0 58px;width:58px;height:58px;border-radius:50%;background:#e8efdF;color:var(--taxi-accent);font-size:18px;font-weight:700}
+.taxi-reviews-simple .taxi-review-card-footer>div{min-width:0}
+.taxi-reviews-simple cite{display:block;color:var(--taxi-lime);font-style:normal;font-size:16px;font-weight:700;line-height:1.5}
+.taxi-review-journey{display:block;color:#828282;font-size:13px;line-height:1.6}
+.taxi-review-sample{display:block;color:#737373;font-size:11px;line-height:1.6}
+.taxi-reviews-demo-note{text-align:center;font-size:12px;color:#7a7a7a;margin:24px 0 0}
+@media(max-width:1050px){.taxi-reviews-simple .taxi-review-grid{grid-auto-columns:calc((100% - 22px)/2);gap:22px}}
+@media(max-width:640px){.taxi-reviews-simple{padding:56px 0}.taxi-reviews-heading{margin-bottom:30px}.taxi-reviews-heading p{font-size:15px}.taxi-reviews-simple .taxi-review-grid{grid-auto-columns:88%;gap:18px}.taxi-reviews-simple blockquote{padding:25px}.taxi-reviews-simple blockquote>p{font-size:15px}}
 
 /* Responsive optimized media reserves space without stretching vehicle photos. */
 .public-site .taxi-why-photo { position: relative; width: 100%; min-width: 0; aspect-ratio: 800 / 390; }

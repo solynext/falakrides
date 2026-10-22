@@ -258,6 +258,11 @@ model Feedback {
   version   Int @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  journey   String @default("")
+  featured  Boolean @default(false)
+  isSample  Boolean @default(false)
+
+  @@index([type, status, featured])
 }
 
 model Inquiry {

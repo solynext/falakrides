@@ -8,7 +8,7 @@ import StayInTouch from "@/components/public/stay-in-touch";
 import SocialLinks from "@/components/public/social-links";
 import "./footer.css";
 
-export default async function Footer() {
+export default async function Footer({showStayInTouch = true}: {showStayInTouch?: boolean} = {}) {
   const {published} = await readContent();
   const {copy: c, services} = websiteFromValues(published);
   const phone = published["contact.phone"] ?? "+966 56 769 1683";
@@ -16,7 +16,7 @@ export default async function Footer() {
   const name = published["company.name"] ?? "Falak Rides";
   const ziyarat = services.find(service => service.visible && service.slug.includes("ziyarat"));
 
-  return <><StayInTouch/><footer className="taxi-footer">
+  return <>{showStayInTouch && <StayInTouch/>}<footer className="taxi-footer">
     <div className="taxi-container">
       <div className="taxi-footer-main">
         <div className="taxi-footer-intro">
