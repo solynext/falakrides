@@ -1,6 +1,15 @@
 .taxi-related-prices { margin-block: 48px; min-width: 0; }
 .taxi-related-prices > .taxi-section-heading { margin-bottom: 28px; }
 .taxi-related-prices .taxi-price-empty { text-align: center; padding: 24px 16px; }
+.taxi-all-vehicles { margin-top: 64px; }
+.taxi-related-prices .taxi-vehicle-route-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.taxi-related-prices .taxi-vehicle-route-grid .taxi-price-card { min-height: 460px; }
+.taxi-related-prices .taxi-vehicle-route-grid .taxi-price-photo { height: 190px; }
+@media (max-width: 640px) {
+  .taxi-related-prices .taxi-vehicle-route-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .taxi-related-prices .taxi-vehicle-route-grid .taxi-price-card { min-height: 430px; }
+  .taxi-related-prices .taxi-vehicle-route-grid .taxi-price-photo { height: 150px; }
+}
 @media (max-width: 600px) {
   .taxi-related-prices { margin-block: 32px; }
 }

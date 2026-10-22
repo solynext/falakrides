@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import {readContent} from "@/features/content/store";
 import {PublicContent} from "@/features/content/public-content";
 import BookingPopup from "@/features/bookings/components/booking-popup";
+import SpecialOfferButton from "@/components/public/special-offer-button";
 import JsonLd from "@/components/seo/json-ld";
 import {absoluteUrl} from "@/lib/seo";
 import "./public-design.css";
@@ -16,5 +17,5 @@ export default async function PublicLayout({children}: {children: React.ReactNod
     {"@type":"Organization","@id":absoluteUrl("/#organization"),name,url:absoluteUrl("/"),logo:{"@type":"ImageObject",url:absoluteUrl("/images/falak-ride-logo.png")},description:content.published["company.description"]??"Private transportation across Makkah, Madinah and Jeddah.",email:content.published["contact.email"]??"falakrides56@gmail.com",telephone:content.published["contact.phone"]??"+966 56 769 1683",areaServed:["Makkah","Madinah","Jeddah"]},
     {"@type":"WebSite","@id":absoluteUrl("/#website"),url:absoluteUrl("/"),name,publisher:{"@id":absoluteUrl("/#organization")}},
   ]};
-  return <PublicContent initial={content.published} catalog={content.catalog!} revision={content.publishedAt}><JsonLd data={structuredData}/><div className={`public-site ${heading.variable} ${body.variable}`}><Header/>{children}<BookingPopup/></div></PublicContent>;
+  return <PublicContent initial={content.published} catalog={content.catalog!} revision={content.publishedAt}><JsonLd data={structuredData}/><div className={`public-site ${heading.variable} ${body.variable}`}><Header/>{children}<BookingPopup/><SpecialOfferButton/></div></PublicContent>;
 }

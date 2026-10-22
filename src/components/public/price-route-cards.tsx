@@ -7,9 +7,11 @@ import {useSiteCatalog} from "@/features/content/public-content";
 import PriceRouteCard from "./price-route-card";
 import "./price-route-cards.css";
 
-export default function PriceRouteCards({featuredOnly = true}: {featuredOnly?: boolean}) {
+export default function PriceRouteCards({featuredOnly = true, vehicleName}: {featuredOnly?: boolean; vehicleName?: string}) {
   const {routes: allRoutes, vehicles} = useSiteCatalog();
-  const routes = featuredOnly ? allRoutes.filter(route => route[8] === "true") : allRoutes;
+  const routes = vehicleName
+    ? allRoutes.filter(route => vehicles.find(vehicle => vehicle.id === route[6])?.name.toLowerCase() === vehicleName.toLowerCase())
+    : featuredOnly ? allRoutes.filter(route => route[8] === "true") : allRoutes;
   const track = useRef<HTMLDivElement>(null);
   const trackId = useId();
   const drag = useRef<{pointer: number; x: number; scroll: number; moved: boolean} | null>(null);
@@ -72,7 +74,7 @@ export default function PriceRouteCards({featuredOnly = true}: {featuredOnly?: b
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
   }
 
-  if (!routes.length) return <div className="taxi-price-empty"><p>{featuredOnly ? "No featured rides at the moment. Explore all routes to find your journey." : "No routes are currently available. Contact us to plan your journey."}</p><Link href={featuredOnly ? "/routes" : "/contact"} className="taxi-button">{featuredOnly ? "See all prices" : "Contact us"} <Icon size={16}/></Link></div>;
+  if (!routes.length) return <div className="taxi-price-empty"><p>{vehicleName ? `No published prices are available for ${vehicleName} yet. Contact us for a quote.` : featuredOnly ? "No featured rides at the moment. Explore all routes to find your journey." : "No routes are currently available. Contact us to plan your journey."}</p><Link href={vehicleName ? "/contact" : featuredOnly ? "/routes" : "/contact"} className="taxi-button">{vehicleName ? "Request a quote" : featuredOnly ? "See all prices" : "Contact us"} <Icon size={16}/></Link></div>;
 
   return <section ref={carousel} className="taxi-price-carousel" aria-label="Prices and routes" aria-roledescription="carousel">
     <div className="taxi-price-grid" id={trackId} ref={track} onPointerDown={startDrag} onPointerMove={dragMove} onPointerUp={endDrag} onPointerCancel={endDrag} onLostPointerCapture={endDrag} onDragStart={event => event.preventDefault()} onClickCapture={event => {if (Date.now() < suppressClickUntil.current) {event.preventDefault(); event.stopPropagation();}}} onWheel={() => {manualUntil.current = Date.now() + 8000;}} tabIndex={0} role="group" aria-label="Available rides" onKeyDown={event => {if (event.target !== event.currentTarget) return; if (event.key === "ArrowLeft" || event.key === "ArrowRight") {event.preventDefault(); move(event.key === "ArrowLeft" ? -1 : 1);}}}>{routes.map((route, index) => <PriceRouteCard key={route[7] || `${route[0]}:${route[1]}:${route[6]}`} route={route} vehicle={vehicles.find(vehicle => vehicle.id === route[6])} slide={`${index + 1} of ${routes.length}`}/>)}</div>

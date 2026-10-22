@@ -5,6 +5,7 @@ import {websiteFromValues} from "@/features/content/website-model";
 import Link from "next/link";
 import Icon from "@/components/ui/icon";
 import StayInTouch from "@/components/public/stay-in-touch";
+import SocialLinks from "@/components/public/social-links";
 import "./footer.css";
 
 export default async function Footer() {
@@ -24,6 +25,7 @@ export default async function Footer() {
             <small>{c.footerTagline}</small>
           </Link>
           <p className="taxi-footer-description"><ContentText id="company.description" fallback="Private transportation across Makkah, Madinah and Jeddah."/></p>
+          <div className="taxi-footer-social"><SocialLinks/></div>
         </div>
         <div className="taxi-footer-navigation">
           <nav aria-label="Explore">

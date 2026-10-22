@@ -63,3 +63,9 @@
 
 .public-site .taxi-footer-description { max-width: 300px; margin: 0; font-size: 13px; line-height: 1.8; color: #647063; }
 .public-site .taxi-footer-brand { margin-bottom: 16px; }
+.public-site .taxi-footer-social { margin-top: 18px; }
+.public-site .taxi-footer-social .contact-popup-social { margin: 0; padding: 0; border: 0; }
+.public-site .taxi-footer-social .contact-popup-social > span { color: #647063; font-size: 12px; }
+.public-site .taxi-footer-social .contact-popup-social nav { gap: 8px; margin-top: 9px; }
+.public-site .taxi-footer-social .contact-social-button { width: 32px; height: 32px; border-radius: 50%; }
+.public-site .taxi-footer-social .contact-social-button > svg { width: 16px; height: 16px; }
