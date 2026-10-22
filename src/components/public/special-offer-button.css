@@ -1,37 +1,73 @@
 .public-site .special-offer-wrap {
   position: fixed;
   z-index: 40;
-  top: 42%;
-  right: 0;
+  top: 44%;
+  right: 18px;
   display: flex;
-  align-items: flex-start;
-  transform: translateX(110%);
-  filter: drop-shadow(0 8px 18px #4a10102e);
-  transition: transform .65s cubic-bezier(.16, 1, .3, 1);
+  align-items: center;
+  filter: drop-shadow(0 8px 14px #4a10102e);
+  transform: translateX(calc(100% + 110px));
+  transition: transform .7s cubic-bezier(.16, 1, .3, 1);
 }
 .public-site .special-offer-wrap.is-visible { transform: translateX(0); }
 .public-site .special-offer-button {
-  display: inline-flex;
+  position: relative;
+  display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 11px 17px 11px 12px;
-  border: 1px solid #ffffff65;
-  border-right: 0;
-  border-radius: 999px 0 0 999px;
-  background: #e52d36;
-  box-shadow: inset 0 1px 0 #ffffff30;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 225px;
+  min-height: 60px;
+  padding: 9px 12px 9px 66px;
+  overflow: visible;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(110deg, #f42b35, #df101c 72%, #c90a17);
+  box-shadow: inset 0 1px 0 #ffffff40;
   color: #fff;
-  font-size: 13px;
-  font-weight: 650;
-  letter-spacing: .15px;
-  transition: background .25s ease, padding .25s ease, box-shadow .25s ease;
+  transition: filter .25s ease, transform .25s ease;
 }
-.public-site .special-offer-button:hover { background: #cc202b; padding-left: 15px; box-shadow: inset 0 1px 0 #ffffff38, 0 5px 14px #7f17232b; }
-.public-site .special-offer-button > span:first-child { display: grid; place-items: center; width: 25px; height: 25px; border: 1px solid #ffffff50; border-radius: 50%; background: #ffffff1c; font-size: 16px; }
-.public-site .special-offer-button:focus-visible { outline-offset: -4px; }
-.public-site .special-offer-dismiss { position: absolute; top: -7px; right: 6px; display: grid; place-items: center; width: 19px; height: 19px; padding: 0 0 1px; border: 1px solid #fff; border-radius: 50%; background: #fff; color: #555; font-size: 14px; line-height: 1; box-shadow: 0 1px 4px #0002; transition: transform .2s ease, color .2s ease; }
-.public-site .special-offer-dismiss:hover { color: #c51d29; transform: scale(1.1); }
+.public-site .special-offer-button::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(100deg, #ffffff0b, transparent 42%, #7e00000d);
+  content: "";
+  pointer-events: none;
+}
+.public-site .special-offer-button:hover { filter: brightness(1.08); transform: translateY(-2px); }
+.public-site .special-offer-button:focus-visible { outline-offset: 4px; }
+.public-site .special-offer-discount {
+  position: absolute;
+  top: 50%;
+  left: -32px;
+  z-index: 1;
+  display: flex;
+  width: 78px;
+  height: 78px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #f42b35, #ce101c);
+  box-shadow: 0 2px 6px #7000002e;
+  transform: translateY(-50%);
+  line-height: 1;
+}
+.public-site .special-offer-discount small { color: #ffe681; font-family: var(--font-taxi-body), sans-serif; font-size: 8px; font-weight: 700; letter-spacing: .45px; }
+.public-site .special-offer-discount strong { margin: 2px 0 1px; color: #fff; font-family: var(--font-taxi-heading), sans-serif; font-size: 26px; font-weight: 700; letter-spacing: -.8px; }
+.public-site .special-offer-label { position: relative; z-index: 1; font-family: var(--font-taxi-heading), sans-serif; font-size: 20px; font-weight: 700; letter-spacing: .35px; line-height: 1; white-space: nowrap; }
+.public-site .special-offer-dismiss { position: absolute; top: -8px; right: -8px; z-index: 2; display: grid; place-items: center; box-sizing: border-box; width: 28px; height: 28px; min-width: 28px; padding: 0; border: 2px solid #fff; border-radius: 50%; background: #fff; color: #c90a17; box-shadow: 0 3px 9px #5e08083d; cursor: pointer; transition: transform .22s cubic-bezier(.2, .8, .2, 1), background .22s ease, box-shadow .22s ease; }
+.public-site .special-offer-dismiss svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.public-site .special-offer-dismiss:hover { background: #ffe8e9; box-shadow: 0 4px 12px #5e08085c; transform: rotate(90deg) scale(1.08); }
+.public-site .special-offer-dismiss:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+@media (max-width: 600px) {
+  .public-site .special-offer-wrap { top: 46%; right: 12px; }
+  .public-site .special-offer-button { width: min(214px, calc(100vw - 24px)); min-height: 56px; padding-left: 62px; }
+  .public-site .special-offer-discount { width: 70px; height: 70px; }
+  .public-site .special-offer-label { font-size: clamp(17px, 5.6vw, 19px); }
+}
 @media (prefers-reduced-motion: reduce) {
-  .public-site .special-offer-wrap { transition: none; }
-  .public-site .special-offer-button, .public-site .special-offer-dismiss { transition: none; }
+  .public-site .special-offer-wrap, .public-site .special-offer-button, .public-site .special-offer-dismiss { transition: none; }
 }
